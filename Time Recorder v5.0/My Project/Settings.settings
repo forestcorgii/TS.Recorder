@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="Company" Type="System.String" Scope="User">
+      <Value Profile="(Default)">INTERNATIONAL DATA CONVERSION SOLUTIONS INC</Value>
+    </Setting>
+    <Setting Name="Acronym" Type="System.String" Scope="User">
+      <Value Profile="(Default)">IDCSI</Value>
+    </Setting>
+    <Setting Name="defaultstate" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="dumpenabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="hedformvaldation" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
