@@ -27,6 +27,15 @@ Public Class sfrmSettings
         Else : HRMSAPIManager = New hrms_api_service.Manager.API.HRMS
         End If
 
+        If UPSGAPIManager IsNot Nothing Then
+            tbUPSGAction.Text = UPSGAPIManager.action
+            tbUPSGToken.Text = UPSGAPIManager.token
+            tbUPSGSite.Text = UPSGAPIManager.site
+            tbUPSGURL.Text = UPSGAPIManager.APIUrl
+
+        Else : UPSGAPIManager = New upsg_api_service.Manager.API.UPSG
+        End If
+
         If VerilookManager Is Nothing Then
             VerilookManager = New VerilookLib2.Manager.Verilook
         End If
@@ -60,6 +69,16 @@ Public Class sfrmSettings
             settings = New Model.Settings() With {
                 .Name = "HRMSAPIManager",
                 .JSON_Arguments = JsonConvert.SerializeObject(HRMSAPIManager)
+            }
+            Controller.Settings.SaveSettings(DatabaseManager, settings)
+
+            UPSGAPIManager.action = tbUPSGAction.Text
+            UPSGAPIManager.token = tbUPSGToken.Text
+            UPSGAPIManager.site = tbUPSGSite.Text
+            UPSGAPIManager.APIUrl = tbUPSGURL.Text
+            settings = New Model.Settings() With {
+                .Name = "UPSGAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(UPSGAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 

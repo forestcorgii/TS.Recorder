@@ -1,4 +1,5 @@
-﻿Imports time_recorder_service
+﻿Imports Newtonsoft.Json
+Imports time_recorder_service
 
 Public Class sfrmUserProfiles
     Public Employees As New List(Of Model.Employee)
@@ -25,6 +26,8 @@ Public Class sfrmUserProfiles
     End Sub
 
     Private Sub sfrmUserProfiles_Load(sender As Object, e As EventArgs) Handles Me.Load
+        LoadAPISettings()
+
         LoadEmployeesToDGV()
         cbSearchOption.SelectedIndex = 0
     End Sub
@@ -43,7 +46,7 @@ Public Class sfrmUserProfiles
 
     Private Sub dgv_CurrentCellChanged(sender As Object, e As EventArgs) Handles dgv.CurrentCellChanged
         If Not dgv.Rows.Count = 0 And dgv.CurrentRow IsNot Nothing Then
-            employee = dgv.CurrentRow.Cells(0).Value
+            Employee = dgv.CurrentRow.Cells(0).Value
             With Employee
                 tbEmployeeNumber.Text = .Employee_Id
                 tbFirstName.Text = .first_name
@@ -54,24 +57,24 @@ Public Class sfrmUserProfiles
 
                 cbActive.Enabled = (.NoFaceImage = False)
             End With
-            checkFaceAvailable(employee)
+            checkFaceAvailable(Employee)
         End If
     End Sub
 
 
     Private Sub btnRegFace_Click(sender As Object, e As EventArgs) Handles btnRegFace.Click
-        If checkFaceAvailable(employee) Then
+        If checkFaceAvailable(Employee) Then
             If MsgBox("Re-scan? Previous data will be overwritten.", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             Else : Exit Sub
             End If
         End If
 
         VerilookLib2.Controller.Verilook.EditFaceTemplate(FaceManager, Employee)
-        checkFaceAvailable(employee)
+        checkFaceAvailable(Employee)
     End Sub
 
 
-    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+    Private Sub btnSaveProfile_Click(sender As Object, e As EventArgs) Handles btnSaveProfile.Click
         Dim changes As New List(Of String)
         With Employee
 
@@ -81,7 +84,7 @@ Public Class sfrmUserProfiles
 
             .owner = Environment.GetEnvironmentVariable("USERDOMAIN")
 
-            Controller.Employee.SaveEmployee(DatabaseManager, employee)
+            Controller.Employee.SaveEmployee(DatabaseManager, Employee)
         End With
 
 
@@ -135,4 +138,102 @@ Public Class sfrmUserProfiles
     '    End Select
     '    readUserDB(filteredUserDB)
     'End Sub
+
+
+    Private Sub LoadAPISettings()
+        If AttendanceAPIManager IsNot Nothing Then
+            tbAttendanceURL.Text = AttendanceAPIManager.ApiUrl
+        Else : AttendanceAPIManager = New Manager.API.Attendance
+        End If
+
+        If EmployeeAPIManager IsNot Nothing Then
+            tbEmployeeSite.Text = EmployeeAPIManager.Site
+            tbEmployeeTerminal.Text = EmployeeAPIManager.Terminal
+            tbEmployeeURL.Text = EmployeeAPIManager.Url
+            tbEmployeeToken.Text = EmployeeAPIManager.ApiToken
+        Else : EmployeeAPIManager = New Manager.API.Employee
+        End If
+
+        If HRMSAPIManager IsNot Nothing Then
+            tbHRMSURL.Text = HRMSAPIManager.Url
+            tbHRMSToken.Text = HRMSAPIManager.APIToken
+            tbHRMSWhat.Text = HRMSAPIManager.What
+            tbHRMSSearch.Text = HRMSAPIManager.Search
+            tbHRMSField.Text = HRMSAPIManager.Field
+        Else : HRMSAPIManager = New hrms_api_service.Manager.API.HRMS
+        End If
+
+        If UPSGAPIManager IsNot Nothing Then
+            tbUPSGAction.Text = UPSGAPIManager.action
+            tbUPSGToken.Text = UPSGAPIManager.token
+            tbUPSGSite.Text = UPSGAPIManager.site
+            tbUPSGURL.Text = UPSGAPIManager.APIUrl
+
+        Else : UPSGAPIManager = New upsg_api_service.Manager.API.UPSG
+        End If
+
+        If VerilookManager Is Nothing Then
+            VerilookManager = New VerilookLib2.Manager.Verilook
+        End If
+    End Sub
+
+    Private Sub btnSaveAPI_Click(sender As Object, e As EventArgs) Handles btnSaveAPI.Click
+        If MsgBox("Are You sure you want to save?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            DatabaseManager.Connection.Open()
+            AttendanceAPIManager.ApiUrl = tbAttendanceURL.Text
+            Dim settings As New Model.Settings() With {
+                .Name = "AttendanceAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(AttendanceAPIManager)
+            }
+            Controller.Settings.SaveSettings(DatabaseManager, settings)
+
+            EmployeeAPIManager.Site = tbEmployeeSite.Text
+            EmployeeAPIManager.Terminal = tbEmployeeTerminal.Text
+            EmployeeAPIManager.Url = tbEmployeeURL.Text
+            EmployeeAPIManager.ApiToken = tbEmployeeToken.Text
+            settings = New Model.Settings() With {
+                .Name = "EmployeeAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(EmployeeAPIManager)
+            }
+            Controller.Settings.SaveSettings(DatabaseManager, settings)
+
+            HRMSAPIManager.Url = tbHRMSURL.Text
+            HRMSAPIManager.APIToken = tbHRMSToken.Text
+            HRMSAPIManager.What = tbHRMSWhat.Text
+            HRMSAPIManager.Search = tbHRMSSearch.Text
+            HRMSAPIManager.Field = tbHRMSField.Text
+            settings = New Model.Settings() With {
+                .Name = "HRMSAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(HRMSAPIManager)
+            }
+            Controller.Settings.SaveSettings(DatabaseManager, settings)
+
+            UPSGAPIManager.action = tbUPSGAction.Text
+            UPSGAPIManager.token = tbUPSGToken.Text
+            UPSGAPIManager.site = tbUPSGSite.Text
+            UPSGAPIManager.APIUrl = tbUPSGURL.Text
+            settings = New Model.Settings() With {
+                .Name = "UPSGAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(UPSGAPIManager)
+            }
+            Controller.Settings.SaveSettings(DatabaseManager, settings)
+            DatabaseManager.Connection.Close()
+        End If
+    End Sub
+
+    Private Sub btnOpenBiometricClientSettings_Click(sender As Object, e As EventArgs) Handles btnOpenBiometricClientSettings.Click
+        'VerilookManager.SetBiometricClientParams()
+        Using _verilookSettings As New VerilookLib2.dlgSettings(VerilookManager.Settings)
+            If _verilookSettings.ShowDialog = System.Windows.Forms.DialogResult.OK Then
+                VerilookManager.Settings = _verilookSettings.Settings
+
+                Dim settings As New Model.Settings() With {
+                    .Name = "VerilookManager.Settings",
+                    .JSON_Arguments = JsonConvert.SerializeObject(VerilookManager.Settings)
+                }
+                Controller.Settings.SaveSettings(DatabaseManager, settings)
+
+            End If
+        End Using
+    End Sub
 End Class

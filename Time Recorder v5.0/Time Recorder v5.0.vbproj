@@ -277,6 +277,10 @@
       <Project>{4FE7CB48-0A3C-4D4F-AC87-C549DF7B9310}</Project>
       <Name>time-recorder-service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\upsg-api-service\upsg-api-service.vbproj">
+      <Project>{1b28f3d2-da0c-4267-8bb6-be4ea74f5b7e}</Project>
+      <Name>upsg-api-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\utility-service\utility-service.vbproj">
       <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
       <Name>utility-service</Name>

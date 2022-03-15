@@ -25,13 +25,13 @@ Partial Class frmMain
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.stState = New System.Windows.Forms.StatusStrip()
         Me.lbSenderQueues = New System.Windows.Forms.ToolStripStatusLabel()
@@ -67,6 +67,10 @@ Partial Class frmMain
         Me.pbStatus = New System.Windows.Forms.ProgressBar()
         Me.tmSendTimelog = New System.Windows.Forms.Timer(Me.components)
         Me.bgwSendTimelog = New System.ComponentModel.BackgroundWorker()
+        Me.fvStream = New Neurotec.Biometrics.Gui.NFaceView()
+        Me.pnlSuccess = New System.Windows.Forms.Panel()
+        Me.pnlError = New System.Windows.Forms.Panel()
+        Me.tmChecker = New System.Windows.Forms.Timer(Me.components)
         Me.stState.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -152,7 +156,7 @@ Partial Class frmMain
         Me.lbCompany.ForeColor = System.Drawing.Color.Black
         Me.lbCompany.Location = New System.Drawing.Point(128, 33)
         Me.lbCompany.Name = "lbCompany"
-        Me.lbCompany.Size = New System.Drawing.Size(990, 58)
+        Me.lbCompany.Size = New System.Drawing.Size(517, 58)
         Me.lbCompany.TabIndex = 3
         Me.lbCompany.Text = "COMPANY INC."
         '
@@ -250,8 +254,8 @@ Partial Class frmMain
         Me.dgv.AllowUserToDeleteRows = False
         Me.dgv.AllowUserToResizeColumns = False
         Me.dgv.AllowUserToResizeRows = False
-        DataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        Me.dgv.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle8
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        Me.dgv.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         Me.dgv.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -260,40 +264,40 @@ Partial Class frmMain
         Me.dgv.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None
         Me.dgv.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable
         Me.dgv.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None
-        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(40, Byte), Integer), CType(CType(45, Byte), Integer))
-        DataGridViewCellStyle9.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle9.ForeColor = System.Drawing.Color.White
-        DataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.dgv.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(40, Byte), Integer), CType(CType(45, Byte), Integer))
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.White
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.dgv.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgv.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.empName, Me.clProject, Me.dgvrDept, Me.rwDate, Me.timeIN})
         Me.dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.dgv.EnableHeadersVisualStyles = False
         Me.dgv.GridColor = System.Drawing.Color.Black
-        Me.dgv.Location = New System.Drawing.Point(12, 150)
+        Me.dgv.Location = New System.Drawing.Point(12, 157)
         Me.dgv.MultiSelect = False
         Me.dgv.Name = "dgv"
         Me.dgv.ReadOnly = True
         Me.dgv.RowHeadersVisible = False
-        DataGridViewCellStyle14.BackColor = System.Drawing.Color.WhiteSmoke
-        DataGridViewCellStyle14.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle14.ForeColor = System.Drawing.Color.Black
-        DataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(90, Byte), Integer), CType(CType(10, Byte), Integer), CType(CType(10, Byte), Integer))
-        DataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.White
-        Me.dgv.RowsDefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle7.BackColor = System.Drawing.Color.WhiteSmoke
+        DataGridViewCellStyle7.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle7.ForeColor = System.Drawing.Color.Black
+        DataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(90, Byte), Integer), CType(CType(10, Byte), Integer), CType(CType(10, Byte), Integer))
+        DataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.White
+        Me.dgv.RowsDefaultCellStyle = DataGridViewCellStyle7
         Me.dgv.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgv.Size = New System.Drawing.Size(1106, 488)
+        Me.dgv.Size = New System.Drawing.Size(1106, 481)
         Me.dgv.TabIndex = 7
         '
         'empName
         '
         Me.empName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.empName.DefaultCellStyle = DataGridViewCellStyle10
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.empName.DefaultCellStyle = DataGridViewCellStyle3
         Me.empName.HeaderText = "FULL NAME"
         Me.empName.Name = "empName"
         Me.empName.ReadOnly = True
@@ -309,8 +313,8 @@ Partial Class frmMain
         '
         'dgvrDept
         '
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.dgvrDept.DefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.dgvrDept.DefaultCellStyle = DataGridViewCellStyle4
         Me.dgvrDept.HeaderText = "DEPARTMENT"
         Me.dgvrDept.Name = "dgvrDept"
         Me.dgvrDept.ReadOnly = True
@@ -319,8 +323,8 @@ Partial Class frmMain
         '
         'rwDate
         '
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.rwDate.DefaultCellStyle = DataGridViewCellStyle12
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.rwDate.DefaultCellStyle = DataGridViewCellStyle5
         Me.rwDate.HeaderText = "DATE"
         Me.rwDate.Name = "rwDate"
         Me.rwDate.ReadOnly = True
@@ -329,8 +333,8 @@ Partial Class frmMain
         '
         'timeIN
         '
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.timeIN.DefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.timeIN.DefaultCellStyle = DataGridViewCellStyle6
         Me.timeIN.HeaderText = " TIME"
         Me.timeIN.Name = "timeIN"
         Me.timeIN.ReadOnly = True
@@ -419,12 +423,59 @@ Partial Class frmMain
         'bgwSendTimelog
         '
         '
+        'fvStream
+        '
+        Me.fvStream.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.fvStream.BackColor = System.Drawing.Color.Black
+        Me.fvStream.Face = Nothing
+        Me.fvStream.FaceIds = Nothing
+        Me.fvStream.IcaoArrowsColor = System.Drawing.Color.Red
+        Me.fvStream.Location = New System.Drawing.Point(845, 33)
+        Me.fvStream.Margin = New System.Windows.Forms.Padding(1)
+        Me.fvStream.Name = "fvStream"
+        Me.fvStream.ShowIcaoArrows = True
+        Me.fvStream.ShowTokenImageRectangle = True
+        Me.fvStream.Size = New System.Drawing.Size(268, 118)
+        Me.fvStream.TabIndex = 17
+        Me.fvStream.TokenImageRectangleColor = System.Drawing.Color.White
+        '
+        'pnlSuccess
+        '
+        Me.pnlSuccess.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.pnlSuccess.BackColor = System.Drawing.Color.PaleGreen
+        Me.pnlSuccess.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_ok_240
+        Me.pnlSuccess.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pnlSuccess.Location = New System.Drawing.Point(845, 33)
+        Me.pnlSuccess.Name = "pnlSuccess"
+        Me.pnlSuccess.Size = New System.Drawing.Size(269, 118)
+        Me.pnlSuccess.TabIndex = 1
+        Me.pnlSuccess.Visible = False
+        '
+        'pnlError
+        '
+        Me.pnlError.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.pnlError.BackColor = System.Drawing.Color.MistyRose
+        Me.pnlError.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_cancel_240
+        Me.pnlError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pnlError.Location = New System.Drawing.Point(845, 33)
+        Me.pnlError.Name = "pnlError"
+        Me.pnlError.Size = New System.Drawing.Size(269, 118)
+        Me.pnlError.TabIndex = 19
+        Me.pnlError.Visible = False
+        '
+        'tmChecker
+        '
+        Me.tmChecker.Interval = 1000
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.White
         Me.ClientSize = New System.Drawing.Size(1123, 704)
+        Me.Controls.Add(Me.pnlSuccess)
+        Me.Controls.Add(Me.pnlError)
+        Me.Controls.Add(Me.fvStream)
         Me.Controls.Add(Me.pbStatus)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.lbLastTimelogSync)
@@ -487,4 +538,8 @@ Partial Class frmMain
     Friend WithEvents timeIN As DataGridViewTextBoxColumn
     Friend WithEvents tmSendTimelog As Timer
     Friend WithEvents bgwSendTimelog As System.ComponentModel.BackgroundWorker
+    Friend WithEvents fvStream As Neurotec.Biometrics.Gui.NFaceView
+    Friend WithEvents pnlSuccess As Panel
+    Friend WithEvents pnlError As Panel
+    Friend WithEvents tmChecker As Timer
 End Class

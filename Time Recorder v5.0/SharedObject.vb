@@ -4,12 +4,14 @@ Imports time_recorder_service
 Imports utility_service
 Imports hrms_api_service
 Imports VerilookLib2
+Imports upsg_api_service
 
 Module SharedObject
 
 
 
     Public HRMSAPIManager As Manager.API.HRMS
+    Public UPSGAPIManager As Manager.API.UPSG
     Public AttendanceAPIManager As Manager.API.Attendance
     Public EmployeeAPIManager As Manager.API.Employee
 

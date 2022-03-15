@@ -73,7 +73,6 @@ Public Class frmStream
                         Splash("Access not allowed.", StatusChoices.SCAN_ERROR)
                     End If
                     PendingAuth = False
-                    '                End Sub)
                 ElseIf Not ScannedUsers.Contains(userId) And Not UsersOnQueue.Contains(userId) Then
                     If e.Score > VerilookManager.Settings.MatchingScoreThreshold Then
                         Dim validLog As Boolean = True
@@ -93,7 +92,7 @@ Public Class frmStream
                             Splash("Found " & userId, StatusChoices.SCAN_SUCCESS)
                             ScannedUsers.Add(New clsUsedUser() With {.ID = userId})
 
-                            Controller.Attendance.SaveAttendance(DatabaseManager, userId)
+                            'Controller.Attendance.SaveAttendance(DatabaseManager, userId)
                         End If
                     End If
                 End If

@@ -2,7 +2,7 @@
 Namespace Controller
 
     Public Class AttendanceLog
-        Public Shared Async Function GetQueuedAttendance(databaseManager As utility_service.Manager.Mysql, AttendanceAPIManager As Manager.API.Attendance) As Task
+        Public Shared Async Function SendQueuedAttendance(databaseManager As utility_service.Manager.Mysql, AttendanceAPIManager As Manager.API.Attendance) As Task
             Dim attendances As New List(Of Object)
 
             Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("select * from attendance_send_queue")

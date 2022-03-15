@@ -57,7 +57,7 @@ Namespace Controller
                                     .LogStatus = AttendanceStatusChoices.TIME_IN
                                     .TimeStamp = loginf.new_time_in
                                 End With
-                                InsertAttendance(databaseManager, attendance)
+                                InsertAttendance(databaseManager, attendance, empinfo)
                             End If
 
                             If loginf.no_time_out = False Then
@@ -68,7 +68,7 @@ Namespace Controller
                                     .LogStatus = AttendanceStatusChoices.TIME_OUT
                                     .TimeStamp = loginf.new_time_out
                                 End With
-                                InsertAttendance(databaseManager, attendance)
+                                InsertAttendance(databaseManager, attendance, empinfo)
                             End If
                         End If
                     Catch ex As Exception
@@ -81,11 +81,11 @@ Namespace Controller
             Return True
         End Function
 
-        Public Shared Sub SaveAttendance(databaseManager As utility_service.Manager.Mysql, employee_id As String)
+        Public Shared Sub SaveAttendance(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
             Try
                 Dim attendanceStatus As Byte = 0
                 Dim attendanceDate As Date = Now
-                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee_id)
+                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee.Employee_Id)
 
                 If currentAttendance.LogDate.ToString("yyyyMMdd HHmmss") <> "00010101 000000" Then
                     attendanceStatus = GetNextAttendanceStatus(currentAttendance.TimeStamp, currentAttendance.LogStatus)
@@ -112,7 +112,7 @@ Namespace Controller
                 End With
 
                 InsertAttendanceSendQueue(databaseManager, newAttendance)
-                InsertAttendance(databaseManager, newAttendance)
+                InsertAttendance(databaseManager, newAttendance, employee)
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Error occured while saving the time log.", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
@@ -152,8 +152,7 @@ Namespace Controller
             Return attendance
         End Function
 
-        Private Shared Sub InsertAttendance(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance)
-            Dim employee As Model.Employee = Controller.Employee.GetEmployee(databaseManager, attendance.Employee_Id)
+        Private Shared Sub InsertAttendance(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance, employee As Model.Employee)
             Dim query As String = "REPLACE INTO `attendance`(attendance_name,employee_id,`date`,`name`,project,department,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?,?,?)"
 
             Dim command As New MySqlCommand(query, databaseManager.Connection)
