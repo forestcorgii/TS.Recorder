@@ -7,7 +7,7 @@ Namespace Controller
     Public Class Employee
         Public Shared Function GetEmployee(databaseManager As utility_service.Manager.Mysql, employee_id As String) As Model.Employee
             Dim employee As Model.Employee = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM faces_schema.employee WHERE employee_id='{0}' LIMIT 1", employee_id))
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE employee_id='{0}' LIMIT 1", employee_id))
                 If reader.HasRows Then
                     reader.Read()
                     employee = New Model.Employee(reader)
@@ -18,7 +18,7 @@ Namespace Controller
 
         Public Shared Function CollectEmployees(databaseManager As utility_service.Manager.Mysql) As List(Of Model.Employee)
             Dim employees As New List(Of Model.Employee)
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM faces_schema.employee")
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM employee")
                 'Collect the Users
                 While reader.Read
                     employees.Add(New Model.Employee(reader))
@@ -70,7 +70,7 @@ Namespace Controller
 
                 Dim existingUserID As Integer = -1
                 Dim rdr As MySqlDataReader
-                rdr = databaseManager.ExecuteDataReader("SELECT * FROM faces_schema.employee WHERE `employee_id` = '" & employee.Employee_Id & "'")
+                rdr = databaseManager.ExecuteDataReader("SELECT * FROM employee WHERE `employee_id` = '" & employee.Employee_Id & "'")
                 If rdr.HasRows Then
                     rdr.Read()
                     existingUserID = rdr.Item("id")
@@ -78,10 +78,10 @@ Namespace Controller
                 rdr.Close()
 
                 If existingUserID > 0 Then
-                    qry = "UPDATE faces_schema.employee SET `employee_id`=@employee_id, `firstname`=@firstname, `lastname`=@lastname, `middlename`=@middlename, `project`=@project, `department`=@department," _
+                    qry = "UPDATE employee SET `employee_id`=@employee_id, `firstname`=@firstname, `lastname`=@lastname, `middlename`=@middlename, `project`=@project, `department`=@department," _
                     & " `company`=@company, `schedule`=@schedule, `admin`=@admin, `active`=@active, `face_img1`=@face_img1, `face_img2`=@face_img2, `face_img3`=@face_img3, `owner`=@owner WHERE `id`=@id"
                 Else
-                    qry = "REPLACE INTO faces_schema.employee (`id`,`firstname`,`lastname`,`middlename`,`employee_id`,`project`,`department`,`company`,`schedule`,`admin`,`active`,`face_img1`,`face_img2`,`face_img3`,`owner`)" _
+                    qry = "REPLACE INTO employee (`id`,`firstname`,`lastname`,`middlename`,`employee_id`,`project`,`department`,`company`,`schedule`,`admin`,`active`,`face_img1`,`face_img2`,`face_img3`,`owner`)" _
                         & "VALUES(@id,@firstname,@lastname,@middlename,@employee_id,@project,@department,@company,@schedule,@admin,@active,@face_img1,@face_img2,@face_img3,@owner)"
                 End If
 
@@ -113,7 +113,7 @@ Namespace Controller
             Dim EmployeeRecords As New List(Of Model.Employee)
 
             Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM faces_schema.employee_sync_log WHERE `request_type` = 'POST' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;")
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM employee_sync_log WHERE `request_type` = 'POST' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;")
                 While reader.Read
                     lastSynced = reader.Item("exec_datetime")
                 End While
@@ -124,7 +124,7 @@ Namespace Controller
             Try 'POST
                 'get newly Updated USERS
                 Dim owner As String = Environment.GetEnvironmentVariable("USERDOMAIN")
-                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM faces_schema.employee WHERE `owner` = '{0}' AND `date_modified` > '{1}'", owner, lastSynced.ToString("yyyy-MM-dd HH:mm:ss")))
+                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE `owner` = '{0}' AND `date_modified` > '{1}'", owner, lastSynced.ToString("yyyy-MM-dd HH:mm:ss")))
                     While reader.Read
                         EmployeeRecords.Add(New Model.Employee(reader))
                     End While
@@ -135,8 +135,8 @@ Namespace Controller
 
                     Dim postData As New EmployeeSyncPostData
                     With postData
-                        .site = employeeAPIManager.site
-                        .terminal = employeeAPIManager.terminal
+                        .site = employeeAPIManager.Site
+                        .terminal = employeeAPIManager.Terminal
                         .employees = EmployeeRecords
                     End With
                     Dim dataString As String = JsonConvert.SerializeObject(postData, Formatting.Indented)
@@ -150,7 +150,7 @@ Namespace Controller
                 Return 0
             End Try
 
-            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO faces_schema.employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", postMessage, "POST", success))
+            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", postMessage, "POST", success))
 
             Return EmployeeRecords.Count
         End Function
@@ -159,7 +159,7 @@ Namespace Controller
             'get last GET Sync Request date
             Dim EmployeeRecords As New List(Of Model.Employee)
             Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM faces_schema.employee_sync_log WHERE `request_type` = 'GET' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;"))
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee_sync_log WHERE `request_type` = 'GET' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;"))
                 While reader.Read
                     lastSynced = reader.Item("exec_datetime")
                 End While
@@ -182,7 +182,7 @@ Namespace Controller
                 Console.WriteLine(ex.Message)
             End Try
 
-            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO faces_schema.employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", getMessage, "GET", success))
+            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", getMessage, "GET", success))
 
             Return EmployeeRecords.Count
         End Function

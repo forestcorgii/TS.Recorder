@@ -6,7 +6,7 @@ Namespace Controller
         Public Shared Async Function SendUPSGQueuedLogAsync(databaseManager As utility_service.Manager.Mysql, upsgAPIManager As Manager.API.UPSG) As Task(Of Boolean)
             Dim logs As New List(Of Model.UPSG)
             Try
-                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM faces_schema.upsg_log_queue")
+                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM upsg_log_queue")
                     While reader.Read
                         logs.Add(New Model.UPSG(reader))
                     End While
@@ -27,20 +27,19 @@ Namespace Controller
         End Function
 
 
-        Public Shared Sub SaveLogToQueue(databaseManager As utility_service.Manager.Mysql, log As Model.UPSG)
+        Public Shared Sub SaveLogToQueue(databaseManager As utility_service.Manager.Mysql, ee_id As String, timestamp As Date)
             Try
-                Dim command As New MySqlCommand("INSERT INTO faces_schema.upsg_log_queue(ee_id,timestamp) VALUES(?,?);", databaseManager.Connection)
-                command.Parameters.AddWithValue("p2", log.EE_Id)
-                command.Parameters.AddWithValue("p1", log.TimeStamp)
+                Dim command As New MySqlCommand("INSERT INTO upsg_log_queue(ee_id,timestamp) VALUES(?,?);", databaseManager.Connection)
+                command.Parameters.AddWithValue("p2", ee_id)
+                command.Parameters.AddWithValue("p1", timestamp)
                 command.ExecuteNonQuery()
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
             End Try
-
         End Sub
         Public Shared Sub DeleteLogFromQueue(databaseManager As utility_service.Manager.Mysql, log As Model.UPSG)
             Try
-                Dim command As New MySqlCommand("DELETE FROM faces_schema.upsg_log_queue WHERE timestamp=? AND ee_id=?;", databaseManager.Connection)
+                Dim command As New MySqlCommand("DELETE FROM upsg_log_queue WHERE timestamp=? AND ee_id=?;", databaseManager.Connection)
                 command.Parameters.AddWithValue("p1", log.TimeStamp)
                 command.Parameters.AddWithValue("p2", log.EE_Id)
                 command.ExecuteNonQuery()

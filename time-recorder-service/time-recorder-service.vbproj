@@ -108,6 +108,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SharedObject.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -131,6 +132,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\hrms-api-service\hrms-api-service\hrms-api-service.vbproj">
+      <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
+      <Name>hrms-api-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\utility-service\utility-service.vbproj">
       <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
       <Name>utility-service</Name>

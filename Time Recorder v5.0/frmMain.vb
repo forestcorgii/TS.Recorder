@@ -9,9 +9,7 @@ Imports VerilookLib2
 Imports VerilookLib2.Manager
 
 Public Class frmMain
-    Public AuthButton As Object
 
-    Public FaceManager As Manager.Verilook
 
     Sub New()
 
@@ -19,30 +17,15 @@ Public Class frmMain
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-
+        Me.Text = Application.ProductName & " v" & Application.ProductVersion
+        lbCompany.Text = Environment.GetEnvironmentVariable("TIME_RECORDER_COMPANY")
     End Sub
+
+
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         SetupConfiguration()
         SetupDGV()
-
-        tmUserSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
-        tmTimelogSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
-        tmSendTimelog.Interval = TimeSpan.FromMinutes(3).TotalMilliseconds
-
-        tmSendTimelog.Enabled = True
-        tmRefreshStream.Enabled = True
-        tmTimelogSync.Enabled = True
-        tmUserSync.Enabled = True
-
-        tmTimelogSync_Tick(Nothing, Nothing)
-
-        tmRefreshStream.Enabled = False
-        tmSendTimelog_Tick(Nothing, Nothing)
-
-        changeStatus("Employee Detail Syncing, Wait for the Camera to Open.", Color.Firebrick)
-
-        Me.Text = Application.ProductName & " v" & Application.ProductVersion
-        lbCompany.Text = Environment.GetEnvironmentVariable("TIME_RECORDER_COMPANY")
+        SetupTimer()
     End Sub
 
 #Region "Setup"
@@ -57,30 +40,25 @@ Public Class frmMain
         DatabaseManager.Connection.Close()
     End Sub
     Private Function SetupManager()
-        Dim valid As Boolean = True
 
         Dim settings As Model.Settings = Controller.Settings.GetSettings(DatabaseManager, "AttendanceAPIManager")
         If settings IsNot Nothing Then
             AttendanceAPIManager = JsonConvert.DeserializeObject(Of Manager.API.Attendance)(settings.JSON_Arguments)
-        Else : valid = False
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "EmployeeAPIManager")
         If settings IsNot Nothing Then
             EmployeeAPIManager = JsonConvert.DeserializeObject(Of Manager.API.Employee)(settings.JSON_Arguments)
-        Else : valid = False
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "HRMSAPIManager")
         If settings IsNot Nothing Then
             HRMSAPIManager = JsonConvert.DeserializeObject(Of hrms_api_service.Manager.API.HRMS)(settings.JSON_Arguments)
-        Else : valid = False
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "UPSGAPIManager")
         If settings IsNot Nothing Then
             UPSGAPIManager = JsonConvert.DeserializeObject(Of upsg_api_service.Manager.API.UPSG)(settings.JSON_Arguments)
-        Else : valid = False
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "VerilookManager.Settings")
@@ -88,20 +66,10 @@ Public Class frmMain
             VerilookManager = New Manager.Verilook
             VerilookManager.Settings = JsonConvert.DeserializeObject(Of Configuration.Face)(settings.JSON_Arguments)
             VerilookManager.Setup()
-        Else : valid = False
         End If
 
-        If Not valid Then
-            If sfrmSettings.ShowDialog = DialogResult.OK Then
-                SetupManager()
-            Else Return False
-            End If
-        End If
         Return True
     End Function
-
-
-
     Private Sub SetupDGV()
         dgv.Rows.Clear()
         DatabaseManager.Connection.Open()
@@ -126,36 +94,34 @@ Public Class frmMain
         If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
         Application.DoEvents()
     End Sub
+    Private Sub SetupTimer()
+        tmUserSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
+        tmTimelogSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
+        tmSendTimelog.Interval = TimeSpan.FromMinutes(3).TotalMilliseconds
 
+        tmSendTimelog.Enabled = True
+        tmRefreshStream.Enabled = True
+        tmTimelogSync.Enabled = True
+        tmUserSync.Enabled = True
+
+        tmTimelogSync_Tick(Nothing, Nothing)
+
+        tmRefreshStream.Enabled = False
+        tmSendTimelog_Tick(Nothing, Nothing)
+    End Sub
 
 #End Region
 
-#Region "Controls"
-
-    Private Sub btnProfiles_Click(sender As Object, e As EventArgs) Handles btnProfiles.Click
-        tryAccess(btnProfiles)
-    End Sub
-
-
-
-
-    Private Sub btnExit_Click(sender As Object, e As EventArgs)
-        Me.Close()
+#Region "Administrator Access"
+    Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
+        tryAccess(btnAdministrator)
     End Sub
 
     Private Function tryAccess(btn As Object) As Boolean
-        If AllowAuth Then
-            AuthButton = Nothing
-            tbAdminID.Visible = False
-            AllowAuth = False
-            PendingAuth = False
-            Return True
-        ElseIf Not AllowAuth And Not PendingAuth And tbAdminID.Visible Then
-            AuthButton = Nothing
+        If Not PendingAuth And tbAdminID.Visible Then
             tbAdminID.Visible = False
             Return False
         Else
-            AuthButton = btn
             tbAdminID.Visible = True
             PendingAuth = True
             Return False
@@ -163,7 +129,7 @@ Public Class frmMain
     End Function
 #End Region
 
-#Region "Timer Eventhandler"
+#Region "Clock and No Internet Prompter"
     Private NoInternetPromptCounter As Integer = 0
     Private NoInternetConnection As Boolean
     Private Sub tmClock_Tick(sender As Object, e As EventArgs) Handles tmClock.Tick
@@ -192,12 +158,26 @@ Public Class frmMain
 
 #End Region
 
+#Region "Timers"
     Private Sub tmSendTimelog_Tick(sender As Object, e As EventArgs) Handles tmSendTimelog.Tick
         If bgwSendTimelog.IsBusy = False Then
             bgwSendTimelog.RunWorkerAsync()
         End If
     End Sub
 
+    Private Sub tmTimelogSync_Tick(sender As Object, e As EventArgs) Handles tmTimelogSync.Tick
+
+        If bgwTimelogSync.IsBusy = False Then
+            bgwTimelogSync.RunWorkerAsync()
+        End If
+
+        If bgwUserSync.IsBusy = False Then
+            bgwUserSync.RunWorkerAsync()
+        End If
+    End Sub
+#End Region
+
+#Region "Background Tasks"
     Private Async Sub bgwSendTimelog_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwSendTimelog.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
@@ -210,18 +190,6 @@ Public Class frmMain
         _databaseManager.Connection.Close()
     End Sub
 
-    Private Sub tmTimelogSync_Tick(sender As Object, e As EventArgs) Handles tmTimelogSync.Tick
-        'If NoInternetConnection Then Exit Sub
-
-        If bgwTimelogSync.IsBusy = False Then
-            bgwTimelogSync.RunWorkerAsync()
-        End If
-
-        If bgwUserSync.IsBusy = False Then
-            bgwUserSync.RunWorkerAsync()
-        End If
-    End Sub
-
     Private Async Sub bgwTimelogSync_DoWorkAsync(sender As Object, e As DoWorkEventArgs) Handles bgwTimelogSync.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
@@ -230,6 +198,7 @@ Public Class frmMain
                        pbStatus.Visible = True
                        lbLastTimelogSync.Text = "Syncing..."
                    End Sub)
+
             Dim res As Boolean = Await Controller.Attendance.SyncAttendance(_databaseManager, AttendanceAPIManager)
 
             Invoke(Sub()
@@ -247,6 +216,7 @@ Public Class frmMain
         End Try
         _databaseManager.Connection.Close()
     End Sub
+
     Private Async Sub bgwUserSync_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwUserSync.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
@@ -272,18 +242,12 @@ Public Class frmMain
         Invoke(Sub()
                    pbStatus.Visible = False
                    OpenStream()
-                   'refreshStream()
                End Sub)
     End Sub
 
+#End Region
 
-
-#Region ""
-    Public ScannedUsers As New clsUsedUsers
-    Public UsersOnQueue As New List(Of String)
-    Public AllowAuth As Boolean
-    Public PendingAuth As Boolean
-
+#Region "Stream Handler"
     Private Async Sub OpenStream()
         changeStatus("Camera Refreshing, Please wait...", Color.Firebrick)
 
@@ -294,13 +258,62 @@ Public Class frmMain
         VerilookManager.EmployeeFaceSubjects = Controller.Verilook.CollectFaceSubjects(employees, True)
         VerilookManager.FillBiometricTask()
 
-
         AddHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
-        If ScannedUsers Is Nothing Then
-            ScannedUsers = New clsUsedUsers
-        End If
 
         Await VerilookManager.StartProcess(Me, fvStream, FaceProcessType.Identify)
+    End Sub
+
+    Private Sub StreamClose()
+        RemoveHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
+        VerilookManager.ForceCapture()
+        VerilookManager.StopProcess()
+    End Sub
+
+
+#End Region
+
+#Region "Face Validation Handler"
+    Public PreviousEE_Id As String
+    Public PendingAuth As Boolean
+
+    Private Sub AccessAdministrator(employee As Model.Employee)
+        If employee.admin Then
+            Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
+            StreamClose()
+            sfrmUserProfiles.ShowDialog()
+            OpenStream()
+        Else
+            Splash("Access not allowed.", StatusChoices.SCAN_ERROR)
+        End If
+        PendingAuth = False
+    End Sub
+
+    Private Sub ProcessAttendance(score As Integer, employee As Model.Employee)
+        If score > VerilookManager.Settings.MatchingScoreThreshold Then
+            Dim validLog As Boolean = True
+            If score < (VerilookManager.Settings.MatchingScoreThreshold + 5) Then
+                If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
+                    validLog = True
+                Else validLog = False
+                End If
+            End If
+
+            If validLog Then
+                DatabaseManager.Connection.Open()
+                Controller.Attendance.SaveAttendance(DatabaseManager, employee)
+
+                If employee.jobcode.ToUpper = "UPSG" Then
+                    upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.Employee_Id, Now)
+                End If
+
+                DatabaseManager.Connection.Close()
+
+                Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
+                PreviousEE_Id = employee.Employee_Id
+
+                SetupDGV()
+            End If
+        End If
     End Sub
 
     Private Sub FaceManager_FaceIdentified(sender As Object, e As VerilookEventArgs)
@@ -311,50 +324,9 @@ Public Class frmMain
                 DatabaseManager.Connection.Close()
 
                 If PendingAuth Then
-                    If employee.admin Then
-                        Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
-                        StreamClose()
-                        sfrmUserProfiles.ShowDialog()
-                        OpenStream()
-                    Else
-                        Splash("Access not allowed.", StatusChoices.SCAN_ERROR)
-                    End If
-                    PendingAuth = False
-                ElseIf Not ScannedUsers.Contains(employee.Employee_Id) And Not UsersOnQueue.Contains(employee.Employee_Id) Then
-                    If e.Score > VerilookManager.Settings.MatchingScoreThreshold Then
-                        Dim validLog As Boolean = True
-                        If e.Score < (VerilookManager.Settings.MatchingScoreThreshold + 5) Then
-                            If MessageBox.Show("Are You " & employee.Employee_Id & "?", "Matching score is too low.",
-                                               MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
-                                validLog = True
-                            Else
-                                validLog = False
-                            End If
-                            Dim rawMatches As String = String.Join(",", e.RawMatches)
-                            DatabaseManager.Connection.Open()
-                            DatabaseManager.ExecuteNonQuery(String.Format("INSERT INTO `low_matching_scores_log` (`employee_id`,`score`,`is_match`,`raw_matches`)VALUES('{0}',{1},{2},'{3}')",
-                                                                      employee.Employee_Id, e.Score, validLog, rawMatches))
-                            DatabaseManager.Connection.Close()
-                        End If
-
-                        If validLog Then
-                            Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
-                            ScannedUsers.Add(New clsUsedUser() With {.ID = employee.Employee_Id})
-
-                            DatabaseManager.Connection.Open()
-
-                            Controller.Attendance.SaveAttendance(DatabaseManager, employee)
-
-                            Dim upsgLog As New upsg_api_service.Model.UPSG
-                            upsgLog.EE_Id = employee.Employee_Id
-                            upsgLog.TimeStamp = Now
-                            upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, upsgLog)
-
-                            DatabaseManager.Connection.Close()
-
-                            SetupDGV()
-                        End If
-                    End If
+                    AccessAdministrator(employee)
+                ElseIf Not PreviousEE_Id = employee.Employee_Id Then
+                    ProcessAttendance(e.Score, employee)
                 End If
             End If
         Catch ex As Exception
@@ -366,28 +338,9 @@ Public Class frmMain
         End If
     End Sub
 
+#End Region
 
-    Public Enum StatusChoices
-        SCAN_SUCCESS
-        SCAN_ERROR
-    End Enum
-
-    Private Sub StreamClose()
-        RemoveHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
-        VerilookManager.ForceCapture()
-        VerilookManager.StopProcess()
-    End Sub
-
-    Private closeForm As Boolean
-
-
-    Private Sub tmChecker_Tick(sender As Object, e As EventArgs) Handles tmChecker.Tick
-        If ScannedUsers.Count > 0 Then
-            Dim updatedItems As clsUsedUser() = (From res As clsUsedUser In ScannedUsers Where res.Elapse.TotalSeconds < VerilookManager.Settings.UserReloginTime * 60 Select res).ToArray
-            ScannedUsers = New clsUsedUsers(updatedItems)
-        Else : tmChecker.Enabled = False
-        End If
-    End Sub
+#Region "Status Handler"
     Public Sub Splash(message As String, result As StatusChoices)
         lbState.Text = message
         If result = StatusChoices.SCAN_SUCCESS Then
@@ -399,9 +352,10 @@ Public Class frmMain
             pnlError.Visible = True
             changeStatus("Ready.", Color.Firebrick)
         End If
-        tmRefreshStream.Interval = 500 'TimeSpan.FromSeconds(0.5).TotalMilliseconds
+        tmRefreshStream.Interval = 400
         tmRefreshStream.Enabled = True
     End Sub
+
     Public Sub changeStatus(resultString As String, statBarColor As Color)
         lbState.Text = resultString
         stState.BackColor = statBarColor
@@ -414,45 +368,14 @@ Public Class frmMain
         pnlError.Visible = False
         tmRefreshStream.Enabled = False
     End Sub
-
-
-
-
-    Public Class clsUsedUsers
-        Inherits List(Of clsUsedUser)
-
-        Sub New()
-
-        End Sub
-
-        Sub New(_users As clsUsedUser())
-            AddRange(_users)
-        End Sub
-
-        Public Shadows Function Contains(userID As String) As Boolean
-            If Count > 0 Then
-                Return (From res As clsUsedUser In Me Where res.ID = userID Select res).ToList.Count > 0
-            End If
-            Return False
-        End Function
-    End Class
-
-    Public Class clsUsedUser
-        Public ID As String
-        Private timeCreated As Date
-
-        Public ReadOnly Property Elapse As TimeSpan
-            Get
-                Return Now - timeCreated
-            End Get
-        End Property
-
-        Sub New()
-            timeCreated = Now
-        End Sub
-    End Class
-
 #End Region
+
+
+    Public Enum StatusChoices
+        SCAN_SUCCESS
+        SCAN_ERROR
+    End Enum
+
 End Class
 
 

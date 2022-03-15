@@ -152,28 +152,16 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\frmStream.Designer.vb">
-      <DependentUpon>frmStream.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmStream.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Sub Forms\sfrmSettings.Designer.vb">
-      <DependentUpon>sfrmSettings.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Sub Forms\sfrmSettings.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Sub Forms\sfrmUserProfiles.Designer.vb">
+    <Compile Include="sfrmUserProfiles.Designer.vb">
       <DependentUpon>sfrmUserProfiles.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Sub Forms\sfrmUserProfiles.vb">
+    <Compile Include="sfrmUserProfiles.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmMain.vb">
+    <Compile Include="frmMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmMain.Designer.vb">
+    <Compile Include="frmMain.Designer.vb">
       <DependentUpon>frmMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
@@ -196,17 +184,11 @@
     <Compile Include="SharedObject.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\frmMain.resx">
+    <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmStream.resx">
-      <DependentUpon>frmStream.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Sub Forms\sfrmSettings.resx">
-      <DependentUpon>sfrmSettings.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Sub Forms\sfrmUserProfiles.resx">
+    <EmbeddedResource Include="sfrmUserProfiles.resx">
       <DependentUpon>sfrmUserProfiles.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">

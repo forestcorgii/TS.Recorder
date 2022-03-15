@@ -44,8 +44,7 @@ Partial Class frmMain
         Me.lbDate = New System.Windows.Forms.Label()
         Me.lbTime = New System.Windows.Forms.Label()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
-        Me.btnProfiles = New System.Windows.Forms.ToolStripMenuItem()
-        Me.btnSettings = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnAdministrator = New System.Windows.Forms.ToolStripMenuItem()
         Me.tbAdminID = New System.Windows.Forms.ToolStripTextBox()
         Me.btnRefreshCamera = New System.Windows.Forms.ToolStripMenuItem()
         Me.btnMaximize = New System.Windows.Forms.ToolStripMenuItem()
@@ -186,7 +185,7 @@ Partial Class frmMain
         '
         Me.MenuStrip1.AutoSize = False
         Me.MenuStrip1.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(40, Byte), Integer), CType(CType(45, Byte), Integer))
-        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.btnProfiles, Me.btnSettings, Me.tbAdminID, Me.btnRefreshCamera})
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.btnAdministrator, Me.tbAdminID, Me.btnRefreshCamera})
         Me.MenuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
@@ -195,23 +194,14 @@ Partial Class frmMain
         Me.MenuStrip1.TabIndex = 11
         Me.MenuStrip1.Text = "MenuStrip1"
         '
-        'btnProfiles
+        'btnAdministrator
         '
-        Me.btnProfiles.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnProfiles.ForeColor = System.Drawing.SystemColors.ButtonHighlight
-        Me.btnProfiles.Image = Global.Time_Recorder_v5s._0.My.Resources.Resources.users
-        Me.btnProfiles.Name = "btnProfiles"
-        Me.btnProfiles.Size = New System.Drawing.Size(85, 22)
-        Me.btnProfiles.Text = "PROFILES"
-        '
-        'btnSettings
-        '
-        Me.btnSettings.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSettings.ForeColor = System.Drawing.Color.White
-        Me.btnSettings.Image = Global.Time_Recorder_v5s._0.My.Resources.Resources.settings
-        Me.btnSettings.Name = "btnSettings"
-        Me.btnSettings.Size = New System.Drawing.Size(85, 22)
-        Me.btnSettings.Text = "SETTINGS"
+        Me.btnAdministrator.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnAdministrator.ForeColor = System.Drawing.SystemColors.ButtonHighlight
+        Me.btnAdministrator.Image = Global.Time_Recorder_v5s._0.My.Resources.Resources.users
+        Me.btnAdministrator.Name = "btnAdministrator"
+        Me.btnAdministrator.Size = New System.Drawing.Size(124, 22)
+        Me.btnAdministrator.Text = "ADMINISTRATOR"
         '
         'tbAdminID
         '
@@ -277,7 +267,7 @@ Partial Class frmMain
         Me.dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.dgv.EnableHeadersVisualStyles = False
         Me.dgv.GridColor = System.Drawing.Color.Black
-        Me.dgv.Location = New System.Drawing.Point(12, 157)
+        Me.dgv.Location = New System.Drawing.Point(12, 228)
         Me.dgv.MultiSelect = False
         Me.dgv.Name = "dgv"
         Me.dgv.ReadOnly = True
@@ -290,7 +280,7 @@ Partial Class frmMain
         Me.dgv.RowsDefaultCellStyle = DataGridViewCellStyle7
         Me.dgv.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgv.Size = New System.Drawing.Size(1106, 481)
+        Me.dgv.Size = New System.Drawing.Size(1106, 410)
         Me.dgv.TabIndex = 7
         '
         'empName
@@ -430,12 +420,12 @@ Partial Class frmMain
         Me.fvStream.Face = Nothing
         Me.fvStream.FaceIds = Nothing
         Me.fvStream.IcaoArrowsColor = System.Drawing.Color.Red
-        Me.fvStream.Location = New System.Drawing.Point(845, 33)
+        Me.fvStream.Location = New System.Drawing.Point(743, 33)
         Me.fvStream.Margin = New System.Windows.Forms.Padding(1)
         Me.fvStream.Name = "fvStream"
         Me.fvStream.ShowIcaoArrows = True
         Me.fvStream.ShowTokenImageRectangle = True
-        Me.fvStream.Size = New System.Drawing.Size(268, 118)
+        Me.fvStream.Size = New System.Drawing.Size(370, 188)
         Me.fvStream.TabIndex = 17
         Me.fvStream.TokenImageRectangleColor = System.Drawing.Color.White
         '
@@ -445,9 +435,9 @@ Partial Class frmMain
         Me.pnlSuccess.BackColor = System.Drawing.Color.PaleGreen
         Me.pnlSuccess.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_ok_240
         Me.pnlSuccess.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pnlSuccess.Location = New System.Drawing.Point(845, 33)
+        Me.pnlSuccess.Location = New System.Drawing.Point(742, 33)
         Me.pnlSuccess.Name = "pnlSuccess"
-        Me.pnlSuccess.Size = New System.Drawing.Size(269, 118)
+        Me.pnlSuccess.Size = New System.Drawing.Size(372, 189)
         Me.pnlSuccess.TabIndex = 1
         Me.pnlSuccess.Visible = False
         '
@@ -457,9 +447,9 @@ Partial Class frmMain
         Me.pnlError.BackColor = System.Drawing.Color.MistyRose
         Me.pnlError.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_cancel_240
         Me.pnlError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pnlError.Location = New System.Drawing.Point(845, 33)
+        Me.pnlError.Location = New System.Drawing.Point(742, 33)
         Me.pnlError.Name = "pnlError"
-        Me.pnlError.Size = New System.Drawing.Size(269, 118)
+        Me.pnlError.Size = New System.Drawing.Size(372, 189)
         Me.pnlError.TabIndex = 19
         Me.pnlError.Visible = False
         '
@@ -511,8 +501,7 @@ Partial Class frmMain
     Friend WithEvents lbCompany As System.Windows.Forms.Label
     Friend WithEvents lbDate As System.Windows.Forms.Label
     Friend WithEvents lbTime As System.Windows.Forms.Label
-    Friend WithEvents btnProfiles As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents btnSettings As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents btnAdministrator As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
     Friend WithEvents btnMaximize As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents lbState As System.Windows.Forms.ToolStripStatusLabel

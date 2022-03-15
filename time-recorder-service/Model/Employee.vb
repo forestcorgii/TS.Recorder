@@ -4,24 +4,33 @@ Imports Neurotec.Biometrics
 Imports Neurotec.IO
 Imports Newtonsoft.Json
 Imports VerilookLib2.Interface_
-
+Imports hrms_api_service.IInterface
 Namespace Model
 
     Public Class Employee
-        Implements IFace
+        Implements IFace, IEmployee
 
-        Public id As Integer
-        Public first_name As String = ""
-        Public last_name As String = ""
-        Public middle_name As String = ""
-        Public department As String = ""
-        Public company As String = ""
-        Public schedule As String
-        Public project As String
-        Public admin As Boolean = False
-        Public owner As String = ""
+        Public Property id As Integer
+        Public Property first_name As String Implements IEmployee.first_name
+        Public Property last_name As String Implements IEmployee.last_name
+        Public Property middle_name As String Implements IEmployee.middle_name
+        Public Property department As String Implements IEmployee.department
+        Public Property company As String = ""
+        Public Property schedule As String
+        Public Property project As String
+        Public Property admin As Boolean = False
+        Public Property owner As String = ""
         Public Property Active As Boolean Implements IFace.Active
-        Public Property Employee_Id As String Implements IFace.Employee_Id
+        Public Property Employee_Id As String Implements IFace.Employee_Id, IEmployee.idno
+
+        Public Property tin As String Implements IEmployee.tin
+        Public Property bank_name As String Implements IEmployee.bank_name
+        Public Property bank_category As String Implements IEmployee.bank_category
+        Public Property account_number As String Implements IEmployee.account_number
+        Public Property card_number As String Implements IEmployee.card_number
+        Public Property payroll_code As String Implements IEmployee.payroll_code
+        Public Property jobcode As String Implements IEmployee.jobcode
+
 
         Public Property face_data1 As Byte() Implements IFace.face_data1
         Public Property face_data2 As Byte() Implements IFace.face_data2
@@ -81,6 +90,7 @@ Namespace Model
                 Return middle_name.Substring(0, 1)
             End Get
         End Property
+
 
 
         Public Overrides Function ToString() As String
