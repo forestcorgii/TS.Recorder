@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class sfrmUserProfiles
+Partial Class frmUserProfiles
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -24,7 +24,7 @@ Partial Class sfrmUserProfiles
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(sfrmUserProfiles))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUserProfiles))
         Me.dgv = New System.Windows.Forms.DataGridView()
         Me.clEmpNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.clFname = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -54,6 +54,7 @@ Partial Class sfrmUserProfiles
         Me.Label2 = New System.Windows.Forms.Label()
         Me.tbFirstName = New System.Windows.Forms.TextBox()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.btnOpenBiometricClientSettings = New System.Windows.Forms.Button()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
@@ -90,18 +91,19 @@ Partial Class sfrmUserProfiles
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.tbAttendanceURL = New System.Windows.Forms.TextBox()
         Me.Label19 = New System.Windows.Forms.Label()
-        Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.tbJobcode = New System.Windows.Forms.TextBox()
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.TabControl1.SuspendLayout()
+        Me.TabPage3.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
-        Me.TabPage3.SuspendLayout()
         Me.SuspendLayout()
         '
         'dgv
@@ -205,6 +207,7 @@ Partial Class sfrmUserProfiles
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(664, 28)
         Me.Panel1.TabIndex = 2
+        Me.Panel1.Visible = False
         '
         'btnSearch
         '
@@ -278,6 +281,8 @@ Partial Class sfrmUserProfiles
         '
         Me.Panel2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.Panel2.Controls.Add(Me.Label20)
+        Me.Panel2.Controls.Add(Me.tbJobcode)
         Me.Panel2.Controls.Add(Me.cbActive)
         Me.Panel2.Controls.Add(Me.lbMessage2)
         Me.Panel2.Controls.Add(Me.btnRegFace)
@@ -311,7 +316,7 @@ Partial Class sfrmUserProfiles
         '
         Me.lbMessage2.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lbMessage2.ForeColor = System.Drawing.Color.Black
-        Me.lbMessage2.Location = New System.Drawing.Point(12, 155)
+        Me.lbMessage2.Location = New System.Drawing.Point(14, 186)
         Me.lbMessage2.Name = "lbMessage2"
         Me.lbMessage2.Size = New System.Drawing.Size(170, 42)
         Me.lbMessage2.TabIndex = 39
@@ -320,7 +325,7 @@ Partial Class sfrmUserProfiles
         'btnRegFace
         '
         Me.btnRegFace.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnRegFace.Location = New System.Drawing.Point(188, 157)
+        Me.btnRegFace.Location = New System.Drawing.Point(190, 188)
         Me.btnRegFace.Name = "btnRegFace"
         Me.btnRegFace.Size = New System.Drawing.Size(115, 39)
         Me.btnRegFace.TabIndex = 38
@@ -442,14 +447,26 @@ Partial Class sfrmUserProfiles
         Me.TabControl1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Controls.Add(Me.TabPage2)
         Me.TabControl1.Controls.Add(Me.TabPage1)
-        Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Location = New System.Drawing.Point(12, 12)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
         Me.TabControl1.Size = New System.Drawing.Size(1001, 538)
         Me.TabControl1.TabIndex = 46
+        '
+        'TabPage3
+        '
+        Me.TabPage3.Controls.Add(Me.dgv)
+        Me.TabPage3.Controls.Add(Me.Panel2)
+        Me.TabPage3.Controls.Add(Me.Panel1)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage3.Name = "TabPage3"
+        Me.TabPage3.Size = New System.Drawing.Size(993, 512)
+        Me.TabPage3.TabIndex = 2
+        Me.TabPage3.Text = "Profiles"
+        Me.TabPage3.UseVisualStyleBackColor = True
         '
         'TabPage2
         '
@@ -805,19 +822,29 @@ Partial Class sfrmUserProfiles
         Me.Label19.TabIndex = 8
         Me.Label19.Text = "URL"
         '
-        'TabPage3
+        'Label20
         '
-        Me.TabPage3.Controls.Add(Me.dgv)
-        Me.TabPage3.Controls.Add(Me.Panel2)
-        Me.TabPage3.Controls.Add(Me.Panel1)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(993, 512)
-        Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Profiles"
-        Me.TabPage3.UseVisualStyleBackColor = True
+        Me.Label20.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label20.ForeColor = System.Drawing.Color.Black
+        Me.Label20.Location = New System.Drawing.Point(3, 154)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(87, 30)
+        Me.Label20.TabIndex = 42
+        Me.Label20.Text = "Jobcode:"
+        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'sfrmUserProfiles
+        'tbJobcode
+        '
+        Me.tbJobcode.BackColor = System.Drawing.Color.GhostWhite
+        Me.tbJobcode.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.tbJobcode.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbJobcode.Location = New System.Drawing.Point(96, 157)
+        Me.tbJobcode.MaxLength = 50
+        Me.tbJobcode.Name = "tbJobcode"
+        Me.tbJobcode.Size = New System.Drawing.Size(71, 23)
+        Me.tbJobcode.TabIndex = 41
+        '
+        'frmUserProfiles
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -826,14 +853,15 @@ Partial Class sfrmUserProfiles
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
-        Me.Name = "sfrmUserProfiles"
-        Me.Text = "UserProfiles"
+        Me.Name = "frmUserProfiles"
+        Me.Text = "Administrator"
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
         Me.Panel2.ResumeLayout(False)
         Me.Panel2.PerformLayout()
         Me.TabControl1.ResumeLayout(False)
+        Me.TabPage3.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.GroupBox2.ResumeLayout(False)
@@ -844,7 +872,6 @@ Partial Class sfrmUserProfiles
         Me.GroupBox3.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
-        Me.TabPage3.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -914,4 +941,6 @@ Partial Class sfrmUserProfiles
     Friend WithEvents TabPage3 As System.Windows.Forms.TabPage
     Friend WithEvents btnOpenBiometricClientSettings As System.Windows.Forms.Button
     Friend WithEvents btnSaveAPI As System.Windows.Forms.Button
+    Friend WithEvents Label20 As System.Windows.Forms.Label
+    Friend WithEvents tbJobcode As System.Windows.Forms.TextBox
 End Class

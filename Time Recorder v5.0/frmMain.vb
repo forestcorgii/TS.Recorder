@@ -1,12 +1,10 @@
 ﻿Imports System.ComponentModel
-Imports System.IO
 Imports System.Windows.Forms
-Imports MySql.Data.MySqlClient
 Imports Newtonsoft.Json
 Imports time_recorder_service
 Imports utility_service
-Imports VerilookLib2
-Imports VerilookLib2.Manager
+Imports verilook_service
+Imports verilook_service.Manager
 
 Public Class frmMain
 
@@ -21,7 +19,6 @@ Public Class frmMain
         lbCompany.Text = Environment.GetEnvironmentVariable("TIME_RECORDER_COMPANY")
     End Sub
 
-
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         SetupConfiguration()
         SetupDGV()
@@ -32,7 +29,7 @@ Public Class frmMain
 
     Private Sub SetupConfiguration()
         DatabaseConfiguration = New Configuration.Mysql()
-        DatabaseConfiguration.Setup("TIME_RECORDER_DB_URL")
+        DatabaseConfiguration.Setup("TIME_RECORDER_DB_URL_2")
 
         DatabaseManager = New Manager.Mysql(DatabaseConfiguration)
         DatabaseManager.Connection.Open()
@@ -63,7 +60,7 @@ Public Class frmMain
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "VerilookManager.Settings")
         If settings IsNot Nothing Then
-            VerilookManager = New Manager.Verilook
+            VerilookManager = New Verilook
             VerilookManager.Settings = JsonConvert.DeserializeObject(Of Configuration.Face)(settings.JSON_Arguments)
             VerilookManager.Setup()
         End If
@@ -114,10 +111,10 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
-        tryAccess(btnAdministrator)
+        TryAccess(btnAdministrator)
     End Sub
 
-    Private Function tryAccess(btn As Object) As Boolean
+    Private Function TryAccess(btn As Object) As Boolean
         If Not PendingAuth And tbAdminID.Visible Then
             tbAdminID.Visible = False
             Return False
@@ -152,10 +149,6 @@ Public Class frmMain
         tmClock.Enabled = True
     End Sub
 
-    Private Sub Clock1_TimeChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Clock1.TimeChanged
-        Me.Clock1.UtcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(Date.Now)
-    End Sub
-
 #End Region
 
 #Region "Timers"
@@ -166,10 +159,6 @@ Public Class frmMain
     End Sub
 
     Private Sub tmTimelogSync_Tick(sender As Object, e As EventArgs) Handles tmTimelogSync.Tick
-
-        If bgwTimelogSync.IsBusy = False Then
-            bgwTimelogSync.RunWorkerAsync()
-        End If
 
         If bgwUserSync.IsBusy = False Then
             bgwUserSync.RunWorkerAsync()
@@ -240,8 +229,14 @@ Public Class frmMain
         _databaseManager.Connection.Close()
 
         Invoke(Sub()
+
+                   If bgwTimelogSync.IsBusy = False Then
+                       bgwTimelogSync.RunWorkerAsync()
+                   End If
+
                    pbStatus.Visible = False
                    OpenStream()
+
                End Sub)
     End Sub
 
@@ -273,19 +268,21 @@ Public Class frmMain
 #End Region
 
 #Region "Face Validation Handler"
-    Public PreviousEE_Id As String
+    Public RecentEE_Ids As New List(Of String)
     Public PendingAuth As Boolean
 
     Private Sub AccessAdministrator(employee As Model.Employee)
+        tbAdminID.Visible = False
+        PendingAuth = False
+
         If employee.admin Then
             Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
             StreamClose()
-            sfrmUserProfiles.ShowDialog()
+            frmUserProfiles.ShowDialog()
             OpenStream()
         Else
             Splash("Access not allowed.", StatusChoices.SCAN_ERROR)
         End If
-        PendingAuth = False
     End Sub
 
     Private Sub ProcessAttendance(score As Integer, employee As Model.Employee)
@@ -302,14 +299,17 @@ Public Class frmMain
                 DatabaseManager.Connection.Open()
                 Controller.Attendance.SaveAttendance(DatabaseManager, employee)
 
-                If employee.jobcode.ToUpper = "UPSG" Then
+                If employee.jobcode.ToUpper = "UPSG" Or employee.jobcode.ToUpper = "UPS" Then
                     upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.Employee_Id, Now)
                 End If
 
                 DatabaseManager.Connection.Close()
 
                 Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
-                PreviousEE_Id = employee.Employee_Id
+
+
+                RecentEE_Ids.Insert(0, employee.Employee_Id)
+                If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
 
                 SetupDGV()
             End If
@@ -325,7 +325,7 @@ Public Class frmMain
 
                 If PendingAuth Then
                     AccessAdministrator(employee)
-                ElseIf Not PreviousEE_Id = employee.Employee_Id Then
+                ElseIf RecentEE_Ids.Contains(employee.Employee_Id) = False Then
                     ProcessAttendance(e.Score, employee)
                 End If
             End If
@@ -369,7 +369,6 @@ Public Class frmMain
         tmRefreshStream.Enabled = False
     End Sub
 #End Region
-
 
     Public Enum StatusChoices
         SCAN_SUCCESS

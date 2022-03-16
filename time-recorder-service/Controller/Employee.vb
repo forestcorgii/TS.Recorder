@@ -38,8 +38,12 @@ Namespace Controller
             Return employees
         End Function
 
-        Public Shared Sub SaveEmployee(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
+        Public Shared Sub SaveEmployee(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee, Optional owner As String = "")
             Try
+                If owner <> "" Then
+                    employee.owner = owner
+                End If
+
                 Dim cmd As New MySqlCommand()
                 cmd.Connection = databaseManager.Connection
                 With cmd.Parameters
@@ -49,10 +53,6 @@ Namespace Controller
                     .Add("@lastname", MySqlDbType.String).Value = employee.last_name
                     .Add("@middlename", MySqlDbType.String).Value = employee.middle_name
                     .Add("@employee_id", MySqlDbType.String).Value = employee.Employee_Id
-                    .Add("@department", MySqlDbType.String).Value = employee.department
-                    .Add("@company", MySqlDbType.String).Value = employee.company
-                    .Add("@schedule", MySqlDbType.String).Value = employee.schedule
-                    .Add("@project", MySqlDbType.String).Value = employee.project
                     .Add("@admin", MySqlDbType.String).Value = employee.admin
 
                     If employee.NoFaceImage = False Then
@@ -77,32 +77,45 @@ Namespace Controller
                 End If
                 rdr.Close()
 
-                If existingUserID > 0 Then
-                    qry = "UPDATE employee SET `employee_id`=@employee_id, `firstname`=@firstname, `lastname`=@lastname, `middlename`=@middlename, `project`=@project, `department`=@department," _
-                    & " `company`=@company, `schedule`=@schedule, `admin`=@admin, `active`=@active, `face_img1`=@face_img1, `face_img2`=@face_img2, `face_img3`=@face_img3, `owner`=@owner WHERE `id`=@id"
-                Else
-                    qry = "REPLACE INTO employee (`id`,`firstname`,`lastname`,`middlename`,`employee_id`,`project`,`department`,`company`,`schedule`,`admin`,`active`,`face_img1`,`face_img2`,`face_img3`,`owner`)" _
-                        & "VALUES(@id,@firstname,@lastname,@middlename,@employee_id,@project,@department,@company,@schedule,@admin,@active,@face_img1,@face_img2,@face_img3,@owner)"
-                End If
+                'If existingUserID >= 0 Then
+                'qry = "UPDATE employee SET `employee_id`=@employee_id, `firstname`=@firstname, `lastname`=@lastname, `middlename`=@middlename, `project`=@project, `department`=@department," _
+                '& " `company`=@company, `schedule`=@schedule, `admin`=@admin, `active`=@active, `face_img1`=@face_img1, `face_img2`=@face_img2, `face_img3`=@face_img3, `owner`=@owner WHERE `id`=@id"
+                'Else
+                qry = "REPLACE INTO employee (`id`,`firstname`,`lastname`,`middlename`,`employee_id`,`admin`,`active`,`face_img1`,`face_img2`,`face_img3`,`owner`)" _
+                        & "VALUES(@id,@firstname,@lastname,@middlename,@employee_id,@admin,@active,@face_img1,@face_img2,@face_img3,@owner)"
+                'End If
 
                 cmd.CommandText = qry
                 cmd.ExecuteNonQuery()
             Catch ex As Exception
-
+                Console.WriteLine(ex.Message)
             End Try
         End Sub
 
-        Sub New(mysql As Configuration.Mysql)
-            Dim bin As String = "" 'New DirectoryInfo(Application.StartupPath).Parent.FullName
-            Dim conf As String = bin & "\conf\"
+        Public Shared Async Function SyncJobcodeToHRMS(databaseManager As utility_service.Manager.Mysql, hrmsAPIManager As hrms_api_service.Manager.API.HRMS) As Task
+            Dim employees As List(Of Model.Employee) = CollectEmployees(databaseManager)
+            For Each employee As Model.Employee In employees
+                Try
+                    Dim newEmployee As hrms_api_service.IInterface.IEmployee = Await hrmsAPIManager.GetEmployeeFromServer(employee.Employee_Id)
+                    If newEmployee IsNot Nothing AndAlso employee.jobcode <> newEmployee.jobcode Then
+                        UpdateJobcode(databaseManager, employee.Employee_Id, newEmployee.jobcode)
+                    End If
+                Catch ex As Exception
+                    Console.WriteLine(ex.Message)
+                End Try
+            Next
+        End Function
 
-            'mngr = mysql
-
-            'Time_Recorder_API = New EmployeeSyncClasses.TimeUser_API
-
-            'StartSync()
+        Public Shared Sub UpdateJobcode(databaseManager As utility_service.Manager.Mysql, ee_id As String, jobcode As String)
+            Try
+                Dim command As New MySqlCommand("UPDATE employee SET jobcode=? WHERE employee_id=?;", databaseManager.Connection)
+                command.Parameters.AddWithValue("p1", jobcode)
+                command.Parameters.AddWithValue("p2", ee_id)
+                command.ExecuteNonQuery()
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+            End Try
         End Sub
-
 
         Public Class EmployeeSyncPostData
             Public site As String

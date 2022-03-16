@@ -27,15 +27,6 @@ Namespace Manager
                 client.DefaultRequestHeaders.Authorization = New AuthenticationHeaderValue("Token", ApiToken)
             End Sub
 
-            Public Async Function SendCreateUserRequest(values As Dictionary(Of String, String)) As Task(Of HttpResponseMessage)
-                Dim content As New FormUrlEncodedContent(values)
-
-                Dim response As HttpResponseMessage
-                response = Await client.PostAsync(String.Format("{0}user/", Url), content)
-
-                Return response
-            End Function
-
             Public Async Function SendUserDetailRequest(employee_id As String) As Task(Of String)
                 Dim response As HttpResponseMessage = Await client.GetAsync(String.Format("{0}user/{1}/", Url, employee_id))
                 Dim responseString As String = Await response.Content.ReadAsStringAsync()

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{58976BF9-EC30-4E26-BEC1-01F277457966}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>VerilookLib2</RootNamespace>
-    <AssemblyName>VerilookLib2</AssemblyName>
+    <RootNamespace>verilook_service</RootNamespace>
+    <AssemblyName>verilook-service</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -18,8 +18,8 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\..\2 - Bins\DDC-TimeRecorder\Verilook-Lib\</OutputPath>
-    <DocumentationFile>VerilookLib2.xml</DocumentationFile>
+    <OutputPath>..\..\..\2 - Bins\DDC-TimeRecorder\verilook-service\</OutputPath>
+    <DocumentationFile>verilook-service.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\2 - Bins\DDC-TimeRecorder\Verilook-Lib\</OutputPath>
-    <DocumentationFile>VerilookLib2.xml</DocumentationFile>
+    <DocumentationFile>verilook-service.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>

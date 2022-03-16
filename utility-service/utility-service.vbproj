@@ -69,8 +69,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\Settings.vb" />
     <Compile Include="Manager\Mysql.vb" />
     <Compile Include="Configuration\Mysql.vb" />
+    <Compile Include="Model\Settings.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

@@ -1,12 +1,13 @@
 ﻿Imports Newtonsoft.Json
 Imports time_recorder_service
-
-Public Class sfrmUserProfiles
+Imports verilook_service
+Imports utility_service
+Public Class frmUserProfiles
     Public Employees As New List(Of Model.Employee)
-    Private Employee As New Model.Employee
-    Public FaceManager As VerilookLib2.Manager.Verilook
+    Private SelectedEmployee As New Model.Employee
+    Public FaceManager As verilook_service.Manager.Verilook
 
-    Private Function checkFaceAvailable(_user As Model.Employee) As Boolean
+    Private Function CheckFaceProfile(_user As Model.Employee) As Boolean
         Dim value As Boolean = Not (_user.FaceImage_1 Is Nothing Or _user.FaceImage_2 Is Nothing Or _user.FaceImage_3 Is Nothing)
         If value Then
             lbMessage2.ForeColor = Color.MidnightBlue
@@ -46,8 +47,8 @@ Public Class sfrmUserProfiles
 
     Private Sub dgv_CurrentCellChanged(sender As Object, e As EventArgs) Handles dgv.CurrentCellChanged
         If Not dgv.Rows.Count = 0 And dgv.CurrentRow IsNot Nothing Then
-            Employee = dgv.CurrentRow.Cells(0).Value
-            With Employee
+            SelectedEmployee = dgv.CurrentRow.Cells(0).Value
+            With SelectedEmployee
                 tbEmployeeNumber.Text = .Employee_Id
                 tbFirstName.Text = .first_name
                 tbLastName.Text = .last_name
@@ -57,47 +58,77 @@ Public Class sfrmUserProfiles
 
                 cbActive.Enabled = (.NoFaceImage = False)
             End With
-            checkFaceAvailable(Employee)
+            checkFaceProfile(SelectedEmployee)
         End If
     End Sub
 
 
     Private Sub btnRegFace_Click(sender As Object, e As EventArgs) Handles btnRegFace.Click
-        If checkFaceAvailable(Employee) Then
+        If checkFaceProfile(SelectedEmployee) Then
             If MsgBox("Re-scan? Previous data will be overwritten.", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             Else : Exit Sub
             End If
         End If
 
-        VerilookLib2.Controller.Verilook.EditFaceTemplate(FaceManager, Employee)
-        checkFaceAvailable(Employee)
+        Controller.Verilook.EditFaceTemplate(VerilookManager, SelectedEmployee)
+        checkFaceProfile(SelectedEmployee)
     End Sub
 
 
     Private Sub btnSaveProfile_Click(sender As Object, e As EventArgs) Handles btnSaveProfile.Click
         Dim changes As New List(Of String)
-        With Employee
-
+        With SelectedEmployee
             .Employee_Id = tbEmployeeNumber.Text
             .admin = cbAdmin.Checked
             .Active = cbActive.Checked
 
-            .owner = Environment.GetEnvironmentVariable("USERDOMAIN")
+            .owner = EmployeeAPIManager.Terminal
 
-            Controller.Employee.SaveEmployee(DatabaseManager, Employee)
+            Controller.Employee.SaveEmployee(DatabaseManager, SelectedEmployee)
         End With
 
 
         With dgv.CurrentRow
-            .Cells(0).Value = Employee.Employee_Id
-            .Cells(1).Value = Employee.first_name
-            .Cells(2).Value = Employee.last_name
-            .Cells(3).Value = Employee.middle_name
-            .Cells(8).Value = Employee.Active
-            .Cells(9).Value = Employee.admin
+            .Cells(0).Value = SelectedEmployee.Employee_Id
+            .Cells(1).Value = SelectedEmployee.first_name
+            .Cells(2).Value = SelectedEmployee.last_name
+            .Cells(3).Value = SelectedEmployee.middle_name
+            .Cells(8).Value = SelectedEmployee.Active
+            .Cells(9).Value = SelectedEmployee.admin
         End With
 
         MsgBox("All Changes Has been Saved.")
+    End Sub
+
+    Private Async Sub tbEmployeeNumber_TextChanged(sender As Object, e As EventArgs) Handles tbEmployeeNumber.TextChanged
+        If tbEmployeeNumber.TextLength >= 3 Then
+            Dim employeeFound As hrms_api_service.IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(tbEmployeeNumber.Text)
+            If employeeFound IsNot Nothing Then
+                With SelectedEmployee
+                    .Employee_Id = tbEmployeeNumber.Text
+                    .jobcode = employeeFound.jobcode
+                    .first_name = employeeFound.first_name
+                    .last_name = employeeFound.last_name
+                    .middle_name = employeeFound.middle_name
+                    .admin = False
+                    .Active = True
+
+                    tbJobcode.Text = .jobcode
+                    tbFirstName.Text = .first_name
+                    tbLastName.Text = .last_name
+                    tbMiddleName.Text = .middle_name
+                    cbAdmin.Checked = .admin
+                    cbActive.Checked = .Active
+                End With
+            End If
+        Else
+            tbJobcode.Text = ""
+            tbFirstName.Text = ""
+            tbLastName.Text = ""
+            tbMiddleName.Text = ""
+            cbAdmin.Checked = False
+            cbActive.Checked = False
+        End If
     End Sub
 
     'Private Sub tbSearch_KeyDown(sender As Object, e As KeyEventArgs) Handles tbSearch.KeyDown
@@ -173,7 +204,7 @@ Public Class sfrmUserProfiles
         End If
 
         If VerilookManager Is Nothing Then
-            VerilookManager = New VerilookLib2.Manager.Verilook
+            VerilookManager = New verilook_service.Manager.Verilook
         End If
     End Sub
 
@@ -223,7 +254,7 @@ Public Class sfrmUserProfiles
 
     Private Sub btnOpenBiometricClientSettings_Click(sender As Object, e As EventArgs) Handles btnOpenBiometricClientSettings.Click
         'VerilookManager.SetBiometricClientParams()
-        Using _verilookSettings As New VerilookLib2.dlgSettings(VerilookManager.Settings)
+        Using _verilookSettings As New verilook_service.dlgSettings(VerilookManager.Settings)
             If _verilookSettings.ShowDialog = System.Windows.Forms.DialogResult.OK Then
                 VerilookManager.Settings = _verilookSettings.Settings
 
@@ -236,4 +267,5 @@ Public Class sfrmUserProfiles
             End If
         End Using
     End Sub
+
 End Class

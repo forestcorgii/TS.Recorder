@@ -4,31 +4,35 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4FE7CB48-0A3C-4D4F-AC87-C549DF7B9310}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>time_recorder_service</RootNamespace>
-    <AssemblyName>time-recorder-service</AssemblyName>
+    <ProjectGuid>{E8CE4122-A45F-4382-88D9-004DA88F45BD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>employee_sync.My.MyApplication</StartupObject>
+    <RootNamespace>employee_sync</RootNamespace>
+    <AssemblyName>Employee Sync</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>Windows</MyType>
+    <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>time-recorder-service.xml</DocumentationFile>
+    <OutputPath>D:\4 - Bins\time-recorder\Debug\</OutputPath>
+    <DocumentationFile>Employee Sync.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>time-recorder-service.xml</DocumentationFile>
+    <DocumentationFile>Employee Sync.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
@@ -44,19 +48,51 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <ApplicationIcon>DDC LOGO_RED.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MySql.Data, Version=8.0.20.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
-    <Reference Include="Neurotec">
+    <Reference Include="Neurotec, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Verilook Libraries\Neurotec.dll</HintPath>
     </Reference>
-    <Reference Include="Neurotec.Biometrics">
+    <Reference Include="Neurotec.Accelerator.Admin.Rest">
+      <HintPath>D:\Verilook Libraries\Neurotec.Accelerator.Admin.Rest.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Biometrics, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Verilook Libraries\Neurotec.Biometrics.dll</HintPath>
     </Reference>
+    <Reference Include="Neurotec.Biometrics.Client, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Verilook Libraries\Neurotec.Biometrics.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Biometrics.Gui, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Verilook Libraries\Neurotec.Biometrics.Gui.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Devices, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\4 - Bins\time-recorder\Debug\Neurotec.Devices.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Gui, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\4 - Bins\time-recorder\Debug\Neurotec.Gui.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Licensing, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\4 - Bins\time-recorder\Debug\Neurotec.Licensing.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Media, Version=11.1.0.0, Culture=neutral, PublicKeyToken=ea4ecf06177ea613, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\4 - Bins\time-recorder\Debug\Neurotec.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="Neurotec.Media.Processing">
+      <HintPath>D:\4 - Bins\time-recorder\Debug\Neurotec.Media.Processing.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\2 - Bins\DDC-TimeRecorder\Verilook-Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -75,26 +111,25 @@
     <Import Include="System.Collections" />
     <Import Include="System.Collections.Generic" />
     <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
     <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
     <Import Include="System.Linq" />
     <Import Include="System.Xml.Linq" />
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Employee.vb" />
-    <Compile Include="API\Attendance.vb" />
-    <Compile Include="Controller\AttendanceLog.vb" />
-    <Compile Include="Controller\Employee.vb" />
-    <Compile Include="Controller\Attendance.vb" />
-    <Compile Include="Model\Attendance.vb" />
-    <Compile Include="Model\AttendanceLog.vb" />
-    <Compile Include="Model\Employee.vb" />
-    <Compile Include="Model\TimeRecorderSettings.vb" />
+    <Compile Include="frmMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.Designer.vb">
+      <DependentUpon>frmMain.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -109,6 +144,9 @@
     <Compile Include="SharedObject.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -117,7 +155,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -127,22 +164,24 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\hrms-api-service\hrms-api-service\hrms-api-service.vbproj">
       <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
       <Name>hrms-api-service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\time-recorder-service\time-recorder-service.vbproj">
+      <Project>{4fe7cb48-0a3c-4d4f-ac87-c549df7b9310}</Project>
+      <Name>time-recorder-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\utility-service\utility-service.vbproj">
       <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
       <Name>utility-service</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VerilookLib2\verilook-service.vbproj">
-      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
-      <Name>verilook-service</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="DDC LOGO_RED.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

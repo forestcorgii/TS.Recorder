@@ -3,7 +3,7 @@ Imports System.Text.RegularExpressions
 Imports time_recorder_service
 Imports utility_service
 Imports hrms_api_service
-Imports VerilookLib2
+Imports verilook_service
 Imports upsg_api_service
 
 Module SharedObject

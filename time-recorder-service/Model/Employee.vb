@@ -3,7 +3,7 @@
 Imports Neurotec.Biometrics
 Imports Neurotec.IO
 Imports Newtonsoft.Json
-Imports VerilookLib2.Interface_
+Imports verilook_service.Interface_
 Imports hrms_api_service.IInterface
 Namespace Model
 
@@ -107,6 +107,9 @@ Namespace Model
             last_name = rdr("lastname")
             middle_name = rdr("middlename")
             Employee_Id = rdr("employee_id")
+
+            jobcode = rdr("jobcode")
+
             admin = rdr("admin")
             Active = rdr("active")
 
