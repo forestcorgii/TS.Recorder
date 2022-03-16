@@ -1,6 +1,6 @@
 ﻿Imports Neurotec.Biometrics
 
-Namespace Interface_
+Namespace IInterface
 
     Public Interface IFace
         Property face_data1 As Byte()

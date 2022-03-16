@@ -45,7 +45,7 @@ Namespace Controller
 
             Return faceSubjects
         End Function
-        Public Shared Function EditFaceTemplate(verilookManager As Manager.Verilook, ByRef Faces As Interface_.IFace) As Boolean
+        Public Shared Function EditFaceTemplate(verilookManager As Manager.Verilook, ByRef Faces As IInterface.IFace) As Boolean
             Using freg As New dlgFaceRegistration With {.FaceManager = verilookManager, .Faces = Faces}
                 freg.ShowDialog()
                 'If freg.res = DialogResult.OK Then

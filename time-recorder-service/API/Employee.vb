@@ -7,22 +7,13 @@ Imports Newtonsoft.Json
 Namespace Manager
     Namespace API
         Public Class Employee
-            <Xml.Serialization.XmlIgnore> Public client As New HttpClient
+            <JsonIgnore> Private Client As New HttpClient
             Public Url As String = ""
             Public ApiToken As String = ""
             Public Terminal As String = ""
             Public Site As String = ""
 
             Sub New()
-                Try
-                    Url = Environment.GetEnvironmentVariable("TIME_RECORDER_API_URL")
-                    ApiToken = Environment.GetEnvironmentVariable("TIME_RECORDER_TOKEN")
-                    Terminal = Environment.GetEnvironmentVariable("USERDOMAIN")
-                    Site = Environment.GetEnvironmentVariable("TIME_RECORDER_SITE")
-                Catch ex As Exception
-                    MessageBox.Show(ex.Message, "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                End Try
-
                 client.Timeout = TimeSpan.FromMinutes(100)
                 client.DefaultRequestHeaders.Authorization = New AuthenticationHeaderValue("Token", ApiToken)
             End Sub

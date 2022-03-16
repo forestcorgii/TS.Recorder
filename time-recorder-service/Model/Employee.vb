@@ -3,7 +3,7 @@
 Imports Neurotec.Biometrics
 Imports Neurotec.IO
 Imports Newtonsoft.Json
-Imports verilook_service.Interface_
+Imports verilook_service.IInterface
 Imports hrms_api_service.IInterface
 Namespace Model
 

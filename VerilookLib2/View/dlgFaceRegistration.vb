@@ -12,7 +12,7 @@ Imports System.IO
 
 Public Class dlgFaceRegistration
     Public FaceManager As Manager.Verilook
-    Public Faces As Interface_.IFace
+    Public Faces As IInterface.IFace
     Public fs1 As NSubject
     Public fs2 As NSubject
     Public fs3 As NSubject

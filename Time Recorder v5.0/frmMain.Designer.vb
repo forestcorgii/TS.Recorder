@@ -198,7 +198,6 @@ Partial Class frmMain
         '
         Me.btnAdministrator.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnAdministrator.ForeColor = System.Drawing.SystemColors.ButtonHighlight
-        Me.btnAdministrator.Image = Global.Time_Recorder_v5s._0.My.Resources.Resources.users
         Me.btnAdministrator.Name = "btnAdministrator"
         Me.btnAdministrator.Size = New System.Drawing.Size(124, 22)
         Me.btnAdministrator.Text = "ADMINISTRATOR"
@@ -231,7 +230,6 @@ Partial Class frmMain
         Me.btnMaximize.BackColor = System.Drawing.Color.DimGray
         Me.btnMaximize.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnMaximize.ForeColor = System.Drawing.Color.White
-        Me.btnMaximize.Image = Global.Time_Recorder_v5s._0.My.Resources.Resources.cancel__2_
         Me.btnMaximize.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.btnMaximize.Name = "btnMaximize"
         Me.btnMaximize.Size = New System.Drawing.Size(58, 22)
