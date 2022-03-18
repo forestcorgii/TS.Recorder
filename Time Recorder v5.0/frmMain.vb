@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.Windows.Forms
 Imports face_recognition_service.Manager
+Imports Neurotec.Biometrics
 Imports Newtonsoft.Json
 Imports time_recorder_service
 Imports utility_service
@@ -64,9 +65,9 @@ Public Class frmMain
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "VerilookManager.Settings")
         If settings IsNot Nothing Then
-            VerilookManager = New FaceRecognition
-            VerilookManager.Settings = JsonConvert.DeserializeObject(Of face_recognition_service.Configuration.Face)(settings.JSON_Arguments)
-            VerilookManager.Setup()
+            FaceRecognitionManager = New FaceRecognition
+            FaceRecognitionManager.Settings = JsonConvert.DeserializeObject(Of face_recognition_service.Configuration.Face)(settings.JSON_Arguments)
+            FaceRecognitionManager.Setup()
         End If
 
         Return True
@@ -260,18 +261,18 @@ Public Class frmMain
         Dim employees As List(Of Model.FaceProfile) = Controller.FaceProfile.Collect(DatabaseManager)
         DatabaseManager.Connection.Close()
 
-        VerilookManager.EmployeeFaceSubjects = face_recognition_service.Controller.FaceProfile.CollectFaceSubjects(employees, True)
-        VerilookManager.FillBiometricTask()
+        FaceRecognitionManager.EmployeeFaceSubjects = face_recognition_service.Controller.FaceProfile.CollectFaceSubjects(employees, True)
+        FaceRecognitionManager.FillBiometricTask()
 
-        AddHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
+        AddHandler FaceRecognitionManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
 
-        Await VerilookManager.StartProcess(Me, fvStream, FaceProcessType.Identify)
+        Await FaceRecognitionManager.StartProcess(Me, fvStream, FaceProcessType.Identify)
     End Sub
 
     Private Sub CloseStream()
-        RemoveHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
-        VerilookManager.ForceCapture()
-        VerilookManager.StopProcess()
+        RemoveHandler FaceRecognitionManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
+        FaceRecognitionManager.ForceCapture()
+        FaceRecognitionManager.StopProcess()
     End Sub
 
 
@@ -295,46 +296,49 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub ProcessAttendance(score As Integer, employee As Model.Employee)
-        If score > VerilookManager.Settings.MatchingScoreThreshold Then
-            'Dim validLog As Boolean = True
-            'If score < (VerilookManager.Settings.MatchingScoreThreshold + 5) Then
-            '    If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
-            '        validLog = True
-            '    Else validLog = False
-            '    End If
-            'End If
+    Private Function ProcessAttendance(score As Integer, faceSubject As NSubject, employee As Model.Employee) As Boolean
+        Dim validLog As Boolean = True
+        If score < (FaceRecognitionManager.Settings.MatchingScoreThreshold + 5) Then
+            If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
+                'NOTE: SAVE AS NEW FACE PROFILE
 
-            'If validLog Then
+            Else
+                validLog = False
+            End If
+        End If
+
+        If validLog Then
+            Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
+
             Try
                 DatabaseManager.Connection.Open()
+
+                Dim faceProfile As Model.FaceProfile = Controller.FaceProfile.Find(DatabaseManager, employee.EE_Id)
+                faceProfile.FaceImage_1 = faceSubject
+                Controller.FaceProfile.Save(DatabaseManager, faceProfile, FaceRecognitionAPIManager.Terminal)
+
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
 
                 If employee.Jobcode.ToUpper = "UPSG" Or employee.Jobcode.ToUpper = "UPS" Then
                     upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
                 End If
 
-                Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
-
-                RecentEE_Ids.Insert(0, employee.EE_Id)
-                If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
-
                 dgv.Rows.Insert(0,
-                                employee.FullName,
-                                employee.Jobcode,
-                                attendance.LogStatus,
-                                attendance.LogDate.ToString("yyyy-mm-dd"),
-                                attendance.TimeStamp.ToString("hh:mm tt")
-                )
+                                    employee.FullName,
+                                    employee.Jobcode,
+                                    attendance.LogStatus,
+                                    attendance.LogDate.ToString("yyyy-mm-dd"),
+                                    attendance.TimeStamp.ToString("hh:mm tt")
+                    )
 
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
-                End Try
-                DatabaseManager.Connection.Close()
+            End Try
+            DatabaseManager.Connection.Close()
 
-            'End If
         End If
-    End Sub
+        Return validLog
+    End Function
 
     Private Async Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
         Try
@@ -350,7 +354,11 @@ Public Class frmMain
                 If PendingAuth Then
                     AccessAdministrator(employee)
                 ElseIf RecentEE_Ids.Contains(employee.EE_Id) = False Then
-                    ProcessAttendance(e.Score, employee)
+                    RecentEE_Ids.Insert(0, employee.EE_Id)
+                    If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
+                    If ProcessAttendance(e.Score, e.Subject, employee) Then
+                        RecentEE_Ids.Remove(employee.EE_Id)
+                    End If
                 End If
             End If
         Catch ex As Exception

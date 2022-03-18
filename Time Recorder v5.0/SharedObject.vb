@@ -18,7 +18,7 @@ Module SharedObject
     Public DatabaseManager As Manager.Mysql
     Public DatabaseConfiguration As Configuration.Mysql
 
-    Public VerilookManager As Manager.FaceRecognition
+    Public FaceRecognitionManager As Manager.FaceRecognition
 
 
     Public Function IsConnectedToInternet() As Boolean

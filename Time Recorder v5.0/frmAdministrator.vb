@@ -59,7 +59,7 @@ Public Class frmAdministrator
             End If
         End If
 
-        face_recognition_service.Controller.FaceProfile.EditFaceTemplate(VerilookManager, SelectedEmployee.FaceProfile)
+        face_recognition_service.Controller.FaceProfile.EditFaceTemplate(FaceRecognitionManager, SelectedEmployee.FaceProfile)
         CheckFaceProfile(SelectedEmployee.FaceProfile)
     End Sub
 
@@ -165,8 +165,8 @@ Public Class frmAdministrator
         Else : UPSGAPIManager = New upsg_api_service.Manager.API.UPSG
         End If
 
-        If VerilookManager Is Nothing Then
-            VerilookManager = New face_recognition_service.Manager.FaceRecognition
+        If FaceRecognitionManager Is Nothing Then
+            FaceRecognitionManager = New face_recognition_service.Manager.FaceRecognition
         End If
     End Sub
 
@@ -216,13 +216,13 @@ Public Class frmAdministrator
 
     Private Sub btnOpenBiometricClientSettings_Click(sender As Object, e As EventArgs) Handles btnOpenBiometricClientSettings.Click
         'VerilookManager.SetBiometricClientParams()
-        Using _verilookSettings As New face_recognition_service.dlgSettings(VerilookManager.Settings)
+        Using _verilookSettings As New face_recognition_service.dlgSettings(FaceRecognitionManager.Settings)
             If _verilookSettings.ShowDialog = System.Windows.Forms.DialogResult.OK Then
-                VerilookManager.Settings = _verilookSettings.Settings
+                FaceRecognitionManager.Settings = _verilookSettings.Settings
 
                 Dim settings As New Model.Settings() With {
                     .Name = "VerilookManager.Settings",
-                    .JSON_Arguments = JsonConvert.SerializeObject(VerilookManager.Settings)
+                    .JSON_Arguments = JsonConvert.SerializeObject(FaceRecognitionManager.Settings)
                 }
                 Controller.Settings.SaveSettings(DatabaseManager, settings)
 
