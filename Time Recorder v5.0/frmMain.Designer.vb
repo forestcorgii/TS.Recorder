@@ -199,7 +199,7 @@ Partial Class frmMain
         Me.btnAdministrator.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnAdministrator.ForeColor = System.Drawing.SystemColors.ButtonHighlight
         Me.btnAdministrator.Name = "btnAdministrator"
-        Me.btnAdministrator.Size = New System.Drawing.Size(124, 22)
+        Me.btnAdministrator.Size = New System.Drawing.Size(108, 22)
         Me.btnAdministrator.Text = "ADMINISTRATOR"
         '
         'tbAdminID
@@ -208,6 +208,7 @@ Partial Class frmMain
         Me.tbAdminID.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(40, Byte), Integer), CType(CType(45, Byte), Integer))
         Me.tbAdminID.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.tbAdminID.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.tbAdminID.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.tbAdminID.ForeColor = System.Drawing.Color.White
         Me.tbAdminID.MaxLength = 4
         Me.tbAdminID.Name = "tbAdminID"
@@ -292,7 +293,7 @@ Partial Class frmMain
         '
         'clProject
         '
-        Me.clProject.HeaderText = "PROJECT"
+        Me.clProject.HeaderText = "JOBCODE"
         Me.clProject.Name = "clProject"
         Me.clProject.ReadOnly = True
         Me.clProject.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
@@ -302,7 +303,7 @@ Partial Class frmMain
         '
         DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
         Me.dgvrDept.DefaultCellStyle = DataGridViewCellStyle4
-        Me.dgvrDept.HeaderText = "DEPARTMENT"
+        Me.dgvrDept.HeaderText = "LOG STATUS"
         Me.dgvrDept.Name = "dgvrDept"
         Me.dgvrDept.ReadOnly = True
         Me.dgvrDept.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
@@ -517,15 +518,15 @@ Partial Class frmMain
     Friend WithEvents Label4 As Label
     Friend WithEvents bgwUserSync As System.ComponentModel.BackgroundWorker
     Friend WithEvents pbStatus As ProgressBar
-    Friend WithEvents empName As DataGridViewTextBoxColumn
-    Friend WithEvents clProject As DataGridViewTextBoxColumn
-    Friend WithEvents dgvrDept As DataGridViewTextBoxColumn
-    Friend WithEvents rwDate As DataGridViewTextBoxColumn
-    Friend WithEvents timeIN As DataGridViewTextBoxColumn
     Friend WithEvents tmSendTimelog As Timer
     Friend WithEvents bgwSendTimelog As System.ComponentModel.BackgroundWorker
     Friend WithEvents fvStream As Neurotec.Biometrics.Gui.NFaceView
     Friend WithEvents pnlSuccess As Panel
     Friend WithEvents pnlError As Panel
     Friend WithEvents tmChecker As Timer
+    Friend WithEvents empName As DataGridViewTextBoxColumn
+    Friend WithEvents clProject As DataGridViewTextBoxColumn
+    Friend WithEvents dgvrDept As DataGridViewTextBoxColumn
+    Friend WithEvents rwDate As DataGridViewTextBoxColumn
+    Friend WithEvents timeIN As DataGridViewTextBoxColumn
 End Class

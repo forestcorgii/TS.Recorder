@@ -9,8 +9,8 @@ Imports Neurotec.Devices
 Imports System.IO
 Namespace Manager
 
-    Public Class Verilook
-        Public Event FaceIdentified(sender As Object, e As VerilookEventArgs)
+    Public Class FaceRecognition
+        Public Event FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
 
 #Region "Saved Fields"
         Public Settings As Configuration.Face
@@ -44,7 +44,7 @@ Namespace Manager
         End Property
 
         Public Sub Setup()
-            Controller.Verilook.licenseSetup()
+            Controller.FaceProfile.licenseSetup()
 
             Try
                 _biometricClient = New NBiometricClient With {.BiometricTypes = NBiometricType.Face}
@@ -165,7 +165,7 @@ Namespace Manager
                     End If
                 End If
 
-                Dim args As New VerilookEventArgs
+                Dim args As New FaceRecognizeEventArgs
                 With args
                     .Subject = s
                     .UserID = _id
@@ -212,7 +212,7 @@ Namespace Manager
 
 
 
-    Public Class VerilookEventArgs
+    Public Class FaceRecognizeEventArgs
         Inherits EventArgs
 
         Public UserID As String

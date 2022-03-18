@@ -25,8 +25,6 @@ Partial Class dlgFaceRegistration
         Me.components = New System.ComponentModel.Container()
         Me.fvStream = New Neurotec.Biometrics.Gui.NFaceView()
         Me.fv1 = New Neurotec.Biometrics.Gui.NFaceView()
-        Me.fv2 = New Neurotec.Biometrics.Gui.NFaceView()
-        Me.fv3 = New Neurotec.Biometrics.Gui.NFaceView()
         Me.btnCapture = New System.Windows.Forms.Button()
         Me.btnRestart = New System.Windows.Forms.Button()
         Me.tmClosingAttempt = New System.Windows.Forms.Timer(Me.components)
@@ -66,38 +64,6 @@ Partial Class dlgFaceRegistration
         Me.fv1.TabIndex = 1
         Me.fv1.TokenImageRectangleColor = System.Drawing.Color.White
         '
-        'fv2
-        '
-        Me.fv2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.fv2.BackColor = System.Drawing.Color.DimGray
-        Me.fv2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.fv2.Face = Nothing
-        Me.fv2.FaceIds = Nothing
-        Me.fv2.IcaoArrowsColor = System.Drawing.Color.Red
-        Me.fv2.Location = New System.Drawing.Point(141, 246)
-        Me.fv2.Name = "fv2"
-        Me.fv2.ShowIcaoArrows = True
-        Me.fv2.ShowTokenImageRectangle = True
-        Me.fv2.Size = New System.Drawing.Size(139, 142)
-        Me.fv2.TabIndex = 2
-        Me.fv2.TokenImageRectangleColor = System.Drawing.Color.White
-        '
-        'fv3
-        '
-        Me.fv3.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.fv3.BackColor = System.Drawing.Color.DimGray
-        Me.fv3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.fv3.Face = Nothing
-        Me.fv3.FaceIds = Nothing
-        Me.fv3.IcaoArrowsColor = System.Drawing.Color.Red
-        Me.fv3.Location = New System.Drawing.Point(281, 246)
-        Me.fv3.Name = "fv3"
-        Me.fv3.ShowIcaoArrows = True
-        Me.fv3.ShowTokenImageRectangle = True
-        Me.fv3.Size = New System.Drawing.Size(139, 142)
-        Me.fv3.TabIndex = 2
-        Me.fv3.TokenImageRectangleColor = System.Drawing.Color.White
-        '
         'btnCapture
         '
         Me.btnCapture.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -132,8 +98,6 @@ Partial Class dlgFaceRegistration
         Me.ClientSize = New System.Drawing.Size(584, 391)
         Me.Controls.Add(Me.btnRestart)
         Me.Controls.Add(Me.btnCapture)
-        Me.Controls.Add(Me.fv2)
-        Me.Controls.Add(Me.fv3)
         Me.Controls.Add(Me.fv1)
         Me.Controls.Add(Me.fvStream)
         Me.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -145,8 +109,6 @@ Partial Class dlgFaceRegistration
     End Sub
     Friend WithEvents fvStream As Neurotec.Biometrics.Gui.NFaceView
     Friend WithEvents fv1 As Neurotec.Biometrics.Gui.NFaceView
-    Friend WithEvents fv2 As Neurotec.Biometrics.Gui.NFaceView
-    Friend WithEvents fv3 As Neurotec.Biometrics.Gui.NFaceView
     Friend WithEvents btnCapture As System.Windows.Forms.Button
     Friend WithEvents btnRestart As System.Windows.Forms.Button
     Friend WithEvents tmClosingAttempt As System.Windows.Forms.Timer

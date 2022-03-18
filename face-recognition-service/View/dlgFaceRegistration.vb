@@ -11,7 +11,7 @@ Imports Neurotec.Devices
 Imports System.IO
 
 Public Class dlgFaceRegistration
-    Public FaceManager As Manager.Verilook
+    Public FaceManager As Manager.FaceRecognition
     Public Faces As IInterface.IFace
     Public fs1 As NSubject
     Public fs2 As NSubject
@@ -29,12 +29,6 @@ Public Class dlgFaceRegistration
             If fv1.Face Is Nothing Then
                 fs1 = value
                 fv1.Face = fs1.Faces(0)
-            ElseIf fv2.Face Is Nothing Then
-                fs2 = value
-                fv2.Face = fs2.Faces(0)
-            ElseIf fv3.Face Is Nothing Then
-                fs3 = value
-                fv3.Face = fs3.Faces(0)
             End If
         End Set
     End Property
@@ -62,8 +56,6 @@ Public Class dlgFaceRegistration
 
     Private Sub btnReset_Click(sender As Object, e As EventArgs) Handles btnRestart.Click
         fv1.Face = Nothing
-        fv2.Face = Nothing
-        fv3.Face = Nothing
         stopScanning = True
 
         FaceManager.ForceCapture()
@@ -81,9 +73,9 @@ Public Class dlgFaceRegistration
                     Dim status = f(1)
                     If status = NBiometricStatus.Ok Then
                         availableFaceView = s
-                        If fv3.Face IsNot Nothing Then
-                            res = System.Windows.Forms.DialogResult.OK
-                            Me.Close()
+                        If fv1.Face IsNot Nothing Then
+                            res = DialogResult.OK
+                            Close()
                             Exit While
                         End If
                     Else ': MsgBox("Please Try Again.")

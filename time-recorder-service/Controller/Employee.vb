@@ -5,200 +5,60 @@ Imports utility_service
 
 Namespace Controller
     Public Class Employee
-        Public Shared Function GetEmployee(databaseManager As utility_service.Manager.Mysql, employee_id As String) As Model.Employee
+        Public Shared Function Find(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional shouldCompleteDetail As Boolean = False) As Model.Employee
             Dim employee As Model.Employee = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE employee_id='{0}' LIMIT 1", employee_id))
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE ee_id='{0}' LIMIT 1", ee_id))
                 If reader.HasRows Then
                     reader.Read()
                     employee = New Model.Employee(reader)
                 End If
             End Using
+
+            If employee IsNot Nothing AndAlso shouldCompleteDetail Then
+                CompleteDetail(databaseManager, employee)
+            End If
+
             Return employee
         End Function
 
-        Public Shared Function CollectEmployees(databaseManager As utility_service.Manager.Mysql) As List(Of Model.Employee)
+        Public Shared Function Collect(databaseManager As utility_service.Manager.Mysql, Optional shouldCompleteDetail As Boolean = False) As List(Of Model.Employee)
             Dim employees As New List(Of Model.Employee)
             Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM employee")
-                'Collect the Users
                 While reader.Read
                     employees.Add(New Model.Employee(reader))
                 End While
             End Using
 
-            ' Create subjects from selected templates
-            For i As Integer = 0 To employees.Count - 1
-                With employees.Item(i)
-                    If .Active Then
-                        If .FaceImage_1 IsNot Nothing Then .FaceImage_1.Id = .Employee_Id & "_1"
-                        If .FaceImage_2 IsNot Nothing Then .FaceImage_2.Id = .Employee_Id & "_2"
-                        If .FaceImage_3 IsNot Nothing Then .FaceImage_3.Id = .Employee_Id & "_3"
-                    End If
-                End With
-            Next i
+            If shouldCompleteDetail Then
+                employees.ForEach(Sub(item As Model.Employee) CompleteDetail(databaseManager, item))
+            End If
+
             Return employees
         End Function
 
-        Public Shared Sub SaveEmployee(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee, Optional owner As String = "")
+        Public Shared Sub Save(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
             Try
-                If owner <> "" Then
-                    employee.owner = owner
-                End If
-
-                Dim cmd As New MySqlCommand()
-                cmd.Connection = databaseManager.Connection
-                With cmd.Parameters
-                    .Add("@owner", MySqlDbType.String).Value = employee.owner
-                    .Add("@id", MySqlDbType.MediumBlob).Value = employee.id
-                    .Add("@firstname", MySqlDbType.String).Value = employee.first_name
-                    .Add("@lastname", MySqlDbType.String).Value = employee.last_name
-                    .Add("@middlename", MySqlDbType.String).Value = employee.middle_name
-                    .Add("@employee_id", MySqlDbType.String).Value = employee.Employee_Id
-                    .Add("@admin", MySqlDbType.String).Value = employee.admin
-
-                    If employee.NoFaceImage = False Then
-                        .Add("@active", MySqlDbType.String).Value = employee.Active
-                        .Add("@face_img1", MySqlDbType.Binary).Value = employee.face_data1
-                        .Add("@face_img2", MySqlDbType.Binary).Value = employee.face_data2
-                        .Add("@face_img3", MySqlDbType.Binary).Value = employee.face_data3
-                    Else : .Add("@active", MySqlDbType.String).Value = False
-                        .Add("@face_img1", MySqlDbType.Binary).Value = Nothing
-                        .Add("@face_img2", MySqlDbType.Binary).Value = Nothing
-                        .Add("@face_img3", MySqlDbType.Binary).Value = Nothing
-                    End If
-                End With
-                Dim qry As String
-
-                Dim existingUserID As Integer = -1
-                Dim rdr As MySqlDataReader
-                rdr = databaseManager.ExecuteDataReader("SELECT * FROM employee WHERE `employee_id` = '" & employee.Employee_Id & "'")
-                If rdr.HasRows Then
-                    rdr.Read()
-                    existingUserID = rdr.Item("id")
-                End If
-                rdr.Close()
-
-                'If existingUserID >= 0 Then
-                'qry = "UPDATE employee SET `employee_id`=@employee_id, `firstname`=@firstname, `lastname`=@lastname, `middlename`=@middlename, `project`=@project, `department`=@department," _
-                '& " `company`=@company, `schedule`=@schedule, `admin`=@admin, `active`=@active, `face_img1`=@face_img1, `face_img2`=@face_img2, `face_img3`=@face_img3, `owner`=@owner WHERE `id`=@id"
-                'Else
-                qry = "REPLACE INTO employee (`id`,`firstname`,`lastname`,`middlename`,`employee_id`,`admin`,`active`,`face_img1`,`face_img2`,`face_img3`,`owner`)" _
-                        & "VALUES(@id,@firstname,@lastname,@middlename,@employee_id,@admin,@active,@face_img1,@face_img2,@face_img3,@owner)"
-                'End If
-
-                cmd.CommandText = qry
-                cmd.ExecuteNonQuery()
-            Catch ex As Exception
-                Console.WriteLine(ex.Message)
-            End Try
-        End Sub
-
-        Public Shared Async Function SyncJobcodeToHRMS(databaseManager As utility_service.Manager.Mysql, hrmsAPIManager As hrms_api_service.Manager.API.HRMS) As Task
-            Dim employees As List(Of Model.Employee) = CollectEmployees(databaseManager)
-            For Each employee As Model.Employee In employees
-                Try
-                    Dim newEmployee As hrms_api_service.IInterface.IEmployee = Await hrmsAPIManager.GetEmployeeFromServer(employee.Employee_Id)
-                    If newEmployee IsNot Nothing AndAlso employee.jobcode <> newEmployee.jobcode Then
-                        UpdateJobcode(databaseManager, employee.Employee_Id, newEmployee.jobcode)
-                    End If
-                Catch ex As Exception
-                    Console.WriteLine(ex.Message)
-                End Try
-            Next
-        End Function
-
-        Public Shared Sub UpdateJobcode(databaseManager As utility_service.Manager.Mysql, ee_id As String, jobcode As String)
-            Try
-                Dim command As New MySqlCommand("UPDATE employee SET jobcode=? WHERE employee_id=?;", databaseManager.Connection)
-                command.Parameters.AddWithValue("p1", jobcode)
-                command.Parameters.AddWithValue("p2", ee_id)
+                Dim command As New MySqlCommand("REPLACE INTO employee (`first_name`,`last_name`,`middle_name`,`ee_id`,job_code) VALUES(?,?,?,?,?)", databaseManager.Connection)
+                command.Parameters.AddWithValue("p1", employee.First_Name)
+                command.Parameters.AddWithValue("p2", employee.Last_Name)
+                command.Parameters.AddWithValue("p3", employee.Middle_Name)
+                command.Parameters.AddWithValue("p5", employee.EE_Id)
+                command.Parameters.AddWithValue("p4", employee.Jobcode)
                 command.ExecuteNonQuery()
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
             End Try
         End Sub
 
-        Public Class EmployeeSyncPostData
-            Public site As String
-            Public terminal As String
-            Public employees As List(Of Model.Employee)
-        End Class
-        Public Shared Async Function SendEmployeeToServer(databaseManager As utility_service.Manager.Mysql, employeeAPIManager As Manager.API.Employee) As Task(Of Integer)
-            Dim EmployeeRecords As New List(Of Model.Employee)
 
-            Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM employee_sync_log WHERE `request_type` = 'POST' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;")
-                While reader.Read
-                    lastSynced = reader.Item("exec_datetime")
-                End While
-            End Using
-
-            Dim success As Boolean = True
-            Dim postMessage As String = "POST Request Succeeded"
-            Try 'POST
-                'get newly Updated USERS
-                Dim owner As String = Environment.GetEnvironmentVariable("USERDOMAIN")
-                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE `owner` = '{0}' AND `date_modified` > '{1}'", owner, lastSynced.ToString("yyyy-MM-dd HH:mm:ss")))
-                    While reader.Read
-                        EmployeeRecords.Add(New Model.Employee(reader))
-                    End While
-                End Using
-
-                If EmployeeRecords.Count > 0 Then
-                    postMessage = "Employees Sent Count: " & EmployeeRecords.Count
-
-                    Dim postData As New EmployeeSyncPostData
-                    With postData
-                        .site = employeeAPIManager.Site
-                        .terminal = employeeAPIManager.Terminal
-                        .employees = EmployeeRecords
-                    End With
-                    Dim dataString As String = JsonConvert.SerializeObject(postData, Formatting.Indented)
-
-                    Await employeeAPIManager.SendSyncPOSTRequest(dataString)
-                Else
-                End If
+        Public Shared Sub CompleteDetail(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
+            Try
+                employee.FaceProfile = FaceProfile.Find(databaseManager, employee.EE_Id)
             Catch ex As Exception
-                postMessage = "POST Request Failed due to an Exception"
-                success = False
-                Return 0
-            End Try
-
-            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", postMessage, "POST", success))
-
-            Return EmployeeRecords.Count
-        End Function
-
-        Public Shared Async Function GetEmployeeFromServer(databaseManager As utility_service.Manager.Mysql, employeeAPIManager As Manager.API.Employee) As Task(Of Integer)
-            'get last GET Sync Request date
-            Dim EmployeeRecords As New List(Of Model.Employee)
-            Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee_sync_log WHERE `request_type` = 'GET' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;"))
-                While reader.Read
-                    lastSynced = reader.Item("exec_datetime")
-                End While
-            End Using
-
-            Dim success As Boolean = True
-            Dim getMessage As String = "GET Request Succeeded"
-
-            Try 'GET
-                EmployeeRecords = JsonConvert.DeserializeObject(Of Model.Employee())(Await employeeAPIManager.SendSyncGETRequest(lastSynced)).ToList
-                If EmployeeRecords.Count > 0 Then
-                    For i As Integer = 0 To EmployeeRecords.Count - 1
-                        SaveEmployee(databaseManager, EmployeeRecords(i))
-                    Next
-                End If
-                success = True
-            Catch ex As Exception
-                success = False
-                getMessage = "GET Request Failed due to an Exception"
                 Console.WriteLine(ex.Message)
             End Try
+        End Sub
 
-            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO employee_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", getMessage, "GET", success))
-
-            Return EmployeeRecords.Count
-        End Function
     End Class
 
 End Namespace

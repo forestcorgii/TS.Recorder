@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{58976BF9-EC30-4E26-BEC1-01F277457966}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>verilook_service</RootNamespace>
-    <AssemblyName>verilook-service</AssemblyName>
+    <RootNamespace>face_recognition_service</RootNamespace>
+    <AssemblyName>face-recognition-service</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -19,7 +19,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\..\2 - Bins\DDC-TimeRecorder\verilook-service\</OutputPath>
-    <DocumentationFile>verilook-service.xml</DocumentationFile>
+    <DocumentationFile>face-recognition-service.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\2 - Bins\DDC-TimeRecorder\Verilook-Lib\</OutputPath>
-    <DocumentationFile>verilook-service.xml</DocumentationFile>
+    <DocumentationFile>face-recognition-service.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
@@ -95,6 +95,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -113,8 +114,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\FaceProfile.vb" />
     <Compile Include="Configuration\Face.vb" />
-    <Compile Include="Controller\Verilook.vb" />
+    <Compile Include="Controller\FaceProfile.vb" />
+    <Compile Include="Model\FaceProfile.vb" />
     <Compile Include="Interface\IFace.vb" />
     <Compile Include="View\dlgFaceRegistration.Designer.vb">
       <DependentUpon>dlgFaceRegistration.vb</DependentUpon>
@@ -145,7 +148,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Utils.vb" />
-    <Compile Include="Verilook.vb" />
+    <Compile Include="Manager\FaceRecognition.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="View\dlgFaceRegistration.resx">

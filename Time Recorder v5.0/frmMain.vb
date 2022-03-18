@@ -1,10 +1,10 @@
 ﻿Imports System.ComponentModel
 Imports System.Windows.Forms
+Imports face_recognition_service.Manager
 Imports Newtonsoft.Json
 Imports time_recorder_service
 Imports utility_service
-Imports verilook_service
-Imports verilook_service.Manager
+
 
 Public Class frmMain
 
@@ -17,12 +17,16 @@ Public Class frmMain
         ' Add any initialization after the InitializeComponent() call.
         Me.Text = Application.ProductName & " v" & Application.ProductVersion
         lbCompany.Text = Environment.GetEnvironmentVariable("TIME_RECORDER_COMPANY")
+
     End Sub
 
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
+
         SetupConfiguration()
-        SetupDGV()
+        'SetupDGV()
         SetupTimer()
+
+
     End Sub
 
 #Region "Setup"
@@ -43,9 +47,9 @@ Public Class frmMain
             AttendanceAPIManager = JsonConvert.DeserializeObject(Of Manager.API.Attendance)(settings.JSON_Arguments)
         End If
 
-        settings = Controller.Settings.GetSettings(DatabaseManager, "EmployeeAPIManager")
+        settings = Controller.Settings.GetSettings(DatabaseManager, "FaceRecognitionAPIManager")
         If settings IsNot Nothing Then
-            EmployeeAPIManager = JsonConvert.DeserializeObject(Of Manager.API.Employee)(settings.JSON_Arguments)
+            FaceRecognitionAPIManager = JsonConvert.DeserializeObject(Of API.FaceProfile)(settings.JSON_Arguments)
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "HRMSAPIManager")
@@ -60,8 +64,8 @@ Public Class frmMain
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "VerilookManager.Settings")
         If settings IsNot Nothing Then
-            VerilookManager = New Verilook
-            VerilookManager.Settings = JsonConvert.DeserializeObject(Of Configuration.Face)(settings.JSON_Arguments)
+            VerilookManager = New FaceRecognition
+            VerilookManager.Settings = JsonConvert.DeserializeObject(Of face_recognition_service.Configuration.Face)(settings.JSON_Arguments)
             VerilookManager.Setup()
         End If
 
@@ -70,7 +74,7 @@ Public Class frmMain
     Private Sub SetupDGV()
         dgv.Rows.Clear()
         DatabaseManager.Connection.Open()
-        Dim attendances As List(Of Model.Attendance) = Controller.Attendance.GetAttendances(DatabaseManager, limit:=100)
+        Dim attendances As List(Of Model.Attendance) = Controller.Attendance.GetAttendances(DatabaseManager, completeDetail:=True, limit:=100)
         DatabaseManager.Connection.Close()
 
         For Each attendance As Model.Attendance In attendances
@@ -78,15 +82,19 @@ Public Class frmMain
             dgvr.CreateCells(dgv)
             With dgvr
                 .Cells(0).Value = attendance.Name
+                .Cells(1).Value = attendance.Employee.Jobcode
+                .Cells(2).Value = attendance.LogStatus.ToString
                 .Cells(3).Value = attendance.LogDate.ToString("yyyy-MM-dd")
                 .Cells(4).Value = attendance.TimeStamp.ToString("hh:mm tt")
             End With
             dgv.Rows.Add(dgvr)
         Next
 
-        dgv.Columns(0).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
-        dgv.Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-        dgv.Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+        dgv.Columns(0).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft 'name
+        dgv.Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter 'jobcode
+        dgv.Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter 'log status
+        dgv.Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter 'log date
+        dgv.Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter 'log time
 
         If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
         Application.DoEvents()
@@ -105,6 +113,8 @@ Public Class frmMain
 
         tmRefreshStream.Enabled = False
         tmSendTimelog_Tick(Nothing, Nothing)
+
+        Me.Clock1.UtcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(Date.Now)
     End Sub
 
 #End Region
@@ -159,6 +169,7 @@ Public Class frmMain
     End Sub
 
     Private Sub tmTimelogSync_Tick(sender As Object, e As EventArgs) Handles tmTimelogSync.Tick
+        If sender IsNot Nothing Then CloseStream()
 
         If bgwUserSync.IsBusy = False Then
             bgwUserSync.RunWorkerAsync()
@@ -174,6 +185,7 @@ Public Class frmMain
             Await Controller.AttendanceLog.SendQueuedAttendance(_databaseManager, AttendanceAPIManager)
             Await upsg_api_service.Controller.UPSG.SendUPSGQueuedLogAsync(_databaseManager, UPSGAPIManager)
         Catch ex As Exception
+            'MsgBox(ex.Message, Title:="bgw")
             Console.WriteLine(ex.Message)
         End Try
         _databaseManager.Connection.Close()
@@ -198,6 +210,7 @@ Public Class frmMain
 
                        pbStatus.Visible = False
                        SetupDGV()
+                       OpenStream()
                    End Sub)
 
         Catch ex As Exception
@@ -215,8 +228,8 @@ Public Class frmMain
                        lbLastUserSync.Text = "Syncing..."
                    End Sub)
 
-            Dim userSent As Integer = Await Controller.Employee.SendEmployeeToServer(_databaseManager, EmployeeAPIManager)
-            Dim userReceived As Integer = Await Controller.Employee.GetEmployeeFromServer(_databaseManager, EmployeeAPIManager)
+            Dim userSent As Integer = Await Controller.FaceProfile.SaveToServer(_databaseManager, FaceRecognitionAPIManager)
+            Dim userReceived As Integer = Await Controller.FaceProfile.CollectFromServer(_databaseManager, FaceRecognitionAPIManager)
 
             Invoke(Sub()
                        lbLastUserSync.Text = String.Format("Last Synced: {0}   Received: {1} Sent: {2}", Now.ToString("yyyy-MM-dd HH:mm:ss"), userReceived, userSent)
@@ -234,9 +247,6 @@ Public Class frmMain
                        bgwTimelogSync.RunWorkerAsync()
                    End If
 
-                   pbStatus.Visible = False
-                   OpenStream()
-
                End Sub)
     End Sub
 
@@ -247,10 +257,10 @@ Public Class frmMain
         changeStatus("Camera Refreshing, Please wait...", Color.Firebrick)
 
         DatabaseManager.Connection.Open()
-        Dim employees As List(Of Model.Employee) = Controller.Employee.CollectEmployees(DatabaseManager)
+        Dim employees As List(Of Model.FaceProfile) = Controller.FaceProfile.Collect(DatabaseManager)
         DatabaseManager.Connection.Close()
 
-        VerilookManager.EmployeeFaceSubjects = Controller.Verilook.CollectFaceSubjects(employees, True)
+        VerilookManager.EmployeeFaceSubjects = face_recognition_service.Controller.FaceProfile.CollectFaceSubjects(employees, True)
         VerilookManager.FillBiometricTask()
 
         AddHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
@@ -258,7 +268,7 @@ Public Class frmMain
         Await VerilookManager.StartProcess(Me, fvStream, FaceProcessType.Identify)
     End Sub
 
-    Private Sub StreamClose()
+    Private Sub CloseStream()
         RemoveHandler VerilookManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
         VerilookManager.ForceCapture()
         VerilookManager.StopProcess()
@@ -275,10 +285,10 @@ Public Class frmMain
         tbAdminID.Visible = False
         PendingAuth = False
 
-        If employee.admin Then
+        If employee.FaceProfile.Admin Then
             Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
-            StreamClose()
-            frmUserProfiles.ShowDialog()
+            CloseStream()
+            frmAdministrator.ShowDialog()
             OpenStream()
         Else
             Splash("Access not allowed.", StatusChoices.SCAN_ERROR)
@@ -287,50 +297,65 @@ Public Class frmMain
 
     Private Sub ProcessAttendance(score As Integer, employee As Model.Employee)
         If score > VerilookManager.Settings.MatchingScoreThreshold Then
-            Dim validLog As Boolean = True
-            If score < (VerilookManager.Settings.MatchingScoreThreshold + 5) Then
-                If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
-                    validLog = True
-                Else validLog = False
-                End If
-            End If
+            'Dim validLog As Boolean = True
+            'If score < (VerilookManager.Settings.MatchingScoreThreshold + 5) Then
+            '    If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
+            '        validLog = True
+            '    Else validLog = False
+            '    End If
+            'End If
 
-            If validLog Then
+            'If validLog Then
+            Try
                 DatabaseManager.Connection.Open()
-                Controller.Attendance.SaveAttendance(DatabaseManager, employee)
+                Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
 
-                If employee.jobcode.ToUpper = "UPSG" Or employee.jobcode.ToUpper = "UPS" Then
-                    upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.Employee_Id, Now)
+                If employee.Jobcode.ToUpper = "UPSG" Or employee.Jobcode.ToUpper = "UPS" Then
+                    upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
                 End If
-
-                DatabaseManager.Connection.Close()
 
                 Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
 
-
-                RecentEE_Ids.Insert(0, employee.Employee_Id)
+                RecentEE_Ids.Insert(0, employee.EE_Id)
                 If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
 
-                SetupDGV()
-            End If
+                dgv.Rows.Insert(0,
+                                employee.FullName,
+                                employee.Jobcode,
+                                attendance.LogStatus,
+                                attendance.LogDate.ToString("yyyy-mm-dd"),
+                                attendance.TimeStamp.ToString("hh:mm tt")
+                )
+
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+                End Try
+                DatabaseManager.Connection.Close()
+
+            'End If
         End If
     End Sub
 
-    Private Sub FaceManager_FaceIdentified(sender As Object, e As VerilookEventArgs)
+    Private Async Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
         Try
             If e.Status = Neurotec.Biometrics.NBiometricStatus.Ok Then
                 DatabaseManager.Connection.Open()
-                Dim employee As Model.Employee = Controller.Employee.GetEmployee(DatabaseManager, e.UserID.Split("_")(0))
+                Dim ee_id As String = e.UserID.Split("_")(0)
+                Dim employee As Model.Employee = Controller.Employee.Find(DatabaseManager, ee_id, shouldCompleteDetail:=True)
+                If employee Is Nothing Then
+                    employee = Await HRMSAPIManager.GetEmployeeFromServer(ee_id)
+                End If
                 DatabaseManager.Connection.Close()
 
                 If PendingAuth Then
                     AccessAdministrator(employee)
-                ElseIf RecentEE_Ids.Contains(employee.Employee_Id) = False Then
+                ElseIf RecentEE_Ids.Contains(employee.EE_Id) = False Then
                     ProcessAttendance(e.Score, employee)
                 End If
             End If
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "Error occured while identifying face.", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Console.WriteLine(ex.Message)
+            'MessageBox.Show(ex.Message, "Error occured while identifying face.", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
         If DatabaseManager.Connection.State = ConnectionState.Open Then
@@ -375,6 +400,10 @@ Public Class frmMain
         SCAN_ERROR
     End Enum
 
+    Private Sub btnRefreshCamera_Click(sender As Object, e As EventArgs) Handles btnRefreshCamera.Click
+        CloseStream()
+        OpenStream()
+    End Sub
 End Class
 
 

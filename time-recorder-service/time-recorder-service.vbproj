@@ -21,6 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>time-recorder-service.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,15 +82,15 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Employee.vb" />
     <Compile Include="API\Attendance.vb" />
     <Compile Include="Controller\AttendanceLog.vb" />
+    <Compile Include="Controller\FaceProfile.vb" />
     <Compile Include="Controller\Employee.vb" />
     <Compile Include="Controller\Attendance.vb" />
     <Compile Include="Model\Attendance.vb" />
     <Compile Include="Model\AttendanceLog.vb" />
+    <Compile Include="Model\FaceProfile.vb" />
     <Compile Include="Model\Employee.vb" />
-    <Compile Include="Model\TimeRecorderSettings.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -134,13 +135,13 @@
       <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
       <Name>hrms-api-service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\face-recognition-service\face-recognition-service.vbproj">
+      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
+      <Name>face-recognition-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\utility-service\utility-service.vbproj">
       <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
       <Name>utility-service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VerilookLib2\verilook-service.vbproj">
-      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
-      <Name>verilook-service</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

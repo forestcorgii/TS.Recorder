@@ -1,14 +1,13 @@
 ﻿Imports Newtonsoft.Json
 Imports time_recorder_service
-Imports verilook_service
 Imports utility_service
-Public Class frmUserProfiles
+Public Class frmAdministrator
     Public Employees As New List(Of Model.Employee)
     Private SelectedEmployee As New Model.Employee
-    Public FaceManager As verilook_service.Manager.Verilook
+    Public FaceManager As face_recognition_service.Manager.FaceRecognition
 
-    Private Function CheckFaceProfile(_user As Model.Employee) As Boolean
-        Dim value As Boolean = Not (_user.FaceImage_1 Is Nothing Or _user.FaceImage_2 Is Nothing Or _user.FaceImage_3 Is Nothing)
+    Private Function CheckFaceProfile(_user As Model.FaceProfile) As Boolean
+        Dim value As Boolean = _user.FaceImage_1 IsNot Nothing
         If value Then
             lbMessage2.ForeColor = Color.MidnightBlue
             lbMessage2.Text = "Your Face has been registered."
@@ -36,10 +35,10 @@ Public Class frmUserProfiles
     Public Sub LoadEmployeesToDGV()
         dgv.Rows.Clear()
         DatabaseManager.Connection.Open()
-        Employees = Controller.Employee.CollectEmployees(DatabaseManager)
+        Employees = Controller.Employee.Collect(DatabaseManager, shouldCompleteDetail:=True)
         For Each employee As Model.Employee In Employees
             With employee
-                dgv.Rows.Add(employee, .first_name, .last_name, .MI, .Active, .admin)
+                dgv.Rows.Add(employee, .First_Name, .Last_Name, .MI, .FaceProfile.Active, .FaceProfile.Admin)
             End With
         Next
         DatabaseManager.Connection.Close()
@@ -48,79 +47,80 @@ Public Class frmUserProfiles
     Private Sub dgv_CurrentCellChanged(sender As Object, e As EventArgs) Handles dgv.CurrentCellChanged
         If Not dgv.Rows.Count = 0 And dgv.CurrentRow IsNot Nothing Then
             SelectedEmployee = dgv.CurrentRow.Cells(0).Value
-            With SelectedEmployee
-                tbEmployeeNumber.Text = .Employee_Id
-                tbFirstName.Text = .first_name
-                tbLastName.Text = .last_name
-                tbMiddleName.Text = .middle_name
-                cbAdmin.Checked = .admin
-                cbActive.Checked = .Active
-
-                cbActive.Enabled = (.NoFaceImage = False)
-            End With
-            checkFaceProfile(SelectedEmployee)
+            tbEmployeeNumber.Text = SelectedEmployee.EE_Id
         End If
     End Sub
 
 
     Private Sub btnRegFace_Click(sender As Object, e As EventArgs) Handles btnRegFace.Click
-        If checkFaceProfile(SelectedEmployee) Then
+        If CheckFaceProfile(SelectedEmployee.FaceProfile) Then
             If MsgBox("Re-scan? Previous data will be overwritten.", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             Else : Exit Sub
             End If
         End If
 
-        Controller.Verilook.EditFaceTemplate(VerilookManager, SelectedEmployee)
-        checkFaceProfile(SelectedEmployee)
+        face_recognition_service.Controller.FaceProfile.EditFaceTemplate(VerilookManager, SelectedEmployee.FaceProfile)
+        CheckFaceProfile(SelectedEmployee.FaceProfile)
     End Sub
 
 
     Private Sub btnSaveProfile_Click(sender As Object, e As EventArgs) Handles btnSaveProfile.Click
         Dim changes As New List(Of String)
         With SelectedEmployee
-            .Employee_Id = tbEmployeeNumber.Text
-            .admin = cbAdmin.Checked
-            .Active = cbActive.Checked
+            .EE_Id = tbEmployeeNumber.Text
+            .FaceProfile.Admin = cbAdmin.Checked
+            .FaceProfile.Active = cbActive.Checked
 
-            .owner = EmployeeAPIManager.Terminal
-
-            Controller.Employee.SaveEmployee(DatabaseManager, SelectedEmployee)
+            .FaceProfile.Owner = FaceRecognitionAPIManager.Terminal
+            DatabaseManager.Connection.Open()
+            Controller.Employee.Save(DatabaseManager, SelectedEmployee)
+            Controller.FaceProfile.Save(DatabaseManager, SelectedEmployee.FaceProfile)
+            DatabaseManager.Connection.Close()
         End With
 
-
         With dgv.CurrentRow
-            .Cells(0).Value = SelectedEmployee.Employee_Id
-            .Cells(1).Value = SelectedEmployee.first_name
-            .Cells(2).Value = SelectedEmployee.last_name
-            .Cells(3).Value = SelectedEmployee.middle_name
-            .Cells(8).Value = SelectedEmployee.Active
-            .Cells(9).Value = SelectedEmployee.admin
+            .Cells(0).Value = SelectedEmployee.EE_Id
+            .Cells(1).Value = SelectedEmployee.First_Name
+            .Cells(2).Value = SelectedEmployee.Last_Name
+            .Cells(3).Value = SelectedEmployee.Middle_Name
+            .Cells(4).Value = SelectedEmployee.FaceProfile.Active
+            .Cells(5).Value = SelectedEmployee.FaceProfile.Admin
         End With
 
         MsgBox("All Changes Has been Saved.")
     End Sub
 
     Private Async Sub tbEmployeeNumber_TextChanged(sender As Object, e As EventArgs) Handles tbEmployeeNumber.TextChanged
-        If tbEmployeeNumber.TextLength >= 3 Then
-            Dim employeeFound As hrms_api_service.IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(tbEmployeeNumber.Text)
+        If tbEmployeeNumber.TextLength >= 4 And Not DatabaseManager.Connection.State = ConnectionState.Open Then
+            DatabaseManager.Connection.Open()
+            Dim employeeFound As Model.Employee = Controller.Employee.Find(DatabaseManager, tbEmployeeNumber.Text, shouldCompleteDetail:=True)
+            If employeeFound Is Nothing Then
+                Dim employeeFromHRMS As hrms_api_service.IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(tbEmployeeNumber.Text)
+                If employeeFromHRMS IsNot Nothing Then
+                    employeeFound = New Model.Employee(employeeFromHRMS)
+                End If
+            End If
+
             If employeeFound IsNot Nothing Then
                 With SelectedEmployee
-                    .Employee_Id = tbEmployeeNumber.Text
-                    .jobcode = employeeFound.jobcode
-                    .first_name = employeeFound.first_name
-                    .last_name = employeeFound.last_name
-                    .middle_name = employeeFound.middle_name
-                    .admin = False
-                    .Active = True
+                    .EE_Id = tbEmployeeNumber.Text
+                    .Jobcode = employeeFound.Jobcode
+                    .First_Name = employeeFound.First_Name
+                    .Last_Name = employeeFound.Last_Name
+                    .Middle_Name = employeeFound.Middle_Name
 
-                    tbJobcode.Text = .jobcode
-                    tbFirstName.Text = .first_name
-                    tbLastName.Text = .last_name
-                    tbMiddleName.Text = .middle_name
-                    cbAdmin.Checked = .admin
-                    cbActive.Checked = .Active
+                    .FaceProfile = Controller.FaceProfile.Find(DatabaseManager, .EE_Id)
+
+                    tbJobcode.Text = .Jobcode
+                    tbFirstName.Text = .First_Name
+                    tbLastName.Text = .Last_Name
+                    tbMiddleName.Text = .Middle_Name
+                    cbAdmin.Checked = .FaceProfile.Admin
+                    cbActive.Checked = .FaceProfile.Active
                 End With
             End If
+            DatabaseManager.Connection.Close()
+            CheckFaceProfile(SelectedEmployee.FaceProfile)
         Else
             tbJobcode.Text = ""
             tbFirstName.Text = ""
@@ -131,44 +131,6 @@ Public Class frmUserProfiles
         End If
     End Sub
 
-    'Private Sub tbSearch_KeyDown(sender As Object, e As KeyEventArgs) Handles tbSearch.KeyDown
-    '    If e.KeyCode = Keys.Enter Then
-    '        btnSearch.PerformClick()
-    '    End If
-    'End Sub
-
-    Private Sub cbSearchAdmin_CheckedChanged(sender As Object, e As EventArgs) Handles cbSearchAdmin.CheckedChanged, cbSearchActive.CheckedChanged
-        'NOTE: Create Controller.Employee.FilterEmployees
-        'readUserDB(Employees)
-    End Sub
-
-
-    'Private Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click
-    '    filteredUserDB = New EmployeeRecordCollection
-    '    Select Case cbSearchOption.Text.ToUpper
-    '        Case "EMPLOYEE NUMBER"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.Employee_Id.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case "COMPANY"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.company.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case "DEPARTMENT"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.department.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case "FIRSTNAME"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.first_name.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case "LASTNAME"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.last_name.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case "MIDDLE INITIAL"
-    '            filteredUserDB.AddRange(
-    '                (From res In employees Where res.MI.ToUpper = tbSearch.Text And res.admin = cbSearchAdmin.Checked And res.Active = cbSearchActive.Checked).ToList)
-    '        Case Else
-    '            Exit Sub
-    '    End Select
-    '    readUserDB(filteredUserDB)
-    'End Sub
 
 
     Private Sub LoadAPISettings()
@@ -177,12 +139,12 @@ Public Class frmUserProfiles
         Else : AttendanceAPIManager = New Manager.API.Attendance
         End If
 
-        If EmployeeAPIManager IsNot Nothing Then
-            tbEmployeeSite.Text = EmployeeAPIManager.Site
-            tbEmployeeTerminal.Text = EmployeeAPIManager.Terminal
-            tbEmployeeURL.Text = EmployeeAPIManager.Url
-            tbEmployeeToken.Text = EmployeeAPIManager.ApiToken
-        Else : EmployeeAPIManager = New Manager.API.Employee
+        If FaceRecognitionAPIManager IsNot Nothing Then
+            tbEmployeeSite.Text = FaceRecognitionAPIManager.Site
+            tbEmployeeTerminal.Text = FaceRecognitionAPIManager.Terminal
+            tbEmployeeURL.Text = FaceRecognitionAPIManager.Url
+            tbEmployeeToken.Text = FaceRecognitionAPIManager.ApiToken
+        Else : FaceRecognitionAPIManager = New face_recognition_service.Manager.API.FaceProfile
         End If
 
         If HRMSAPIManager IsNot Nothing Then
@@ -204,7 +166,7 @@ Public Class frmUserProfiles
         End If
 
         If VerilookManager Is Nothing Then
-            VerilookManager = New verilook_service.Manager.Verilook
+            VerilookManager = New face_recognition_service.Manager.FaceRecognition
         End If
     End Sub
 
@@ -218,13 +180,13 @@ Public Class frmUserProfiles
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
-            EmployeeAPIManager.Site = tbEmployeeSite.Text
-            EmployeeAPIManager.Terminal = tbEmployeeTerminal.Text
-            EmployeeAPIManager.Url = tbEmployeeURL.Text
-            EmployeeAPIManager.ApiToken = tbEmployeeToken.Text
+            FaceRecognitionAPIManager.Site = tbEmployeeSite.Text
+            FaceRecognitionAPIManager.Terminal = tbEmployeeTerminal.Text
+            FaceRecognitionAPIManager.Url = tbEmployeeURL.Text
+            FaceRecognitionAPIManager.ApiToken = tbEmployeeToken.Text
             settings = New Model.Settings() With {
-                .Name = "EmployeeAPIManager",
-                .JSON_Arguments = JsonConvert.SerializeObject(EmployeeAPIManager)
+                .Name = "FaceRecognitionAPIManager",
+                .JSON_Arguments = JsonConvert.SerializeObject(FaceRecognitionAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
@@ -254,7 +216,7 @@ Public Class frmUserProfiles
 
     Private Sub btnOpenBiometricClientSettings_Click(sender As Object, e As EventArgs) Handles btnOpenBiometricClientSettings.Click
         'VerilookManager.SetBiometricClientParams()
-        Using _verilookSettings As New verilook_service.dlgSettings(VerilookManager.Settings)
+        Using _verilookSettings As New face_recognition_service.dlgSettings(VerilookManager.Settings)
             If _verilookSettings.ShowDialog = System.Windows.Forms.DialogResult.OK Then
                 VerilookManager.Settings = _verilookSettings.Settings
 

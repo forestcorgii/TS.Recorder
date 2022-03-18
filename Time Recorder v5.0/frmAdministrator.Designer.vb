@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmUserProfiles
+Partial Class frmAdministrator
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -24,7 +24,7 @@ Partial Class frmUserProfiles
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUserProfiles))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAdministrator))
         Me.dgv = New System.Windows.Forms.DataGridView()
         Me.clEmpNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.clFname = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -40,6 +40,8 @@ Partial Class frmUserProfiles
         Me.tbSearch = New System.Windows.Forms.TextBox()
         Me.cbSearchOption = New System.Windows.Forms.ComboBox()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.tbJobcode = New System.Windows.Forms.TextBox()
         Me.cbActive = New System.Windows.Forms.CheckBox()
         Me.lbMessage2 = New System.Windows.Forms.Label()
         Me.btnRegFace = New System.Windows.Forms.Button()
@@ -91,8 +93,6 @@ Partial Class frmUserProfiles
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.tbAttendanceURL = New System.Windows.Forms.TextBox()
         Me.Label19 = New System.Windows.Forms.Label()
-        Me.Label20 = New System.Windows.Forms.Label()
-        Me.tbJobcode = New System.Windows.Forms.TextBox()
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
@@ -301,6 +301,29 @@ Partial Class frmUserProfiles
         Me.Panel2.Size = New System.Drawing.Size(317, 506)
         Me.Panel2.TabIndex = 3
         '
+        'Label20
+        '
+        Me.Label20.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label20.ForeColor = System.Drawing.Color.Black
+        Me.Label20.Location = New System.Drawing.Point(3, 154)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(87, 30)
+        Me.Label20.TabIndex = 42
+        Me.Label20.Text = "Jobcode:"
+        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbJobcode
+        '
+        Me.tbJobcode.BackColor = System.Drawing.Color.GhostWhite
+        Me.tbJobcode.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.tbJobcode.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbJobcode.Location = New System.Drawing.Point(96, 157)
+        Me.tbJobcode.MaxLength = 50
+        Me.tbJobcode.Name = "tbJobcode"
+        Me.tbJobcode.ReadOnly = True
+        Me.tbJobcode.Size = New System.Drawing.Size(71, 23)
+        Me.tbJobcode.TabIndex = 41
+        '
         'cbActive
         '
         Me.cbActive.AutoSize = True
@@ -395,6 +418,7 @@ Partial Class frmUserProfiles
         Me.tbMiddleName.Location = New System.Drawing.Point(96, 128)
         Me.tbMiddleName.MaxLength = 50
         Me.tbMiddleName.Name = "tbMiddleName"
+        Me.tbMiddleName.ReadOnly = True
         Me.tbMiddleName.Size = New System.Drawing.Size(209, 23)
         Me.tbMiddleName.TabIndex = 22
         '
@@ -417,6 +441,7 @@ Partial Class frmUserProfiles
         Me.tbLastName.Location = New System.Drawing.Point(96, 98)
         Me.tbLastName.MaxLength = 50
         Me.tbLastName.Name = "tbLastName"
+        Me.tbLastName.ReadOnly = True
         Me.tbLastName.Size = New System.Drawing.Size(209, 23)
         Me.tbLastName.TabIndex = 9
         '
@@ -439,6 +464,7 @@ Partial Class frmUserProfiles
         Me.tbFirstName.Location = New System.Drawing.Point(96, 68)
         Me.tbFirstName.MaxLength = 50
         Me.tbFirstName.Name = "tbFirstName"
+        Me.tbFirstName.ReadOnly = True
         Me.tbFirstName.Size = New System.Drawing.Size(209, 23)
         Me.tbFirstName.TabIndex = 7
         '
@@ -822,29 +848,7 @@ Partial Class frmUserProfiles
         Me.Label19.TabIndex = 8
         Me.Label19.Text = "URL"
         '
-        'Label20
-        '
-        Me.Label20.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label20.ForeColor = System.Drawing.Color.Black
-        Me.Label20.Location = New System.Drawing.Point(3, 154)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(87, 30)
-        Me.Label20.TabIndex = 42
-        Me.Label20.Text = "Jobcode:"
-        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'tbJobcode
-        '
-        Me.tbJobcode.BackColor = System.Drawing.Color.GhostWhite
-        Me.tbJobcode.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        Me.tbJobcode.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.tbJobcode.Location = New System.Drawing.Point(96, 157)
-        Me.tbJobcode.MaxLength = 50
-        Me.tbJobcode.Name = "tbJobcode"
-        Me.tbJobcode.Size = New System.Drawing.Size(71, 23)
-        Me.tbJobcode.TabIndex = 41
-        '
-        'frmUserProfiles
+        'frmAdministrator
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -853,7 +857,7 @@ Partial Class frmUserProfiles
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
-        Me.Name = "frmUserProfiles"
+        Me.Name = "frmAdministrator"
         Me.Text = "Administrator"
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel1.ResumeLayout(False)

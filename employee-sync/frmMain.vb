@@ -36,7 +36,7 @@ Public Class frmMain
     Private Async Sub bgwSync_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles bgwSync.DoWork
         Try
             DatabaseManager.Connection.Open()
-            Dim employees As List(Of Model.Employee) = Controller.Employee.CollectEmployees(DatabaseManager)
+            Dim employees As List(Of Model.FaceProfile) = Controller.FaceProfile.Collect(DatabaseManager)
 
             Invoke(Sub()
                        pb.Maximum = employees.Count
@@ -44,16 +44,16 @@ Public Class frmMain
                    End Sub)
 
             For i As Integer = 0 To employees.Count - 1
-                Dim employee As Model.Employee = employees(i)
+                Dim employee As Model.FaceProfile = employees(i)
                 Try
-                    Dim newEmployee As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(employee.Employee_Id)
-                    If newEmployee IsNot Nothing AndAlso employee.jobcode <> newEmployee.jobcode Then
-                        Controller.Employee.UpdateJobcode(DatabaseManager, employee.Employee_Id, newEmployee.jobcode)
+                    Dim employeeFound As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(employee.EE_Id)
+                    If employeeFound IsNot Nothing Then
+                        Controller.Employee.Save(DatabaseManager, New Model.Employee(employeeFound))
                     End If
 
                     Invoke(Sub()
                                pb.Value += 1
-                               lbStatus.Text = String.Format("Updating {1} of {2}... Employee ID: {0}", employee.Employee_Id, i + 1, employees.Count)
+                               lbStatus.Text = String.Format("Updating {1} of {2}... Employee ID: {0}", employee.EE_Id, i + 1, employees.Count)
                            End Sub)
                 Catch ex As Exception
                     MessageBox.Show(ex.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error)

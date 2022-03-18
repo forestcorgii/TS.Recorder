@@ -17,7 +17,7 @@ Namespace Controller
 
             If completeDetail Then
                 attendances.ForEach(Sub(item As Model.Attendance)
-                                        item.Employee = Controller.Employee.GetEmployee(databaseManager, item.Employee_Id)
+                                        item.Employee = Controller.Employee.Find(databaseManager, item.EE_Id)
                                     End Sub)
             End If
             Return attendances
@@ -29,7 +29,7 @@ Namespace Controller
                 If reader.HasRows Then
                     reader.Read()
                     lastAttendanceSyncLogDate = reader.Item("timestamp")
-                Else : lastAttendanceSyncLogDate = Now.AddDays(-1)
+                Else : lastAttendanceSyncLogDate = Now.AddDays(-4)
                 End If
             End Using
 
@@ -45,14 +45,14 @@ Namespace Controller
                 For i As Integer = 0 To tms.Count - 1
                     Dim loginf As AttendanceFromServer = tms(i)
                     Try
-                        Dim empinfo As Model.Employee = Employee.GetEmployee(databaseManager, loginf.id_number)
+                        Dim empinfo As Model.Employee = Employee.Find(databaseManager, loginf.id_number)
 
                         If empinfo IsNot Nothing Then
                             Dim attendance As Model.Attendance
                             If loginf.no_time_in = False Then
                                 attendance = New Model.Attendance
                                 With attendance
-                                    .Employee_Id = loginf.id_number
+                                    .EE_Id = loginf.id_number
                                     .LogDate = loginf.log_date
                                     .LogStatus = AttendanceStatusChoices.TIME_IN
                                     .TimeStamp = loginf.new_time_in
@@ -63,7 +63,7 @@ Namespace Controller
                             If loginf.no_time_out = False Then
                                 attendance = New Model.Attendance
                                 With attendance
-                                    .Employee_Id = loginf.id_number
+                                    .EE_Id = loginf.id_number
                                     .LogDate = loginf.log_date
                                     .LogStatus = AttendanceStatusChoices.TIME_OUT
                                     .TimeStamp = loginf.new_time_out
@@ -81,11 +81,11 @@ Namespace Controller
             Return True
         End Function
 
-        Public Shared Sub SaveAttendance(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
+        Public Shared Function SaveAttendance(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee) As Model.Attendance
             Try
                 Dim attendanceStatus As Byte = 0
                 Dim attendanceDate As Date = Now
-                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee.Employee_Id)
+                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee.EE_Id)
 
                 If currentAttendance.LogDate.ToString("yyyyMMdd HHmmss") <> "00010101 000000" Then
                     attendanceStatus = GetNextAttendanceStatus(currentAttendance.TimeStamp, currentAttendance.LogStatus)
@@ -93,7 +93,7 @@ Namespace Controller
 
                 If attendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso currentAttendance.LogStatus = AttendanceStatusChoices.TIME_IN Then '
                     Dim timeDifference As Integer = (Now - currentAttendance.TimeStamp).TotalHours
-                    Dim dayDifference As Integer = (attendanceDate - currentAttendance.LogDate).TotalDays
+                    Dim dayDifference As Integer = (CInt(attendanceDate.ToString("MMdd")) - CInt(currentAttendance.LogDate.ToString("MMdd")))
                     If (timeDifference <= 24 AndAlso dayDifference > 0) Then
                         attendanceDate = attendanceDate.AddDays(-dayDifference)
                     End If
@@ -105,7 +105,7 @@ Namespace Controller
 
                 Dim newAttendance As New Model.Attendance
                 With newAttendance
-                    .Employee_Id = currentAttendance.Employee_Id
+                    .EE_Id = employee.EE_Id
                     .LogDate = attendanceDate
                     .LogStatus = attendanceStatus
                     .TimeStamp = Now
@@ -113,36 +113,38 @@ Namespace Controller
 
                 InsertAttendanceSendQueue(databaseManager, newAttendance)
                 InsertAttendance(databaseManager, newAttendance, employee)
+
+                Return GetAttendance(databaseManager, employee.EE_Id)
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Error occured while saving the time log.", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
-        End Sub
+        End Function
 
 
 #Region "Private Methods"
         Private Shared Function FillAttendanceAPIPostData(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance)
             Dim apiLogDetail As New AttendanceAPIPostData
-            apiLogDetail.EmployeeID = attendance.Employee_Id
+            apiLogDetail.EmployeeID = attendance.EE_Id
             apiLogDetail.LogDate = attendance.LogDate.ToString("yyyy-MM-dd")
             If attendance.LogStatus = 0 Then
                 apiLogDetail.Timein = ToTimeString(Now)
             ElseIf attendance.LogStatus = 1 Then
-                Dim previousAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.Employee_Id, AttendanceStatusChoices.TIME_IN)
+                Dim previousAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.EE_Id, AttendanceStatusChoices.TIME_IN)
                 apiLogDetail.Timein = ToTimeString(previousAttendance.TimeStamp)
                 apiLogDetail.Timeout = ToTimeString(Now)
             End If
             Return apiLogDetail
         End Function
-        Private Shared Function GetAttendance(databaseManager As utility_service.Manager.Mysql, employee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
+        Private Shared Function GetAttendance(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
             Dim attendance As New Model.Attendance
-            Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `employee_id`='{0}' ORDER BY `time` DESC LIMIT 1", employee_id)
+            Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' ORDER BY `time` DESC LIMIT 1", ee_id)
 
-            If logStatus > -1 Then query = String.Format("SELECT * FROM `attendance` WHERE `employee_id`='{0}' and logstatus={1} ORDER BY `time` DESC LIMIT 1", employee_id, logStatus)
+            If logStatus > -1 Then query = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' and logstatus={1} ORDER BY `time` DESC LIMIT 1", ee_id, logStatus)
 
             Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(query)
                 If reader.HasRows Then
                     reader.Read()
-                    attendance.Employee_Id = reader.Item("employee_id")
+                    attendance.EE_Id = reader.Item("ee_id")
                     attendance.LogStatus = reader.Item("logstatus")
                     attendance.SendStatus = reader.Item("status")
                     attendance.TimeStamp = Date.Parse(reader.Item("time"))
@@ -153,15 +155,13 @@ Namespace Controller
         End Function
 
         Private Shared Sub InsertAttendance(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance, employee As Model.Employee)
-            Dim query As String = "REPLACE INTO `attendance`(attendance_name,employee_id,`date`,`name`,project,department,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?,?,?)"
+            Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
 
             Dim command As New MySqlCommand(query, databaseManager.Connection)
             command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
-            command.Parameters.AddWithValue("employee_id", attendance.Employee_Id)
+            command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
             command.Parameters.AddWithValue("date", attendance.LogDate)
             command.Parameters.AddWithValue("name", employee.FullName)
-            command.Parameters.AddWithValue("project", employee.project)
-            command.Parameters.AddWithValue("department", employee.department)
             command.Parameters.AddWithValue("time", attendance.TimeStamp.ToString("yyyy-MM-dd HH:mm:00"))
             command.Parameters.AddWithValue("logstatus", attendance.LogStatus)
             command.Parameters.AddWithValue("status", 0)

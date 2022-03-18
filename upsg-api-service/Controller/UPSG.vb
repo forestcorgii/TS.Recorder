@@ -6,21 +6,30 @@ Namespace Controller
         Public Shared Async Function SendUPSGQueuedLogAsync(databaseManager As utility_service.Manager.Mysql, upsgAPIManager As Manager.API.UPSG) As Task(Of Boolean)
             Dim logs As New List(Of Model.UPSG)
             Try
-                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM upsg_log_queue")
+                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM upsg_log_queue;")
                     While reader.Read
                         logs.Add(New Model.UPSG(reader))
                     End While
                 End Using
 
+                'MsgBox(logs.Count)
+
                 For Each log As Model.UPSG In logs
-                    Dim res = Await upsgAPIManager.SendTimelog(log.EE_Id, log.TimeStamp)
-                    If res(0) Then
-                        DeleteLogFromQueue(databaseManager, log)
-                    End If
+                    Try
+                        Dim res = Await upsgAPIManager.SendTimelog(log.EE_Id, log.TimeStamp)
+                        'MsgBox(res(1) & res(0))
+                        If res(0) Then
+                            DeleteLogFromQueue(databaseManager, log)
+                        End If
+                    Catch ex As Exception
+                        'MsgBox(ex.Message, Title:="inner send exception")
+                        Console.WriteLine(ex.Message)
+                    End Try
                 Next
                 Return True
             Catch ex As Exception
-                Console.WriteLine(ex.Message)
+                'MsgBox(ex.Message, Title:="outer send exception")
+                'Console.WriteLine(ex.Message)
             End Try
 
             Return False
@@ -44,6 +53,8 @@ Namespace Controller
                 command.Parameters.AddWithValue("p2", log.EE_Id)
                 command.ExecuteNonQuery()
             Catch ex As Exception
+                'MsgBox(ex.Message, Title:="delete query")
+
                 Console.WriteLine(ex.Message)
             End Try
         End Sub

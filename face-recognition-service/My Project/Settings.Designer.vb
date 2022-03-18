@@ -64,9 +64,9 @@ Namespace My
     Friend Module MySettingsProperty
         
         <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
-        Friend ReadOnly Property Settings() As Global.verilook_service.My.MySettings
+        Friend ReadOnly Property Settings() As Global.face_recognition_service.My.MySettings
             Get
-                Return Global.verilook_service.My.MySettings.Default
+                Return Global.face_recognition_service.My.MySettings.Default
             End Get
         End Property
     End Module

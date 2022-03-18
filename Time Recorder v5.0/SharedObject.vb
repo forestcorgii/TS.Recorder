@@ -3,8 +3,8 @@ Imports System.Text.RegularExpressions
 Imports time_recorder_service
 Imports utility_service
 Imports hrms_api_service
-Imports verilook_service
 Imports upsg_api_service
+Imports face_recognition_service
 
 Module SharedObject
 
@@ -13,12 +13,12 @@ Module SharedObject
     Public HRMSAPIManager As Manager.API.HRMS
     Public UPSGAPIManager As Manager.API.UPSG
     Public AttendanceAPIManager As Manager.API.Attendance
-    Public EmployeeAPIManager As Manager.API.Employee
+    Public FaceRecognitionAPIManager As Manager.API.FaceProfile
 
     Public DatabaseManager As Manager.Mysql
     Public DatabaseConfiguration As Configuration.Mysql
 
-    Public VerilookManager As Manager.Verilook
+    Public VerilookManager As Manager.FaceRecognition
 
 
     Public Function IsConnectedToInternet() As Boolean
