@@ -50,7 +50,7 @@ Public Class frmMain
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "FaceRecognitionAPIManager")
         If settings IsNot Nothing Then
-            FaceRecognitionAPIManager = JsonConvert.DeserializeObject(Of API.FaceProfile)(settings.JSON_Arguments)
+            FaceProfileAPIManager = JsonConvert.DeserializeObject(Of API.FaceProfile)(settings.JSON_Arguments)
         End If
 
         settings = Controller.Settings.GetSettings(DatabaseManager, "HRMSAPIManager")
@@ -229,8 +229,8 @@ Public Class frmMain
                        lbLastUserSync.Text = "Syncing..."
                    End Sub)
 
-            Dim userSent As Integer = Await Controller.FaceProfile.SaveToServer(_databaseManager, FaceRecognitionAPIManager)
-            Dim userReceived As Integer = Await Controller.FaceProfile.CollectFromServer(_databaseManager, FaceRecognitionAPIManager)
+            Dim userSent As Integer = Await Controller.FaceProfile.SaveToServer(_databaseManager, FaceProfileAPIManager)
+            Dim userReceived As Integer = Await Controller.FaceProfile.CollectFromServer(_databaseManager, FaceProfileAPIManager)
 
             Invoke(Sub()
                        lbLastUserSync.Text = String.Format("Last Synced: {0}   Received: {1} Sent: {2}", Now.ToString("yyyy-MM-dd HH:mm:ss"), userReceived, userSent)
@@ -315,7 +315,7 @@ Public Class frmMain
 
                 Dim faceProfile As Model.FaceProfile = Controller.FaceProfile.Find(DatabaseManager, employee.EE_Id)
                 faceProfile.FaceImage_1 = faceSubject
-                Controller.FaceProfile.Save(DatabaseManager, faceProfile, FaceRecognitionAPIManager.Terminal)
+                Controller.FaceProfile.Save(DatabaseManager, faceProfile, FaceProfileAPIManager.Terminal)
 
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
 

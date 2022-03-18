@@ -71,7 +71,7 @@ Public Class frmAdministrator
             .FaceProfile.Admin = cbAdmin.Checked
             .FaceProfile.Active = cbActive.Checked
 
-            .FaceProfile.Owner = FaceRecognitionAPIManager.Terminal
+            .FaceProfile.Owner = FaceProfileAPIManager.Terminal
             DatabaseManager.Connection.Open()
             Controller.Employee.Save(DatabaseManager, SelectedEmployee)
             Controller.FaceProfile.Save(DatabaseManager, SelectedEmployee.FaceProfile)
@@ -139,12 +139,12 @@ Public Class frmAdministrator
         Else : AttendanceAPIManager = New Manager.API.Attendance
         End If
 
-        If FaceRecognitionAPIManager IsNot Nothing Then
-            tbEmployeeSite.Text = FaceRecognitionAPIManager.Site
-            tbEmployeeTerminal.Text = FaceRecognitionAPIManager.Terminal
-            tbEmployeeURL.Text = FaceRecognitionAPIManager.Url
-            tbEmployeeToken.Text = FaceRecognitionAPIManager.ApiToken
-        Else : FaceRecognitionAPIManager = New face_recognition_service.Manager.API.FaceProfile
+        If FaceProfileAPIManager IsNot Nothing Then
+            tbEmployeeSite.Text = FaceProfileAPIManager.Site
+            tbEmployeeTerminal.Text = FaceProfileAPIManager.Terminal
+            tbEmployeeURL.Text = FaceProfileAPIManager.Url
+            tbEmployeeToken.Text = FaceProfileAPIManager.ApiToken
+        Else : FaceProfileAPIManager = New face_recognition_service.Manager.API.FaceProfile
         End If
 
         If HRMSAPIManager IsNot Nothing Then
@@ -180,13 +180,13 @@ Public Class frmAdministrator
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
-            FaceRecognitionAPIManager.Site = tbEmployeeSite.Text
-            FaceRecognitionAPIManager.Terminal = tbEmployeeTerminal.Text
-            FaceRecognitionAPIManager.Url = tbEmployeeURL.Text
-            FaceRecognitionAPIManager.ApiToken = tbEmployeeToken.Text
+            FaceProfileAPIManager.Site = tbEmployeeSite.Text
+            FaceProfileAPIManager.Terminal = tbEmployeeTerminal.Text
+            FaceProfileAPIManager.Url = tbEmployeeURL.Text
+            FaceProfileAPIManager.ApiToken = tbEmployeeToken.Text
             settings = New Model.Settings() With {
                 .Name = "FaceRecognitionAPIManager",
-                .JSON_Arguments = JsonConvert.SerializeObject(FaceRecognitionAPIManager)
+                .JSON_Arguments = JsonConvert.SerializeObject(FaceProfileAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 

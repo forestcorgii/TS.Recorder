@@ -13,7 +13,7 @@ Module SharedObject
     Public HRMSAPIManager As Manager.API.HRMS
     Public UPSGAPIManager As Manager.API.UPSG
     Public AttendanceAPIManager As Manager.API.Attendance
-    Public FaceRecognitionAPIManager As Manager.API.FaceProfile
+    Public FaceProfileAPIManager As Manager.API.FaceProfile
 
     Public DatabaseManager As Manager.Mysql
     Public DatabaseConfiguration As Configuration.Mysql
