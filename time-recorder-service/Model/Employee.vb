@@ -12,8 +12,9 @@ Namespace Model
         Public Property Last_Name As String
         Public Property Middle_Name As String
 
-        Public Property Jobcode As String
+        Public Property Job_Code As String
 
+        Public Property Lowest_Matching_Score As Integer
 
         <JsonIgnore> Public ReadOnly Property FullName As String
             Get
@@ -43,7 +44,8 @@ Namespace Model
             Last_Name = rdr("last_name")
             Middle_Name = rdr("middle_name")
 
-            Jobcode = rdr("job_code")
+            Job_Code = rdr("job_code")
+            Lowest_Matching_Score = rdr("lowest_matching_score")
         End Sub
 
         Sub New(emp As IEmployee)
@@ -53,7 +55,7 @@ Namespace Model
             Last_Name = emp.last_name
             Middle_Name = emp.middle_name
 
-            Jobcode = emp.jobcode
+            Job_Code = emp.jobcode
         End Sub
 
     End Class

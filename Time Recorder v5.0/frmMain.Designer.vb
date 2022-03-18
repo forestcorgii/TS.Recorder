@@ -54,22 +54,20 @@ Partial Class frmMain
         Me.dgvrDept = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.rwDate = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.timeIN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.tmUserSync = New System.Windows.Forms.Timer(Me.components)
-        Me.tmTimelogSync = New System.Windows.Forms.Timer(Me.components)
-        Me.bgwTimelogSync = New System.ComponentModel.BackgroundWorker()
-        Me.tmRefreshStream = New System.Windows.Forms.Timer(Me.components)
+        Me.tmFaceProfileSync = New System.Windows.Forms.Timer(Me.components)
+        Me.bgwAttendanceSync = New System.ComponentModel.BackgroundWorker()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.lbLastUserSync = New System.Windows.Forms.Label()
         Me.lbLastTimelogSync = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
-        Me.bgwUserSync = New System.ComponentModel.BackgroundWorker()
+        Me.bgwFaceProfileSync = New System.ComponentModel.BackgroundWorker()
         Me.pbStatus = New System.Windows.Forms.ProgressBar()
-        Me.tmSendTimelog = New System.Windows.Forms.Timer(Me.components)
-        Me.bgwSendTimelog = New System.ComponentModel.BackgroundWorker()
+        Me.tmSendAttendance = New System.Windows.Forms.Timer(Me.components)
+        Me.bgwSendAttendance = New System.ComponentModel.BackgroundWorker()
         Me.fvStream = New Neurotec.Biometrics.Gui.NFaceView()
         Me.pnlSuccess = New System.Windows.Forms.Panel()
         Me.pnlError = New System.Windows.Forms.Panel()
-        Me.tmChecker = New System.Windows.Forms.Timer(Me.components)
+        Me.tmScanResult = New System.Windows.Forms.Timer(Me.components)
         Me.stState.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -222,8 +220,8 @@ Partial Class frmMain
         Me.btnRefreshCamera.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
         Me.btnRefreshCamera.ForeColor = System.Drawing.Color.White
         Me.btnRefreshCamera.Name = "btnRefreshCamera"
-        Me.btnRefreshCamera.Size = New System.Drawing.Size(117, 22)
-        Me.btnRefreshCamera.Text = "REFRESH CAMERA"
+        Me.btnRefreshCamera.Size = New System.Drawing.Size(120, 22)
+        Me.btnRefreshCamera.Text = "ACTIVATE CAMERA"
         '
         'btnMaximize
         '
@@ -329,20 +327,12 @@ Partial Class frmMain
         Me.timeIN.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         Me.timeIN.Width = 163
         '
-        'tmUserSync
+        'tmFaceProfileSync
         '
-        Me.tmUserSync.Interval = 5000
+        Me.tmFaceProfileSync.Interval = 5000
         '
-        'tmTimelogSync
+        'bgwAttendanceSync
         '
-        Me.tmTimelogSync.Interval = 5000
-        '
-        'bgwTimelogSync
-        '
-        '
-        'tmRefreshStream
-        '
-        Me.tmRefreshStream.Interval = 5000
         '
         'Label1
         '
@@ -392,7 +382,7 @@ Partial Class frmMain
         Me.Label4.TabIndex = 15
         Me.Label4.Text = "Timelog Sync:"
         '
-        'bgwUserSync
+        'bgwFaceProfileSync
         '
         '
         'pbStatus
@@ -404,11 +394,11 @@ Partial Class frmMain
         Me.pbStatus.Style = System.Windows.Forms.ProgressBarStyle.Marquee
         Me.pbStatus.TabIndex = 16
         '
-        'tmSendTimelog
+        'tmSendAttendance
         '
-        Me.tmSendTimelog.Interval = 5000
+        Me.tmSendAttendance.Interval = 5000
         '
-        'bgwSendTimelog
+        'bgwSendAttendance
         '
         '
         'fvStream
@@ -451,9 +441,9 @@ Partial Class frmMain
         Me.pnlError.TabIndex = 19
         Me.pnlError.Visible = False
         '
-        'tmChecker
+        'tmScanResult
         '
-        Me.tmChecker.Interval = 1000
+        Me.tmScanResult.Interval = 5000
         '
         'frmMain
         '
@@ -506,27 +496,25 @@ Partial Class frmMain
     Friend WithEvents tbAdminID As System.Windows.Forms.ToolStripTextBox
     Friend WithEvents dgv As System.Windows.Forms.DataGridView
     Friend WithEvents lbSenderQueues As System.Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents tmUserSync As System.Windows.Forms.Timer
+    Friend WithEvents tmFaceProfileSync As System.Windows.Forms.Timer
     Friend WithEvents lbSyncState As ToolStripStatusLabel
-    Friend WithEvents tmTimelogSync As Timer
-    Friend WithEvents bgwTimelogSync As System.ComponentModel.BackgroundWorker
+    Friend WithEvents bgwAttendanceSync As System.ComponentModel.BackgroundWorker
     Friend WithEvents btnRefreshCamera As ToolStripMenuItem
-    Friend WithEvents tmRefreshStream As Timer
     Friend WithEvents Label1 As Label
     Friend WithEvents lbLastUserSync As Label
     Friend WithEvents lbLastTimelogSync As Label
     Friend WithEvents Label4 As Label
-    Friend WithEvents bgwUserSync As System.ComponentModel.BackgroundWorker
+    Friend WithEvents bgwFaceProfileSync As System.ComponentModel.BackgroundWorker
     Friend WithEvents pbStatus As ProgressBar
-    Friend WithEvents tmSendTimelog As Timer
-    Friend WithEvents bgwSendTimelog As System.ComponentModel.BackgroundWorker
+    Friend WithEvents tmSendAttendance As Timer
+    Friend WithEvents bgwSendAttendance As System.ComponentModel.BackgroundWorker
     Friend WithEvents fvStream As Neurotec.Biometrics.Gui.NFaceView
     Friend WithEvents pnlSuccess As Panel
     Friend WithEvents pnlError As Panel
-    Friend WithEvents tmChecker As Timer
     Friend WithEvents empName As DataGridViewTextBoxColumn
     Friend WithEvents clProject As DataGridViewTextBoxColumn
     Friend WithEvents dgvrDept As DataGridViewTextBoxColumn
     Friend WithEvents rwDate As DataGridViewTextBoxColumn
     Friend WithEvents timeIN As DataGridViewTextBoxColumn
+    Friend WithEvents tmScanResult As Timer
 End Class

@@ -93,25 +93,19 @@ Public Class frmAdministrator
     Private Async Sub tbEmployeeNumber_TextChanged(sender As Object, e As EventArgs) Handles tbEmployeeNumber.TextChanged
         If tbEmployeeNumber.TextLength >= 4 And Not DatabaseManager.Connection.State = ConnectionState.Open Then
             DatabaseManager.Connection.Open()
-            Dim employeeFound As Model.Employee = Controller.Employee.Find(DatabaseManager, tbEmployeeNumber.Text, shouldCompleteDetail:=True)
-            If employeeFound Is Nothing Then
-                Dim employeeFromHRMS As hrms_api_service.IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(tbEmployeeNumber.Text)
-                If employeeFromHRMS IsNot Nothing Then
-                    employeeFound = New Model.Employee(employeeFromHRMS)
-                End If
-            End If
+            Dim employeeFound As Model.Employee = Await Controller.Employee.FindAsync(DatabaseManager, tbEmployeeNumber.Text, shouldCompleteDetail:=True)
 
             If employeeFound IsNot Nothing Then
                 With SelectedEmployee
                     .EE_Id = tbEmployeeNumber.Text
-                    .Jobcode = employeeFound.Jobcode
+                    .Job_Code = employeeFound.Job_Code
                     .First_Name = employeeFound.First_Name
                     .Last_Name = employeeFound.Last_Name
                     .Middle_Name = employeeFound.Middle_Name
 
                     .FaceProfile = Controller.FaceProfile.Find(DatabaseManager, .EE_Id)
 
-                    tbJobcode.Text = .Jobcode
+                    tbJobcode.Text = .Job_Code
                     tbFirstName.Text = .First_Name
                     tbLastName.Text = .Last_Name
                     tbMiddleName.Text = .Middle_Name

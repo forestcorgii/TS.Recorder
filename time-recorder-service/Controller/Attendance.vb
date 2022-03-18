@@ -5,7 +5,7 @@ Imports Newtonsoft.Json
 Namespace Controller
 
     Public Class Attendance
-        Public Shared Function GetAttendances(databaseManager As utility_service.Manager.Mysql, Optional completeDetail As Boolean = False, Optional limit As Integer = 100) As List(Of Model.Attendance)
+        Public Shared Async Function GetAttendancesAsync(databaseManager As utility_service.Manager.Mysql, Optional completeDetail As Boolean = False, Optional limit As Integer = 100, Optional hrmsAPIManager As hrms_api_service.Manager.API.HRMS = Nothing) As Task(Of List(Of Model.Attendance))
             Dim attendances As New List(Of Model.Attendance)
             Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM attendance ORDER BY `time` DESC LIMIT {0}", limit))
                 If reader.HasRows Then
@@ -16,9 +16,13 @@ Namespace Controller
             End Using
 
             If completeDetail Then
-                attendances.ForEach(Sub(item As Model.Attendance)
-                                        item.Employee = Controller.Employee.Find(databaseManager, item.EE_Id)
-                                    End Sub)
+                For Each item As Model.Attendance In attendances
+                    If hrmsAPIManager Is Nothing Then
+                        item.Employee = Controller.Employee.Find(databaseManager, item.EE_Id)
+                    Else
+                        item.Employee = Await Controller.Employee.FindAsync(databaseManager, item.EE_Id, hrmsAPIManager:=hrmsAPIManager)
+                    End If
+                Next
             End If
             Return attendances
         End Function
@@ -35,7 +39,7 @@ Namespace Controller
 
             Return lastAttendanceSyncLogDate
         End Function
-        Public Shared Async Function SyncAttendance(databaseManager As utility_service.Manager.Mysql, AttendanceAPIManager As Manager.API.Attendance) As Task(Of Boolean)
+        Public Shared Async Function SyncAttendance(databaseManager As utility_service.Manager.Mysql, AttendanceAPIManager As Manager.API.Attendance, hrmsAPIManager As hrms_api_service.Manager.API.HRMS) As Task(Of Boolean)
             Dim tms As New List(Of AttendanceFromServer)
             Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync(GetLastAttendanceSyncLogDate(databaseManager).ToString("yyyy-MM-dd HH:mm:ss"))
             If serverResponse(0) Then
@@ -45,7 +49,7 @@ Namespace Controller
                 For i As Integer = 0 To tms.Count - 1
                     Dim loginf As AttendanceFromServer = tms(i)
                     Try
-                        Dim empinfo As Model.Employee = Employee.Find(databaseManager, loginf.id_number)
+                        Dim empinfo As Model.Employee = Await Employee.FindAsync(databaseManager, loginf.id_number, hrmsAPIManager:=hrmsAPIManager)
 
                         If empinfo IsNot Nothing Then
                             Dim attendance As Model.Attendance

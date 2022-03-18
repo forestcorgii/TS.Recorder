@@ -5,6 +5,37 @@ Imports utility_service
 
 Namespace Controller
     Public Class Employee
+        ''' <summary>
+        ''' 
+        ''' </summary>
+        ''' <param name="databaseManager"></param>
+        ''' <param name="ee_id"></param>
+        ''' <param name="shouldCompleteDetail"></param>
+        ''' <param name="hrmsAPIManager">If supplied and there is no existing Employee in the Database, will find Employee using the HRMS API.</param>
+        ''' <returns></returns>
+        Public Shared Async Function FindAsync(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional shouldCompleteDetail As Boolean = False, Optional hrmsAPIManager As hrms_api_service.Manager.API.HRMS = Nothing) As Task(Of Model.Employee)
+            Dim employee As Model.Employee = Nothing
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE ee_id='{0}' LIMIT 1", ee_id))
+                If reader.HasRows Then
+                    reader.Read()
+                    employee = New Model.Employee(reader)
+                End If
+            End Using
+
+            If employee Is Nothing Then
+                Dim employeeFound As hrms_api_service.IInterface.IEmployee = Await hrmsAPIManager.GetEmployeeFromServer(ee_id)
+                If employeeFound IsNot Nothing Then
+                    employee = New Model.Employee(employeeFound)
+                    Save(databaseManager, New Model.Employee(employeeFound))
+                End If
+            End If
+
+            If employee IsNot Nothing AndAlso shouldCompleteDetail Then
+                CompleteDetail(databaseManager, employee)
+            End If
+
+            Return employee
+        End Function
         Public Shared Function Find(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional shouldCompleteDetail As Boolean = False) As Model.Employee
             Dim employee As Model.Employee = Nothing
             Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM employee WHERE ee_id='{0}' LIMIT 1", ee_id))
@@ -38,12 +69,13 @@ Namespace Controller
 
         Public Shared Sub Save(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
             Try
-                Dim command As New MySqlCommand("REPLACE INTO employee (`first_name`,`last_name`,`middle_name`,`ee_id`,job_code) VALUES(?,?,?,?,?)", databaseManager.Connection)
+                Dim command As New MySqlCommand("REPLACE INTO employee (`first_name`,`last_name`,`middle_name`,`ee_id`,job_code,lowest_matching_score) VALUES(?,?,?,?,?,?)", databaseManager.Connection)
                 command.Parameters.AddWithValue("p1", employee.First_Name)
                 command.Parameters.AddWithValue("p2", employee.Last_Name)
                 command.Parameters.AddWithValue("p3", employee.Middle_Name)
                 command.Parameters.AddWithValue("p5", employee.EE_Id)
-                command.Parameters.AddWithValue("p4", employee.Jobcode)
+                command.Parameters.AddWithValue("p4", employee.Job_Code)
+                command.Parameters.AddWithValue("p6", If(employee.Lowest_Matching_Score > 0, employee.Lowest_Matching_Score, 65))
                 command.ExecuteNonQuery()
             Catch ex As Exception
                 Console.WriteLine(ex.Message)

@@ -24,7 +24,6 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         SetupConfiguration()
-        'SetupDGV()
         SetupTimer()
 
 
@@ -72,10 +71,10 @@ Public Class frmMain
 
         Return True
     End Function
-    Private Sub SetupDGV()
+    Private Async Function SetupDGV() As Task
         dgv.Rows.Clear()
         DatabaseManager.Connection.Open()
-        Dim attendances As List(Of Model.Attendance) = Controller.Attendance.GetAttendances(DatabaseManager, completeDetail:=True, limit:=100)
+        Dim attendances As List(Of Model.Attendance) = Await Controller.Attendance.GetAttendancesAsync(DatabaseManager, completeDetail:=True, limit:=100, HRMSAPIManager)
         DatabaseManager.Connection.Close()
 
         For Each attendance As Model.Attendance In attendances
@@ -83,7 +82,7 @@ Public Class frmMain
             dgvr.CreateCells(dgv)
             With dgvr
                 .Cells(0).Value = attendance.Name
-                .Cells(1).Value = attendance.Employee.Jobcode
+                .Cells(1).Value = attendance.Employee.Job_Code
                 .Cells(2).Value = attendance.LogStatus.ToString
                 .Cells(3).Value = attendance.LogDate.ToString("yyyy-MM-dd")
                 .Cells(4).Value = attendance.TimeStamp.ToString("hh:mm tt")
@@ -99,21 +98,16 @@ Public Class frmMain
 
         If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
         Application.DoEvents()
-    End Sub
+    End Function
     Private Sub SetupTimer()
-        tmUserSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
-        tmTimelogSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
-        tmSendTimelog.Interval = TimeSpan.FromMinutes(3).TotalMilliseconds
+        tmFaceProfileSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
+        tmSendAttendance.Interval = TimeSpan.FromMinutes(3).TotalMilliseconds
 
-        tmSendTimelog.Enabled = True
-        tmRefreshStream.Enabled = True
-        tmTimelogSync.Enabled = True
-        tmUserSync.Enabled = True
+        tmSendAttendance.Enabled = True
+        tmFaceProfileSync.Enabled = True
 
-        tmTimelogSync_Tick(Nothing, Nothing)
-
-        tmRefreshStream.Enabled = False
-        tmSendTimelog_Tick(Nothing, Nothing)
+        tmFaceProfileSync_Tick(Nothing, Nothing)
+        tmSendAttendance_Tick(Nothing, Nothing)
 
         Me.Clock1.UtcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(Date.Now)
     End Sub
@@ -163,23 +157,25 @@ Public Class frmMain
 #End Region
 
 #Region "Timers"
-    Private Sub tmSendTimelog_Tick(sender As Object, e As EventArgs) Handles tmSendTimelog.Tick
-        If bgwSendTimelog.IsBusy = False Then
-            bgwSendTimelog.RunWorkerAsync()
+    Private Sub tmSendAttendance_Tick(sender As Object, e As EventArgs) Handles tmSendAttendance.Tick
+        If bgwSendAttendance.IsBusy = False Then
+            bgwSendAttendance.RunWorkerAsync()
         End If
+
+        RecentEE_Ids = New List(Of String) 'NOTE: Clears Recently logged employees.
     End Sub
 
-    Private Sub tmTimelogSync_Tick(sender As Object, e As EventArgs) Handles tmTimelogSync.Tick
+    Private Sub tmFaceProfileSync_Tick(sender As Object, e As EventArgs) Handles tmFaceProfileSync.Tick
         If sender IsNot Nothing Then CloseStream()
 
-        If bgwUserSync.IsBusy = False Then
-            bgwUserSync.RunWorkerAsync()
+        If bgwFaceProfileSync.IsBusy = False Then
+            bgwFaceProfileSync.RunWorkerAsync()
         End If
     End Sub
 #End Region
 
 #Region "Background Tasks"
-    Private Async Sub bgwSendTimelog_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwSendTimelog.DoWork
+    Private Async Sub bgwSendTimelog_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwSendAttendance.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
         Try
@@ -192,7 +188,7 @@ Public Class frmMain
         _databaseManager.Connection.Close()
     End Sub
 
-    Private Async Sub bgwTimelogSync_DoWorkAsync(sender As Object, e As DoWorkEventArgs) Handles bgwTimelogSync.DoWork
+    Private Async Sub bgwTimelogSync_DoWorkAsync(sender As Object, e As DoWorkEventArgs) Handles bgwAttendanceSync.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
         Try
@@ -201,16 +197,16 @@ Public Class frmMain
                        lbLastTimelogSync.Text = "Syncing..."
                    End Sub)
 
-            Dim res As Boolean = Await Controller.Attendance.SyncAttendance(_databaseManager, AttendanceAPIManager)
+            Dim res As Boolean = Await Controller.Attendance.SyncAttendance(_databaseManager, AttendanceAPIManager, HRMSAPIManager)
 
-            Invoke(Sub()
+            Invoke(Async Sub()
                        If res Then
                            lbLastTimelogSync.Text = Now.ToString("yyyy-MM-dd HH:mm:ss")
                        Else : lbLastTimelogSync.Text = "Sync attempt resulted to an Error!"
                        End If
 
                        pbStatus.Visible = False
-                       SetupDGV()
+                       Await SetupDGV()
                        OpenStream()
                    End Sub)
 
@@ -220,7 +216,7 @@ Public Class frmMain
         _databaseManager.Connection.Close()
     End Sub
 
-    Private Async Sub bgwUserSync_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwUserSync.DoWork
+    Private Async Sub bgwFaceProfileSync_DoWork(sender As Object, e As DoWorkEventArgs) Handles bgwFaceProfileSync.DoWork
         Dim _databaseManager As New Manager.Mysql(DatabaseConfiguration)
         _databaseManager.Connection.Open()
         Try
@@ -243,11 +239,9 @@ Public Class frmMain
         _databaseManager.Connection.Close()
 
         Invoke(Sub()
-
-                   If bgwTimelogSync.IsBusy = False Then
-                       bgwTimelogSync.RunWorkerAsync()
+                   If bgwAttendanceSync.IsBusy = False Then
+                       bgwAttendanceSync.RunWorkerAsync()
                    End If
-
                End Sub)
     End Sub
 
@@ -274,8 +268,6 @@ Public Class frmMain
         FaceRecognitionManager.ForceCapture()
         FaceRecognitionManager.StopProcess()
     End Sub
-
-
 #End Region
 
 #Region "Face Validation Handler"
@@ -285,6 +277,7 @@ Public Class frmMain
     Private Sub AccessAdministrator(employee As Model.Employee)
         tbAdminID.Visible = False
         PendingAuth = False
+
 
         If employee.FaceProfile.Admin Then
             Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
@@ -296,12 +289,14 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Function ProcessAttendance(score As Integer, faceSubject As NSubject, employee As Model.Employee) As Boolean
+    Private Function ProcessAttendanceAsync(score As Integer, employee As Model.Employee) As Boolean
         Dim validLog As Boolean = True
-        If score < (FaceRecognitionManager.Settings.MatchingScoreThreshold + 5) Then
+        DatabaseManager.Connection.Open()
+        If score < (employee.Lowest_Matching_Score - 5) Then
             If MessageBox.Show(String.Format("Are You {0}?", employee.FullName), "Matching score is too low.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) = System.Windows.Forms.DialogResult.Yes Then
-                'NOTE: SAVE AS NEW FACE PROFILE
-
+                'NOTE: SAVE AS EMPLOYEE'S LOWEST MATCHING SCORE
+                employee.Lowest_Matching_Score = score
+                Controller.Employee.Save(DatabaseManager, employee)
             Else
                 validLog = False
             End If
@@ -309,61 +304,53 @@ Public Class frmMain
 
         If validLog Then
             Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
-
             Try
-                DatabaseManager.Connection.Open()
-
-                Dim faceProfile As Model.FaceProfile = Controller.FaceProfile.Find(DatabaseManager, employee.EE_Id)
-                faceProfile.FaceImage_1 = faceSubject
-                Controller.FaceProfile.Save(DatabaseManager, faceProfile, FaceProfileAPIManager.Terminal)
 
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
 
-                If employee.Jobcode.ToUpper = "UPSG" Or employee.Jobcode.ToUpper = "UPS" Then
+                If employee.Job_Code.ToUpper = "UPSG" Or employee.Job_Code.ToUpper = "UPS" Then
                     upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
                 End If
 
                 dgv.Rows.Insert(0,
-                                    employee.FullName,
-                                    employee.Jobcode,
-                                    attendance.LogStatus,
-                                    attendance.LogDate.ToString("yyyy-mm-dd"),
-                                    attendance.TimeStamp.ToString("hh:mm tt")
+                                employee.FullName,
+                                employee.Job_Code,
+                                attendance.LogStatus,
+                                attendance.LogDate.ToString("yyyy-mm-dd"),
+                                attendance.TimeStamp.ToString("hh:mm tt")
                     )
 
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
             End Try
-            DatabaseManager.Connection.Close()
-
         End If
+
+        DatabaseManager.Connection.Close()
         Return validLog
     End Function
 
     Private Async Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
         Try
             If e.Status = Neurotec.Biometrics.NBiometricStatus.Ok Then
-                DatabaseManager.Connection.Open()
                 Dim ee_id As String = e.UserID.Split("_")(0)
-                Dim employee As Model.Employee = Controller.Employee.Find(DatabaseManager, ee_id, shouldCompleteDetail:=True)
-                If employee Is Nothing Then
-                    employee = Await HRMSAPIManager.GetEmployeeFromServer(ee_id)
-                End If
+                If Not PendingAuth AndAlso RecentEE_Ids.Contains(ee_id) Then Exit Sub
+
+                DatabaseManager.Connection.Open()
+                Dim employee As Model.Employee = Await Controller.Employee.FindAsync(DatabaseManager, ee_id, shouldCompleteDetail:=True)
                 DatabaseManager.Connection.Close()
 
                 If PendingAuth Then
                     AccessAdministrator(employee)
-                ElseIf RecentEE_Ids.Contains(employee.EE_Id) = False Then
-                    RecentEE_Ids.Insert(0, employee.EE_Id)
+                Else
+                    RecentEE_Ids.Insert(0, ee_id)
                     If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
-                    If ProcessAttendance(e.Score, e.Subject, employee) Then
-                        RecentEE_Ids.Remove(employee.EE_Id)
+                    If ProcessAttendanceAsync(e.Score, employee) = False Then
+                        RecentEE_Ids.Remove(ee_id)
                     End If
                 End If
             End If
         Catch ex As Exception
             Console.WriteLine(ex.Message)
-            'MessageBox.Show(ex.Message, "Error occured while identifying face.", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
         If DatabaseManager.Connection.State = ConnectionState.Open Then
@@ -385,8 +372,8 @@ Public Class frmMain
             pnlError.Visible = True
             changeStatus("Ready.", Color.Firebrick)
         End If
-        tmRefreshStream.Interval = 400
-        tmRefreshStream.Enabled = True
+        tmScanResult.Interval = 400
+        tmScanResult.Enabled = True
     End Sub
 
     Public Sub changeStatus(resultString As String, statBarColor As Color)
@@ -394,12 +381,12 @@ Public Class frmMain
         stState.BackColor = statBarColor
         Application.DoEvents()
     End Sub
-    Private Sub tmRefreshStream_Tick(sender As Object, e As EventArgs) Handles tmRefreshStream.Tick
+    Private Sub tmScanResult_Tick(sender As Object, e As EventArgs) Handles tmScanResult.Tick
         changeStatus("Ready.", Color.FromArgb(37, 40, 45))
 
         pnlSuccess.Visible = False
         pnlError.Visible = False
-        tmRefreshStream.Enabled = False
+        tmScanResult.Enabled = False
     End Sub
 #End Region
 
@@ -412,6 +399,7 @@ Public Class frmMain
         CloseStream()
         OpenStream()
     End Sub
+
 End Class
 
 
