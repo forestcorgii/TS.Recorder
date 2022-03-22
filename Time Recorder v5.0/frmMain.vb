@@ -9,7 +9,6 @@ Imports utility_service
 
 Public Class frmMain
 
-
     Sub New()
 
         ' This call is required by the designer.
@@ -26,6 +25,9 @@ Public Class frmMain
         SetupConfiguration()
         SetupTimer()
 
+        RefreshStream()
+
+        SetupDGV()
 
     End Sub
 
@@ -71,7 +73,7 @@ Public Class frmMain
 
         Return True
     End Function
-    Private Async Function SetupDGV() As Task
+    Private Async Sub SetupDGV()
         dgv.Rows.Clear()
         DatabaseManager.Connection.Open()
         Dim attendances As List(Of Model.Attendance) = Await Controller.Attendance.GetAttendancesAsync(DatabaseManager, completeDetail:=True, limit:=100, HRMSAPIManager)
@@ -98,7 +100,7 @@ Public Class frmMain
 
         If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
         Application.DoEvents()
-    End Function
+    End Sub
     Private Sub SetupTimer()
         tmFaceProfileSync.Interval = TimeSpan.FromHours(1).TotalMilliseconds
         tmSendAttendance.Interval = TimeSpan.FromMinutes(3).TotalMilliseconds
@@ -116,6 +118,9 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
+        'CloseStream()
+        'frmAdministrator.ShowDialog()
+        'OpenStream()
         TryAccess(btnAdministrator)
     End Sub
 
@@ -166,7 +171,9 @@ Public Class frmMain
     End Sub
 
     Private Sub tmFaceProfileSync_Tick(sender As Object, e As EventArgs) Handles tmFaceProfileSync.Tick
-        If sender IsNot Nothing Then CloseStream()
+        If bgwAttendanceSync.IsBusy = False Then
+            bgwAttendanceSync.RunWorkerAsync()
+        End If
 
         If bgwFaceProfileSync.IsBusy = False Then
             bgwFaceProfileSync.RunWorkerAsync()
@@ -197,18 +204,17 @@ Public Class frmMain
                        lbLastTimelogSync.Text = "Syncing..."
                    End Sub)
 
+            'Dim res As Boolean = True
             Dim res As Boolean = Await Controller.Attendance.SyncAttendance(_databaseManager, AttendanceAPIManager, HRMSAPIManager)
 
-            Invoke(Async Sub()
+            Invoke( Sub()
                        If res Then
                            lbLastTimelogSync.Text = Now.ToString("yyyy-MM-dd HH:mm:ss")
                        Else : lbLastTimelogSync.Text = "Sync attempt resulted to an Error!"
                        End If
 
-                       pbStatus.Visible = False
-                       Await SetupDGV()
-                       OpenStream()
-                   End Sub)
+                        pbStatus.Visible = False
+                    End Sub)
 
         Catch ex As Exception
             Invoke(Sub() lbLastTimelogSync.Text = "Sync attempt resulted to an Error!")
@@ -230,6 +236,7 @@ Public Class frmMain
 
             Invoke(Sub()
                        lbLastUserSync.Text = String.Format("Last Synced: {0}   Received: {1} Sent: {2}", Now.ToString("yyyy-MM-dd HH:mm:ss"), userReceived, userSent)
+                       If userReceived > 0 Then RefreshStream()
                    End Sub)
         Catch ex As Exception
             Invoke(Sub() lbLastUserSync.Text = "Sync attempt resulted to an Error!")
@@ -238,11 +245,6 @@ Public Class frmMain
 
         _databaseManager.Connection.Close()
 
-        Invoke(Sub()
-                   If bgwAttendanceSync.IsBusy = False Then
-                       bgwAttendanceSync.RunWorkerAsync()
-                   End If
-               End Sub)
     End Sub
 
 #End Region
@@ -267,6 +269,11 @@ Public Class frmMain
         RemoveHandler FaceRecognitionManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
         FaceRecognitionManager.ForceCapture()
         FaceRecognitionManager.StopProcess()
+    End Sub
+
+    Private Sub RefreshStream()
+        CloseStream()
+        OpenStream()
     End Sub
 #End Region
 
@@ -316,10 +323,10 @@ Public Class frmMain
                                 employee.FullName,
                                 employee.Job_Code,
                                 attendance.LogStatus,
-                                attendance.LogDate.ToString("yyyy-mm-dd"),
+                                attendance.LogDate.ToString("yyyy-MM-dd"),
                                 attendance.TimeStamp.ToString("hh:mm tt")
                     )
-
+                If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
             End Try
@@ -335,15 +342,17 @@ Public Class frmMain
                 Dim ee_id As String = e.UserID.Split("_")(0)
                 If Not PendingAuth AndAlso RecentEE_Ids.Contains(ee_id) Then Exit Sub
 
+                RecentEE_Ids.Insert(0, ee_id)
+                If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
+
                 DatabaseManager.Connection.Open()
                 Dim employee As Model.Employee = Await Controller.Employee.FindAsync(DatabaseManager, ee_id, shouldCompleteDetail:=True)
                 DatabaseManager.Connection.Close()
 
                 If PendingAuth Then
+                    RecentEE_Ids.Remove(ee_id)
                     AccessAdministrator(employee)
                 Else
-                    RecentEE_Ids.Insert(0, ee_id)
-                    If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
                     If ProcessAttendanceAsync(e.Score, employee) = False Then
                         RecentEE_Ids.Remove(ee_id)
                     End If
@@ -396,8 +405,7 @@ Public Class frmMain
     End Enum
 
     Private Sub btnRefreshCamera_Click(sender As Object, e As EventArgs) Handles btnRefreshCamera.Click
-        CloseStream()
-        OpenStream()
+        RefreshStream()
     End Sub
 
 End Class

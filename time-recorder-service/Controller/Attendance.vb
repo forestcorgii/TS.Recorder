@@ -21,6 +21,7 @@ Namespace Controller
                         item.Employee = Controller.Employee.Find(databaseManager, item.EE_Id)
                     Else
                         item.Employee = Await Controller.Employee.FindAsync(databaseManager, item.EE_Id, hrmsAPIManager:=hrmsAPIManager)
+                        Employee.Save(databaseManager, item.Employee)
                     End If
                 Next
             End If
@@ -33,7 +34,7 @@ Namespace Controller
                 If reader.HasRows Then
                     reader.Read()
                     lastAttendanceSyncLogDate = reader.Item("timestamp")
-                Else : lastAttendanceSyncLogDate = Now.AddDays(-4)
+                Else : lastAttendanceSyncLogDate = Now.AddDays(-1)
                 End If
             End Using
 
