@@ -108,7 +108,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\utility-service\utility-service.vbproj">
+    <ProjectReference Include="..\..\..\ddc-utility-service\utility-service\utility-service.vbproj">
       <Project>{d314d3f7-c0e4-4103-b768-e5b299ce14b7}</Project>
       <Name>utility-service</Name>
     </ProjectReference>

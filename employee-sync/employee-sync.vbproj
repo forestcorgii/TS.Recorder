@@ -182,10 +182,6 @@
       <Project>{4fe7cb48-0a3c-4d4f-ac87-c549df7b9310}</Project>
       <Name>time-recorder-service</Name>
     </ProjectReference>
-    <ProjectReference Include="..\utility-service\utility-service.vbproj">
-      <Project>{d314d3f7-c0e4-4103-b768-e5b299ce14b7}</Project>
-      <Name>utility-service</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

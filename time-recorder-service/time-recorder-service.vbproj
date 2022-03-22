@@ -131,6 +131,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ddc-utility-service\utility-service\utility-service.vbproj">
+      <Project>{d314d3f7-c0e4-4103-b768-e5b299ce14b7}</Project>
+      <Name>utility-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\hrms-api-service\hrms-api-service\hrms-api-service.vbproj">
       <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
       <Name>hrms-api-service</Name>
@@ -138,10 +142,6 @@
     <ProjectReference Include="..\face-recognition-service\face-recognition-service.vbproj">
       <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
       <Name>face-recognition-service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\utility-service\utility-service.vbproj">
-      <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
-      <Name>utility-service</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
