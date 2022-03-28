@@ -149,9 +149,9 @@ Partial Class frmMain
         '
         Me.lbCompany.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lbCompany.Font = New System.Drawing.Font("Calibri", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lbCompany.Font = New System.Drawing.Font("Calibri", 24.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lbCompany.ForeColor = System.Drawing.Color.Black
-        Me.lbCompany.Location = New System.Drawing.Point(222, 33)
+        Me.lbCompany.Location = New System.Drawing.Point(220, 33)
         Me.lbCompany.Name = "lbCompany"
         Me.lbCompany.Size = New System.Drawing.Size(512, 58)
         Me.lbCompany.TabIndex = 3
@@ -159,25 +159,24 @@ Partial Class frmMain
         '
         'lbDate
         '
-        Me.lbDate.AutoSize = True
         Me.lbDate.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lbDate.ForeColor = System.Drawing.Color.Black
-        Me.lbDate.Location = New System.Drawing.Point(223, 91)
+        Me.lbDate.Location = New System.Drawing.Point(223, 147)
         Me.lbDate.Name = "lbDate"
-        Me.lbDate.Size = New System.Drawing.Size(43, 19)
+        Me.lbDate.Size = New System.Drawing.Size(228, 19)
         Me.lbDate.TabIndex = 4
         Me.lbDate.Text = "DATE"
         '
         'lbTime
         '
-        Me.lbTime.AutoSize = True
-        Me.lbTime.Font = New System.Drawing.Font("Calibri", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lbTime.Font = New System.Drawing.Font("Calibri", 36.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lbTime.ForeColor = System.Drawing.Color.Black
-        Me.lbTime.Location = New System.Drawing.Point(223, 120)
+        Me.lbTime.Location = New System.Drawing.Point(217, 166)
         Me.lbTime.Name = "lbTime"
-        Me.lbTime.Size = New System.Drawing.Size(50, 23)
+        Me.lbTime.Size = New System.Drawing.Size(234, 59)
         Me.lbTime.TabIndex = 5
         Me.lbTime.Text = "TIME"
+        Me.lbTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'MenuStrip1
         '

@@ -24,6 +24,7 @@ Partial Class frmAdministrator
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAdministrator))
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.tbJobcode = New System.Windows.Forms.TextBox()
         Me.cbActive = New System.Windows.Forms.CheckBox()
@@ -41,11 +42,10 @@ Partial Class frmAdministrator
         Me.tbFirstName = New System.Windows.Forms.TextBox()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.btnOpenBiometricClientSettings = New System.Windows.Forms.Button()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.btnSaveAPI = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.btnUPSGApiTest = New System.Windows.Forms.Button()
         Me.tbUPSGURL = New System.Windows.Forms.TextBox()
         Me.tbUPSGSite = New System.Windows.Forms.TextBox()
         Me.tbUPSGAction = New System.Windows.Forms.TextBox()
@@ -55,6 +55,7 @@ Partial Class frmAdministrator
         Me.Label13 = New System.Windows.Forms.Label()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.btnHRMSApiTest = New System.Windows.Forms.Button()
         Me.tbHRMSToken = New System.Windows.Forms.TextBox()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.tbHRMSWhat = New System.Windows.Forms.TextBox()
@@ -66,6 +67,7 @@ Partial Class frmAdministrator
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.btnFaceProfileApiTest = New System.Windows.Forms.Button()
         Me.tbEmployeeURL = New System.Windows.Forms.TextBox()
         Me.tbEmployeeSite = New System.Windows.Forms.TextBox()
         Me.tbEmployeeTerminal = New System.Windows.Forms.TextBox()
@@ -75,18 +77,20 @@ Partial Class frmAdministrator
         Me.Label17 = New System.Windows.Forms.Label()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.btnAttendanceApiTest = New System.Windows.Forms.Button()
         Me.tbAttendanceURL = New System.Windows.Forms.TextBox()
         Me.Label19 = New System.Windows.Forms.Label()
-        Me.Label8 = New System.Windows.Forms.Label()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.btnOpenBiometricClientSettings = New System.Windows.Forms.Button()
         Me.Panel2.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage3.SuspendLayout()
-        Me.TabPage2.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.TabPage2.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel2
@@ -114,6 +118,18 @@ Partial Class frmAdministrator
         Me.Panel2.Size = New System.Drawing.Size(315, 594)
         Me.Panel2.TabIndex = 3
         '
+        'Label8
+        '
+        Me.Label8.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label8.ForeColor = System.Drawing.Color.Black
+        Me.Label8.Location = New System.Drawing.Point(3, 241)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(302, 183)
+        Me.Label8.TabIndex = 44
+        Me.Label8.Text = "To Register:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1. Input Employee ID." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2. Click the 'Register Face' Button." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3. C" &
+    "lick Save."
+        Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
         'Label20
         '
         Me.Label20.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -133,6 +149,7 @@ Partial Class frmAdministrator
         Me.tbJobcode.Location = New System.Drawing.Point(96, 157)
         Me.tbJobcode.MaxLength = 50
         Me.tbJobcode.Name = "tbJobcode"
+        Me.tbJobcode.ReadOnly = True
         Me.tbJobcode.Size = New System.Drawing.Size(71, 23)
         Me.tbJobcode.TabIndex = 41
         '
@@ -164,7 +181,7 @@ Partial Class frmAdministrator
         Me.btnRegFace.Name = "btnRegFace"
         Me.btnRegFace.Size = New System.Drawing.Size(115, 39)
         Me.btnRegFace.TabIndex = 38
-        Me.btnRegFace.Text = "Register Face Image"
+        Me.btnRegFace.Text = "Register Face Profile"
         Me.btnRegFace.UseVisualStyleBackColor = True
         '
         'btnSaveProfile
@@ -230,6 +247,7 @@ Partial Class frmAdministrator
         Me.tbMiddleName.Location = New System.Drawing.Point(96, 128)
         Me.tbMiddleName.MaxLength = 50
         Me.tbMiddleName.Name = "tbMiddleName"
+        Me.tbMiddleName.ReadOnly = True
         Me.tbMiddleName.Size = New System.Drawing.Size(209, 23)
         Me.tbMiddleName.TabIndex = 22
         '
@@ -252,6 +270,7 @@ Partial Class frmAdministrator
         Me.tbLastName.Location = New System.Drawing.Point(96, 98)
         Me.tbLastName.MaxLength = 50
         Me.tbLastName.Name = "tbLastName"
+        Me.tbLastName.ReadOnly = True
         Me.tbLastName.Size = New System.Drawing.Size(209, 23)
         Me.tbLastName.TabIndex = 9
         '
@@ -274,6 +293,7 @@ Partial Class frmAdministrator
         Me.tbFirstName.Location = New System.Drawing.Point(96, 68)
         Me.tbFirstName.MaxLength = 50
         Me.tbFirstName.Name = "tbFirstName"
+        Me.tbFirstName.ReadOnly = True
         Me.tbFirstName.Size = New System.Drawing.Size(209, 23)
         Me.tbFirstName.TabIndex = 7
         '
@@ -288,7 +308,7 @@ Partial Class frmAdministrator
         Me.TabControl1.Location = New System.Drawing.Point(12, 12)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(618, 626)
+        Me.TabControl1.Size = New System.Drawing.Size(618, 448)
         Me.TabControl1.TabIndex = 46
         '
         'TabPage3
@@ -296,10 +316,398 @@ Partial Class frmAdministrator
         Me.TabPage3.Controls.Add(Me.Panel2)
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(610, 600)
+        Me.TabPage3.Size = New System.Drawing.Size(610, 422)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Profiles"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Controls.Add(Me.btnSaveAPI)
+        Me.TabPage1.Controls.Add(Me.GroupBox2)
+        Me.TabPage1.Controls.Add(Me.GroupBox1)
+        Me.TabPage1.Controls.Add(Me.GroupBox3)
+        Me.TabPage1.Controls.Add(Me.GroupBox4)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Size = New System.Drawing.Size(610, 422)
+        Me.TabPage1.TabIndex = 0
+        Me.TabPage1.Text = "APIs"
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'btnSaveAPI
+        '
+        Me.btnSaveAPI.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnSaveAPI.BackColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
+        Me.btnSaveAPI.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnSaveAPI.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.btnSaveAPI.ForeColor = System.Drawing.Color.White
+        Me.btnSaveAPI.Location = New System.Drawing.Point(503, 393)
+        Me.btnSaveAPI.Name = "btnSaveAPI"
+        Me.btnSaveAPI.Size = New System.Drawing.Size(98, 23)
+        Me.btnSaveAPI.TabIndex = 45
+        Me.btnSaveAPI.Text = "SAVE"
+        Me.btnSaveAPI.UseVisualStyleBackColor = False
+        '
+        'GroupBox2
+        '
+        Me.GroupBox2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox2.Controls.Add(Me.btnUPSGApiTest)
+        Me.GroupBox2.Controls.Add(Me.tbUPSGURL)
+        Me.GroupBox2.Controls.Add(Me.tbUPSGSite)
+        Me.GroupBox2.Controls.Add(Me.tbUPSGAction)
+        Me.GroupBox2.Controls.Add(Me.tbUPSGToken)
+        Me.GroupBox2.Controls.Add(Me.Label11)
+        Me.GroupBox2.Controls.Add(Me.Label12)
+        Me.GroupBox2.Controls.Add(Me.Label13)
+        Me.GroupBox2.Controls.Add(Me.Label14)
+        Me.GroupBox2.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox2.Location = New System.Drawing.Point(6, 266)
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.Size = New System.Drawing.Size(301, 145)
+        Me.GroupBox2.TabIndex = 11
+        Me.GroupBox2.TabStop = False
+        Me.GroupBox2.Text = "UPSG"
+        '
+        'btnUPSGApiTest
+        '
+        Me.btnUPSGApiTest.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.btnUPSGApiTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnUPSGApiTest.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.btnUPSGApiTest.ForeColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
+        Me.btnUPSGApiTest.Location = New System.Drawing.Point(197, 50)
+        Me.btnUPSGApiTest.Name = "btnUPSGApiTest"
+        Me.btnUPSGApiTest.Size = New System.Drawing.Size(98, 23)
+        Me.btnUPSGApiTest.TabIndex = 48
+        Me.btnUPSGApiTest.Text = "Test"
+        Me.btnUPSGApiTest.UseVisualStyleBackColor = False
+        '
+        'tbUPSGURL
+        '
+        Me.tbUPSGURL.Location = New System.Drawing.Point(54, 22)
+        Me.tbUPSGURL.Name = "tbUPSGURL"
+        Me.tbUPSGURL.Size = New System.Drawing.Size(241, 23)
+        Me.tbUPSGURL.TabIndex = 7
+        '
+        'tbUPSGSite
+        '
+        Me.tbUPSGSite.Location = New System.Drawing.Point(54, 80)
+        Me.tbUPSGSite.Name = "tbUPSGSite"
+        Me.tbUPSGSite.Size = New System.Drawing.Size(134, 23)
+        Me.tbUPSGSite.TabIndex = 6
+        '
+        'tbUPSGAction
+        '
+        Me.tbUPSGAction.Location = New System.Drawing.Point(54, 51)
+        Me.tbUPSGAction.Name = "tbUPSGAction"
+        Me.tbUPSGAction.Size = New System.Drawing.Size(134, 23)
+        Me.tbUPSGAction.TabIndex = 5
+        '
+        'tbUPSGToken
+        '
+        Me.tbUPSGToken.Location = New System.Drawing.Point(54, 109)
+        Me.tbUPSGToken.Name = "tbUPSGToken"
+        Me.tbUPSGToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
+        Me.tbUPSGToken.Size = New System.Drawing.Size(134, 23)
+        Me.tbUPSGToken.TabIndex = 4
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(3, 54)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(46, 15)
+        Me.Label11.TabIndex = 3
+        Me.Label11.Text = "Action:"
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(17, 25)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(32, 15)
+        Me.Label12.TabIndex = 2
+        Me.Label12.Text = "URL:"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(17, 83)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(32, 15)
+        Me.Label13.TabIndex = 1
+        Me.Label13.Text = "Site:"
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(6, 112)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(43, 15)
+        Me.Label14.TabIndex = 0
+        Me.Label14.Text = "Token:"
+        '
+        'GroupBox1
+        '
+        Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox1.Controls.Add(Me.btnHRMSApiTest)
+        Me.GroupBox1.Controls.Add(Me.tbHRMSToken)
+        Me.GroupBox1.Controls.Add(Me.Label10)
+        Me.GroupBox1.Controls.Add(Me.tbHRMSWhat)
+        Me.GroupBox1.Controls.Add(Me.tbHRMSSearch)
+        Me.GroupBox1.Controls.Add(Me.tbHRMSURL)
+        Me.GroupBox1.Controls.Add(Me.tbHRMSField)
+        Me.GroupBox1.Controls.Add(Me.Label1)
+        Me.GroupBox1.Controls.Add(Me.Label7)
+        Me.GroupBox1.Controls.Add(Me.Label9)
+        Me.GroupBox1.Controls.Add(Me.Label5)
+        Me.GroupBox1.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox1.Location = New System.Drawing.Point(313, 6)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(285, 182)
+        Me.GroupBox1.TabIndex = 11
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "HRMS"
+        '
+        'btnHRMSApiTest
+        '
+        Me.btnHRMSApiTest.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.btnHRMSApiTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnHRMSApiTest.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.btnHRMSApiTest.ForeColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
+        Me.btnHRMSApiTest.Location = New System.Drawing.Point(181, 58)
+        Me.btnHRMSApiTest.Name = "btnHRMSApiTest"
+        Me.btnHRMSApiTest.Size = New System.Drawing.Size(98, 23)
+        Me.btnHRMSApiTest.TabIndex = 48
+        Me.btnHRMSApiTest.Text = "Test"
+        Me.btnHRMSApiTest.UseVisualStyleBackColor = False
+        '
+        'tbHRMSToken
+        '
+        Me.tbHRMSToken.Location = New System.Drawing.Point(67, 146)
+        Me.tbHRMSToken.Name = "tbHRMSToken"
+        Me.tbHRMSToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
+        Me.tbHRMSToken.Size = New System.Drawing.Size(108, 23)
+        Me.tbHRMSToken.TabIndex = 9
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(18, 149)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(43, 15)
+        Me.Label10.TabIndex = 8
+        Me.Label10.Text = "Token:"
+        '
+        'tbHRMSWhat
+        '
+        Me.tbHRMSWhat.Location = New System.Drawing.Point(67, 59)
+        Me.tbHRMSWhat.Name = "tbHRMSWhat"
+        Me.tbHRMSWhat.Size = New System.Drawing.Size(108, 23)
+        Me.tbHRMSWhat.TabIndex = 13
+        '
+        'tbHRMSSearch
+        '
+        Me.tbHRMSSearch.Location = New System.Drawing.Point(67, 117)
+        Me.tbHRMSSearch.Name = "tbHRMSSearch"
+        Me.tbHRMSSearch.Size = New System.Drawing.Size(108, 23)
+        Me.tbHRMSSearch.TabIndex = 12
+        '
+        'tbHRMSURL
+        '
+        Me.tbHRMSURL.Location = New System.Drawing.Point(67, 26)
+        Me.tbHRMSURL.Name = "tbHRMSURL"
+        Me.tbHRMSURL.Size = New System.Drawing.Size(212, 23)
+        Me.tbHRMSURL.TabIndex = 9
+        '
+        'tbHRMSField
+        '
+        Me.tbHRMSField.Location = New System.Drawing.Point(67, 88)
+        Me.tbHRMSField.Name = "tbHRMSField"
+        Me.tbHRMSField.Size = New System.Drawing.Size(108, 23)
+        Me.tbHRMSField.TabIndex = 11
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(29, 29)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(32, 15)
+        Me.Label1.TabIndex = 8
+        Me.Label1.Text = "URL:"
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(17, 120)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(47, 15)
+        Me.Label7.TabIndex = 10
+        Me.Label7.Text = "Search:"
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(24, 91)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(37, 15)
+        Me.Label9.TabIndex = 8
+        Me.Label9.Text = "Field:"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(23, 62)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(41, 15)
+        Me.Label5.TabIndex = 9
+        Me.Label5.Text = "What:"
+        '
+        'GroupBox3
+        '
+        Me.GroupBox3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox3.Controls.Add(Me.btnFaceProfileApiTest)
+        Me.GroupBox3.Controls.Add(Me.tbEmployeeURL)
+        Me.GroupBox3.Controls.Add(Me.tbEmployeeSite)
+        Me.GroupBox3.Controls.Add(Me.tbEmployeeTerminal)
+        Me.GroupBox3.Controls.Add(Me.tbEmployeeToken)
+        Me.GroupBox3.Controls.Add(Me.Label15)
+        Me.GroupBox3.Controls.Add(Me.Label16)
+        Me.GroupBox3.Controls.Add(Me.Label17)
+        Me.GroupBox3.Controls.Add(Me.Label18)
+        Me.GroupBox3.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox3.Location = New System.Drawing.Point(6, 6)
+        Me.GroupBox3.Name = "GroupBox3"
+        Me.GroupBox3.Size = New System.Drawing.Size(301, 182)
+        Me.GroupBox3.TabIndex = 10
+        Me.GroupBox3.TabStop = False
+        Me.GroupBox3.Text = "Face Profile"
+        '
+        'btnFaceProfileApiTest
+        '
+        Me.btnFaceProfileApiTest.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.btnFaceProfileApiTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnFaceProfileApiTest.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.btnFaceProfileApiTest.ForeColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
+        Me.btnFaceProfileApiTest.Location = New System.Drawing.Point(197, 58)
+        Me.btnFaceProfileApiTest.Name = "btnFaceProfileApiTest"
+        Me.btnFaceProfileApiTest.Size = New System.Drawing.Size(98, 23)
+        Me.btnFaceProfileApiTest.TabIndex = 46
+        Me.btnFaceProfileApiTest.Text = "Test"
+        Me.btnFaceProfileApiTest.UseVisualStyleBackColor = False
+        '
+        'tbEmployeeURL
+        '
+        Me.tbEmployeeURL.Location = New System.Drawing.Point(71, 27)
+        Me.tbEmployeeURL.Name = "tbEmployeeURL"
+        Me.tbEmployeeURL.Size = New System.Drawing.Size(224, 23)
+        Me.tbEmployeeURL.TabIndex = 7
+        '
+        'tbEmployeeSite
+        '
+        Me.tbEmployeeSite.Location = New System.Drawing.Point(71, 89)
+        Me.tbEmployeeSite.Name = "tbEmployeeSite"
+        Me.tbEmployeeSite.Size = New System.Drawing.Size(117, 23)
+        Me.tbEmployeeSite.TabIndex = 6
+        '
+        'tbEmployeeTerminal
+        '
+        Me.tbEmployeeTerminal.Location = New System.Drawing.Point(71, 56)
+        Me.tbEmployeeTerminal.Name = "tbEmployeeTerminal"
+        Me.tbEmployeeTerminal.Size = New System.Drawing.Size(117, 23)
+        Me.tbEmployeeTerminal.TabIndex = 5
+        '
+        'tbEmployeeToken
+        '
+        Me.tbEmployeeToken.Location = New System.Drawing.Point(71, 118)
+        Me.tbEmployeeToken.Name = "tbEmployeeToken"
+        Me.tbEmployeeToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
+        Me.tbEmployeeToken.Size = New System.Drawing.Size(117, 23)
+        Me.tbEmployeeToken.TabIndex = 4
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(6, 59)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(58, 15)
+        Me.Label15.TabIndex = 3
+        Me.Label15.Text = "Terminal:"
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(32, 30)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(32, 15)
+        Me.Label16.TabIndex = 2
+        Me.Label16.Text = "URL:"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(32, 92)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(32, 15)
+        Me.Label17.TabIndex = 1
+        Me.Label17.Text = "Site:"
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(26, 121)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(43, 15)
+        Me.Label18.TabIndex = 0
+        Me.Label18.Text = "Token:"
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox4.Controls.Add(Me.btnAttendanceApiTest)
+        Me.GroupBox4.Controls.Add(Me.tbAttendanceURL)
+        Me.GroupBox4.Controls.Add(Me.Label19)
+        Me.GroupBox4.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox4.Location = New System.Drawing.Point(6, 194)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(592, 66)
+        Me.GroupBox4.TabIndex = 10
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "Attendance"
+        '
+        'btnAttendanceApiTest
+        '
+        Me.btnAttendanceApiTest.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.btnAttendanceApiTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnAttendanceApiTest.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.btnAttendanceApiTest.ForeColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
+        Me.btnAttendanceApiTest.Location = New System.Drawing.Point(488, 25)
+        Me.btnAttendanceApiTest.Name = "btnAttendanceApiTest"
+        Me.btnAttendanceApiTest.Size = New System.Drawing.Size(98, 23)
+        Me.btnAttendanceApiTest.TabIndex = 47
+        Me.btnAttendanceApiTest.Text = "Test"
+        Me.btnAttendanceApiTest.UseVisualStyleBackColor = False
+        '
+        'tbAttendanceURL
+        '
+        Me.tbAttendanceURL.Location = New System.Drawing.Point(54, 26)
+        Me.tbAttendanceURL.Name = "tbAttendanceURL"
+        Me.tbAttendanceURL.Size = New System.Drawing.Size(428, 23)
+        Me.tbAttendanceURL.TabIndex = 9
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(6, 34)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(28, 15)
+        Me.Label19.TabIndex = 8
+        Me.Label19.Text = "URL"
         '
         'TabPage2
         '
@@ -307,7 +715,7 @@ Partial Class frmAdministrator
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(610, 600)
+        Me.TabPage2.Size = New System.Drawing.Size(610, 422)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "General"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -322,357 +730,12 @@ Partial Class frmAdministrator
         Me.btnOpenBiometricClientSettings.Text = "Open Biometric Client Settings"
         Me.btnOpenBiometricClientSettings.UseVisualStyleBackColor = True
         '
-        'TabPage1
-        '
-        Me.TabPage1.Controls.Add(Me.btnSaveAPI)
-        Me.TabPage1.Controls.Add(Me.GroupBox2)
-        Me.TabPage1.Controls.Add(Me.GroupBox1)
-        Me.TabPage1.Controls.Add(Me.GroupBox3)
-        Me.TabPage1.Controls.Add(Me.GroupBox4)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(610, 600)
-        Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "APIs"
-        Me.TabPage1.UseVisualStyleBackColor = True
-        '
-        'btnSaveAPI
-        '
-        Me.btnSaveAPI.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnSaveAPI.BackColor = System.Drawing.Color.FromArgb(CType(CType(110, Byte), Integer), CType(CType(5, Byte), Integer), CType(CType(23, Byte), Integer))
-        Me.btnSaveAPI.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnSaveAPI.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.btnSaveAPI.ForeColor = System.Drawing.Color.White
-        Me.btnSaveAPI.Location = New System.Drawing.Point(503, 571)
-        Me.btnSaveAPI.Name = "btnSaveAPI"
-        Me.btnSaveAPI.Size = New System.Drawing.Size(98, 23)
-        Me.btnSaveAPI.TabIndex = 45
-        Me.btnSaveAPI.Text = "SAVE"
-        Me.btnSaveAPI.UseVisualStyleBackColor = False
-        '
-        'GroupBox2
-        '
-        Me.GroupBox2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox2.Controls.Add(Me.tbUPSGURL)
-        Me.GroupBox2.Controls.Add(Me.tbUPSGSite)
-        Me.GroupBox2.Controls.Add(Me.tbUPSGAction)
-        Me.GroupBox2.Controls.Add(Me.tbUPSGToken)
-        Me.GroupBox2.Controls.Add(Me.Label11)
-        Me.GroupBox2.Controls.Add(Me.Label12)
-        Me.GroupBox2.Controls.Add(Me.Label13)
-        Me.GroupBox2.Controls.Add(Me.Label14)
-        Me.GroupBox2.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox2.Location = New System.Drawing.Point(6, 354)
-        Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(595, 109)
-        Me.GroupBox2.TabIndex = 11
-        Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "UPSG"
-        '
-        'tbUPSGURL
-        '
-        Me.tbUPSGURL.Location = New System.Drawing.Point(54, 65)
-        Me.tbUPSGURL.Name = "tbUPSGURL"
-        Me.tbUPSGURL.Size = New System.Drawing.Size(465, 23)
-        Me.tbUPSGURL.TabIndex = 7
-        '
-        'tbUPSGSite
-        '
-        Me.tbUPSGSite.Location = New System.Drawing.Point(54, 28)
-        Me.tbUPSGSite.Name = "tbUPSGSite"
-        Me.tbUPSGSite.Size = New System.Drawing.Size(78, 23)
-        Me.tbUPSGSite.TabIndex = 6
-        '
-        'tbUPSGAction
-        '
-        Me.tbUPSGAction.Location = New System.Drawing.Point(380, 28)
-        Me.tbUPSGAction.Name = "tbUPSGAction"
-        Me.tbUPSGAction.Size = New System.Drawing.Size(139, 23)
-        Me.tbUPSGAction.TabIndex = 5
-        '
-        'tbUPSGToken
-        '
-        Me.tbUPSGToken.Location = New System.Drawing.Point(194, 28)
-        Me.tbUPSGToken.Name = "tbUPSGToken"
-        Me.tbUPSGToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.tbUPSGToken.Size = New System.Drawing.Size(121, 23)
-        Me.tbUPSGToken.TabIndex = 4
-        '
-        'Label11
-        '
-        Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(321, 36)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(42, 15)
-        Me.Label11.TabIndex = 3
-        Me.Label11.Text = "Action"
-        '
-        'Label12
-        '
-        Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(6, 73)
-        Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(28, 15)
-        Me.Label12.TabIndex = 2
-        Me.Label12.Text = "URL"
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(6, 36)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(28, 15)
-        Me.Label13.TabIndex = 1
-        Me.Label13.Text = "Site"
-        '
-        'Label14
-        '
-        Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(138, 36)
-        Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(39, 15)
-        Me.Label14.TabIndex = 0
-        Me.Label14.Text = "Token"
-        '
-        'GroupBox1
-        '
-        Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox1.Controls.Add(Me.tbHRMSToken)
-        Me.GroupBox1.Controls.Add(Me.Label10)
-        Me.GroupBox1.Controls.Add(Me.tbHRMSWhat)
-        Me.GroupBox1.Controls.Add(Me.tbHRMSSearch)
-        Me.GroupBox1.Controls.Add(Me.tbHRMSURL)
-        Me.GroupBox1.Controls.Add(Me.tbHRMSField)
-        Me.GroupBox1.Controls.Add(Me.Label1)
-        Me.GroupBox1.Controls.Add(Me.Label7)
-        Me.GroupBox1.Controls.Add(Me.Label9)
-        Me.GroupBox1.Controls.Add(Me.Label5)
-        Me.GroupBox1.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox1.Location = New System.Drawing.Point(6, 202)
-        Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(595, 146)
-        Me.GroupBox1.TabIndex = 11
-        Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "HRMS"
-        '
-        'tbHRMSToken
-        '
-        Me.tbHRMSToken.Location = New System.Drawing.Point(67, 92)
-        Me.tbHRMSToken.Name = "tbHRMSToken"
-        Me.tbHRMSToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.tbHRMSToken.Size = New System.Drawing.Size(121, 23)
-        Me.tbHRMSToken.TabIndex = 9
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(11, 100)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(39, 15)
-        Me.Label10.TabIndex = 8
-        Me.Label10.Text = "Token"
-        '
-        'tbHRMSWhat
-        '
-        Me.tbHRMSWhat.Location = New System.Drawing.Point(67, 59)
-        Me.tbHRMSWhat.Name = "tbHRMSWhat"
-        Me.tbHRMSWhat.Size = New System.Drawing.Size(121, 23)
-        Me.tbHRMSWhat.TabIndex = 13
-        '
-        'tbHRMSSearch
-        '
-        Me.tbHRMSSearch.Location = New System.Drawing.Point(424, 59)
-        Me.tbHRMSSearch.Name = "tbHRMSSearch"
-        Me.tbHRMSSearch.Size = New System.Drawing.Size(95, 23)
-        Me.tbHRMSSearch.TabIndex = 12
-        '
-        'tbHRMSURL
-        '
-        Me.tbHRMSURL.Location = New System.Drawing.Point(67, 26)
-        Me.tbHRMSURL.Name = "tbHRMSURL"
-        Me.tbHRMSURL.Size = New System.Drawing.Size(452, 23)
-        Me.tbHRMSURL.TabIndex = 9
-        '
-        'tbHRMSField
-        '
-        Me.tbHRMSField.Location = New System.Drawing.Point(236, 59)
-        Me.tbHRMSField.Name = "tbHRMSField"
-        Me.tbHRMSField.Size = New System.Drawing.Size(121, 23)
-        Me.tbHRMSField.TabIndex = 11
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(6, 34)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(28, 15)
-        Me.Label1.TabIndex = 8
-        Me.Label1.Text = "URL"
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(363, 67)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(43, 15)
-        Me.Label7.TabIndex = 10
-        Me.Label7.Text = "Search"
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(189, 67)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(33, 15)
-        Me.Label9.TabIndex = 8
-        Me.Label9.Text = "Field"
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(6, 67)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(37, 15)
-        Me.Label5.TabIndex = 9
-        Me.Label5.Text = "What"
-        '
-        'GroupBox3
-        '
-        Me.GroupBox3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox3.Controls.Add(Me.tbEmployeeURL)
-        Me.GroupBox3.Controls.Add(Me.tbEmployeeSite)
-        Me.GroupBox3.Controls.Add(Me.tbEmployeeTerminal)
-        Me.GroupBox3.Controls.Add(Me.tbEmployeeToken)
-        Me.GroupBox3.Controls.Add(Me.Label15)
-        Me.GroupBox3.Controls.Add(Me.Label16)
-        Me.GroupBox3.Controls.Add(Me.Label17)
-        Me.GroupBox3.Controls.Add(Me.Label18)
-        Me.GroupBox3.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox3.Location = New System.Drawing.Point(6, 6)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(595, 109)
-        Me.GroupBox3.TabIndex = 10
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Employee"
-        '
-        'tbEmployeeURL
-        '
-        Me.tbEmployeeURL.Location = New System.Drawing.Point(54, 65)
-        Me.tbEmployeeURL.Name = "tbEmployeeURL"
-        Me.tbEmployeeURL.Size = New System.Drawing.Size(465, 23)
-        Me.tbEmployeeURL.TabIndex = 7
-        '
-        'tbEmployeeSite
-        '
-        Me.tbEmployeeSite.Location = New System.Drawing.Point(54, 28)
-        Me.tbEmployeeSite.Name = "tbEmployeeSite"
-        Me.tbEmployeeSite.Size = New System.Drawing.Size(78, 23)
-        Me.tbEmployeeSite.TabIndex = 6
-        '
-        'tbEmployeeTerminal
-        '
-        Me.tbEmployeeTerminal.Location = New System.Drawing.Point(402, 28)
-        Me.tbEmployeeTerminal.Name = "tbEmployeeTerminal"
-        Me.tbEmployeeTerminal.Size = New System.Drawing.Size(117, 23)
-        Me.tbEmployeeTerminal.TabIndex = 5
-        '
-        'tbEmployeeToken
-        '
-        Me.tbEmployeeToken.Location = New System.Drawing.Point(194, 28)
-        Me.tbEmployeeToken.Name = "tbEmployeeToken"
-        Me.tbEmployeeToken.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.tbEmployeeToken.Size = New System.Drawing.Size(121, 23)
-        Me.tbEmployeeToken.TabIndex = 4
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(321, 36)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(54, 15)
-        Me.Label15.TabIndex = 3
-        Me.Label15.Text = "Terminal"
-        '
-        'Label16
-        '
-        Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(6, 73)
-        Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(28, 15)
-        Me.Label16.TabIndex = 2
-        Me.Label16.Text = "URL"
-        '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(6, 36)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(28, 15)
-        Me.Label17.TabIndex = 1
-        Me.Label17.Text = "Site"
-        '
-        'Label18
-        '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(138, 36)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(39, 15)
-        Me.Label18.TabIndex = 0
-        Me.Label18.Text = "Token"
-        '
-        'GroupBox4
-        '
-        Me.GroupBox4.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox4.Controls.Add(Me.tbAttendanceURL)
-        Me.GroupBox4.Controls.Add(Me.Label19)
-        Me.GroupBox4.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox4.Location = New System.Drawing.Point(6, 130)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(595, 66)
-        Me.GroupBox4.TabIndex = 10
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Attendance"
-        '
-        'tbAttendanceURL
-        '
-        Me.tbAttendanceURL.Location = New System.Drawing.Point(54, 26)
-        Me.tbAttendanceURL.Name = "tbAttendanceURL"
-        Me.tbAttendanceURL.Size = New System.Drawing.Size(465, 23)
-        Me.tbAttendanceURL.TabIndex = 9
-        '
-        'Label19
-        '
-        Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(6, 34)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(28, 15)
-        Me.Label19.TabIndex = 8
-        Me.Label19.Text = "URL"
-        '
-        'Label8
-        '
-        Me.Label8.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Black
-        Me.Label8.Location = New System.Drawing.Point(3, 241)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(302, 183)
-        Me.Label8.TabIndex = 44
-        Me.Label8.Text = "To Register:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1. Input Employee ID." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2. If the other fields is not auto supplie" &
-    "d, manually input the other fields." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3. Click the 'Register Face' Button." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4. Cl" &
-    "ick Save."
-        Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
         'frmAdministrator
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Gainsboro
-        Me.ClientSize = New System.Drawing.Size(642, 650)
+        Me.ClientSize = New System.Drawing.Size(642, 472)
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
@@ -682,7 +745,6 @@ Partial Class frmAdministrator
         Me.Panel2.PerformLayout()
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage3.ResumeLayout(False)
-        Me.TabPage2.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
@@ -692,6 +754,7 @@ Partial Class frmAdministrator
         Me.GroupBox3.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
+        Me.TabPage2.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -750,4 +813,8 @@ Partial Class frmAdministrator
     Friend WithEvents Label20 As System.Windows.Forms.Label
     Friend WithEvents tbJobcode As System.Windows.Forms.TextBox
     Friend WithEvents Label8 As System.Windows.Forms.Label
+    Friend WithEvents btnUPSGApiTest As System.Windows.Forms.Button
+    Friend WithEvents btnHRMSApiTest As System.Windows.Forms.Button
+    Friend WithEvents btnFaceProfileApiTest As System.Windows.Forms.Button
+    Friend WithEvents btnAttendanceApiTest As System.Windows.Forms.Button
 End Class

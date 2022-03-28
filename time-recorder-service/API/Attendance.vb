@@ -1,4 +1,5 @@
 ﻿Imports System.Net.Http
+Imports System.Windows.Forms
 Imports MySql.Data.MySqlClient
 Imports Newtonsoft.Json
 Imports utility_service
@@ -12,10 +13,7 @@ Namespace Manager
             Private Client As New HttpClient
 
             Sub New()
-                ApiUrl = Environment.GetEnvironmentVariable("TIMELOG_SYNC_API_URL")
-                If ApiUrl = "" Then
-                    Throw New Exception("Set TIMELOG_SYNC_API_URL.")
-                End If
+
             End Sub
 
             Public Async Function RequestUpdateAsync(logdate As String) As Task(Of Object())
@@ -30,11 +28,20 @@ Namespace Manager
 
                     Dim response As HttpResponseMessage = Await Client.PostAsync(ApiUrl, content)
                     Dim responseString As String = Await response.Content.ReadAsStringAsync()
-
-                    Return {response.IsSuccessStatusCode, responseString}
+                    If response.IsSuccessStatusCode Then
+                        Return {response.IsSuccessStatusCode, responseString}
+                    Else
+                        Select Case response.StatusCode
+                            Case 404
+                                MessageBox.Show("Page not Found.", response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            Case Else
+                                MessageBox.Show(responseString, response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End Select
+                    End If
                 Catch ex As Exception
-                    Return {False, ""}
+                    MessageBox.Show(ex.Message, "RequestUpdateAsync", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
+                Return Nothing
             End Function
 
             Public Async Function SendTimelog(args As String) As Task(Of Object())
@@ -46,11 +53,21 @@ Namespace Manager
 
                     Dim response As HttpResponseMessage = Await Client.PostAsync(ApiUrl, content)
                     Dim responseString As String = Await response.Content.ReadAsStringAsync()
-
-                    Return {response.IsSuccessStatusCode, responseString}
+                    If response.IsSuccessStatusCode Then
+                        Return {response.IsSuccessStatusCode, responseString}
+                    Else
+                        Select Case response.StatusCode
+                            Case 404
+                                MessageBox.Show("Page not Found.", response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            Case Else
+                                MessageBox.Show(responseString, response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End Select
+                    End If
                 Catch ex As Exception
-                    Return {False, ""}
+                    MessageBox.Show(ex.Message, "RequestUpdateAsync", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
+
+                Return Nothing
             End Function
         End Class
 

@@ -152,38 +152,29 @@ Public Class frmAdministrator
     Private Sub btnSaveAPI_Click(sender As Object, e As EventArgs) Handles btnSaveAPI.Click
         If MsgBox("Are You sure you want to save?", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             DatabaseManager.Connection.Open()
-            AttendanceAPIManager.ApiUrl = tbAttendanceURL.Text
+
+            FillAttendance()
             Dim settings As New Model.Settings() With {
                 .Name = "AttendanceAPIManager",
                 .JSON_Arguments = JsonConvert.SerializeObject(AttendanceAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
-            FaceProfileAPIManager.Site = tbEmployeeSite.Text
-            FaceProfileAPIManager.Terminal = tbEmployeeTerminal.Text
-            FaceProfileAPIManager.Url = tbEmployeeURL.Text
-            FaceProfileAPIManager.ApiToken = tbEmployeeToken.Text
+            FillFaceProfile()
             settings = New Model.Settings() With {
                 .Name = "FaceRecognitionAPIManager",
                 .JSON_Arguments = JsonConvert.SerializeObject(FaceProfileAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
-            HRMSAPIManager.Url = tbHRMSURL.Text
-            HRMSAPIManager.APIToken = tbHRMSToken.Text
-            HRMSAPIManager.What = tbHRMSWhat.Text
-            HRMSAPIManager.Search = tbHRMSSearch.Text
-            HRMSAPIManager.Field = tbHRMSField.Text
+            FillHRMS()
             settings = New Model.Settings() With {
                 .Name = "HRMSAPIManager",
                 .JSON_Arguments = JsonConvert.SerializeObject(HRMSAPIManager)
             }
             Controller.Settings.SaveSettings(DatabaseManager, settings)
 
-            UPSGAPIManager.action = tbUPSGAction.Text
-            UPSGAPIManager.token = tbUPSGToken.Text
-            UPSGAPIManager.site = tbUPSGSite.Text
-            UPSGAPIManager.APIUrl = tbUPSGURL.Text
+            FillUPSG()
             settings = New Model.Settings() With {
                 .Name = "UPSGAPIManager",
                 .JSON_Arguments = JsonConvert.SerializeObject(UPSGAPIManager)
@@ -194,7 +185,6 @@ Public Class frmAdministrator
     End Sub
 
     Private Sub btnOpenBiometricClientSettings_Click(sender As Object, e As EventArgs) Handles btnOpenBiometricClientSettings.Click
-        'VerilookManager.SetBiometricClientParams()
         Using _verilookSettings As New face_recognition_service.dlgSettings(FaceRecognitionManager.Settings)
             If _verilookSettings.ShowDialog = System.Windows.Forms.DialogResult.OK Then
                 FaceRecognitionManager.Settings = _verilookSettings.Settings
@@ -204,9 +194,73 @@ Public Class frmAdministrator
                     .JSON_Arguments = JsonConvert.SerializeObject(FaceRecognitionManager.Settings)
                 }
                 Controller.Settings.SaveSettings(DatabaseManager, settings)
-
             End If
         End Using
     End Sub
 
+    Private Sub FillFaceProfile()
+        FaceProfileAPIManager.Site = tbEmployeeSite.Text
+        FaceProfileAPIManager.Terminal = tbEmployeeTerminal.Text
+        FaceProfileAPIManager.Url = tbEmployeeURL.Text
+        FaceProfileAPIManager.ApiToken = tbEmployeeToken.Text
+    End Sub
+
+    Private Sub FillUPSG()
+        UPSGAPIManager.action = tbUPSGAction.Text
+        UPSGAPIManager.token = tbUPSGToken.Text
+        UPSGAPIManager.site = tbUPSGSite.Text
+        UPSGAPIManager.APIUrl = tbUPSGURL.Text
+    End Sub
+
+    Private Sub FillAttendance()
+        AttendanceAPIManager.ApiUrl = tbAttendanceURL.Text
+    End Sub
+
+    Private Sub FillHRMS()
+        HRMSAPIManager.Url = tbHRMSURL.Text
+        HRMSAPIManager.APIToken = tbHRMSToken.Text
+        HRMSAPIManager.What = tbHRMSWhat.Text
+        HRMSAPIManager.Search = tbHRMSSearch.Text
+        HRMSAPIManager.Field = tbHRMSField.Text
+    End Sub
+
+    Private Async Sub btnHRMSApiTest_Click(sender As Object, e As EventArgs) Handles btnHRMSApiTest.Click
+        FillHRMS()
+        Dim employee As hrms_api_service.IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer("DYYJ")
+        If employee IsNot Nothing Then
+            MessageBox.Show("TEST Success.", "HRMS Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            MessageBox.Show("TEST Failed.", "HRMS Test", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+    End Sub
+
+    Private Async Sub btnFaceProfileApiTest_Click(sender As Object, e As EventArgs) Handles btnFaceProfileApiTest.Click
+        FillFaceProfile()
+        Dim result As String = Await FaceProfileAPIManager.SendSyncGETRequest(Now)
+        If result IsNot Nothing Then
+            MessageBox.Show("TEST Success.", "Face Profile Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            MessageBox.Show("TEST Failed.", "Face Profile Test", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+    End Sub
+
+    Private Async Sub btnAttendanceApiTest_Click(sender As Object, e As EventArgs) Handles btnAttendanceApiTest.Click
+        FillAttendance()
+        Dim result As Object() = Await AttendanceAPIManager.RequestUpdateAsync(Now.ToString("yyyy-MM-dd"))
+        If result IsNot Nothing Then
+            MessageBox.Show("TEST Success.", "Attendance Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            MessageBox.Show("TEST Failed.", "Attendance Test", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+    End Sub
+
+    Private Async Sub btnUPSGApiTest_Click(sender As Object, e As EventArgs) Handles btnUPSGApiTest.Click
+        FillUPSG()
+        Dim result As Object() = Await UPSGAPIManager.SendTimelog("TEST", New Date(1997, 12, 13))
+        If result IsNot Nothing Then
+            MessageBox.Show("TEST Success.", "UPSG Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            MessageBox.Show("TEST Failed.", "UPSG Test", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+    End Sub
 End Class

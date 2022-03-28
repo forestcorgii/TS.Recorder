@@ -1,11 +1,12 @@
 ﻿Imports System.Net.Http
+Imports System.Windows.Forms
 Imports Newtonsoft.Json
 
 Namespace Manager
     Namespace API
         Public Class UPSG
             Private Client As New HttpClient
-            Public APIUrl As String '= "http://idcsi-officesuites.com:8082/upsg/bio_api/API_Receiver"
+            Public APIUrl As String
             Public token As String
             Public action As String
             Public site As SiteChoices
@@ -28,14 +29,24 @@ Namespace Manager
 
                     Dim response As HttpResponseMessage = Await Client.PostAsync(APIUrl, content)
                     Dim responseString As String = Await response.Content.ReadAsStringAsync()
-
-                    Return {response.IsSuccessStatusCode, responseString}
+                    If response.IsSuccessStatusCode Then
+                        Return {response.IsSuccessStatusCode, responseString}
+                    Else
+                        Select Case response.StatusCode
+                            Case 404
+                                MessageBox.Show("Page not Found.", response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            Case Else
+                                MessageBox.Show(responseString, response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End Select
+                    End If
                 Catch ex As Exception
-                    Return {False, ""}
+                    MessageBox.Show(ex.Message, "RequestUpdateAsync", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
-            End Function
 
+                Return Nothing
+            End Function
         End Class
+
         Public Enum SiteChoices
             LEYTE
             MANILA

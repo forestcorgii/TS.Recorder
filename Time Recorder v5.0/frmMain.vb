@@ -118,9 +118,9 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
-        'CloseStream()
-        'frmAdministrator.ShowDialog()
-        'OpenStream()
+        CloseStream()
+        frmAdministrator.ShowDialog()
+        OpenStream()
         TryAccess(btnAdministrator)
     End Sub
 
@@ -314,19 +314,22 @@ Public Class frmMain
             Try
 
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
+                If attendance IsNot Nothing Then
 
-                If employee.Job_Code.ToUpper = "UPSG" Or employee.Job_Code.ToUpper = "UPS" Then
-                    upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
-                End If
+                    If employee.Job_Code.ToUpper = "UPSG" Or employee.Job_Code.ToUpper = "UPS" Then
+                        upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
+                    End If
 
-                dgv.Rows.Insert(0,
+                    dgv.Rows.Insert(0,
                                 employee.FullName,
                                 employee.Job_Code,
                                 attendance.LogStatus,
                                 attendance.LogDate.ToString("yyyy-MM-dd"),
                                 attendance.TimeStamp.ToString("hh:mm tt")
                     )
-                If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
+
+                    If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
+                End If
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
             End Try

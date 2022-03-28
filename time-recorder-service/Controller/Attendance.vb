@@ -91,6 +91,7 @@ Namespace Controller
                 Dim attendanceStatus As Byte = 0
                 Dim attendanceDate As Date = Now
                 Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee.EE_Id)
+                If (Now - currentAttendance.TimeStamp).TotalMinutes < 2 Then Return Nothing 'IF CURRENT ATTENDANCE IS LESS THAN 2MINS FROM NOW THEN DISREGARD ATTENDANCE ENTRY.
 
                 If currentAttendance.LogDate.ToString("yyyyMMdd HHmmss") <> "00010101 000000" Then
                     attendanceStatus = GetNextAttendanceStatus(currentAttendance.TimeStamp, currentAttendance.LogStatus)
@@ -123,6 +124,8 @@ Namespace Controller
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Error occured while saving the time log.", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
+
+            Return Nothing
         End Function
 
 
