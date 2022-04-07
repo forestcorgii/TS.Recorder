@@ -46,7 +46,7 @@ Public Class frmMain
             For i As Integer = 0 To employees.Count - 1
                 Dim employee As Model.FaceProfile = employees(i)
                 Try
-                    Dim employeeFound As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer(employee.EE_Id)
+                    Dim employeeFound As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer_NoPrompt(employee.EE_Id)
                     If employeeFound IsNot Nothing Then
                         Controller.Employee.Save(DatabaseManager, New Model.Employee(employeeFound))
                     End If
@@ -56,7 +56,7 @@ Public Class frmMain
                                lbStatus.Text = String.Format("Updating {1} of {2}... Employee ID: {0}", employee.EE_Id, i + 1, employees.Count)
                            End Sub)
                 Catch ex As Exception
-                    MessageBox.Show(ex.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    'MessageBox.Show(ex.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Console.WriteLine(ex.Message)
                 End Try
             Next

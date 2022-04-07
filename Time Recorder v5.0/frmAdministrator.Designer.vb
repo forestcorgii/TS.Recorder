@@ -97,13 +97,13 @@ Partial Class frmAdministrator
         '
         Me.Panel2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.Panel2.Controls.Add(Me.btnSaveProfile)
         Me.Panel2.Controls.Add(Me.Label8)
         Me.Panel2.Controls.Add(Me.Label20)
         Me.Panel2.Controls.Add(Me.tbJobcode)
         Me.Panel2.Controls.Add(Me.cbActive)
         Me.Panel2.Controls.Add(Me.lbMessage2)
         Me.Panel2.Controls.Add(Me.btnRegFace)
-        Me.Panel2.Controls.Add(Me.btnSaveProfile)
         Me.Panel2.Controls.Add(Me.cbAdmin)
         Me.Panel2.Controls.Add(Me.tbEmployeeNumber)
         Me.Panel2.Controls.Add(Me.Label6)
@@ -115,7 +115,7 @@ Partial Class frmAdministrator
         Me.Panel2.Controls.Add(Me.tbFirstName)
         Me.Panel2.Location = New System.Drawing.Point(3, 3)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(315, 594)
+        Me.Panel2.Size = New System.Drawing.Size(315, 413)
         Me.Panel2.TabIndex = 3
         '
         'Label8
@@ -124,7 +124,7 @@ Partial Class frmAdministrator
         Me.Label8.ForeColor = System.Drawing.Color.Black
         Me.Label8.Location = New System.Drawing.Point(3, 241)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(302, 183)
+        Me.Label8.Size = New System.Drawing.Size(302, 94)
         Me.Label8.TabIndex = 44
         Me.Label8.Text = "To Register:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1. Input Employee ID." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2. Click the 'Register Face' Button." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3. C" &
     "lick Save."
@@ -188,9 +188,9 @@ Partial Class frmAdministrator
         '
         Me.btnSaveProfile.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnSaveProfile.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSaveProfile.Location = New System.Drawing.Point(158, 549)
+        Me.btnSaveProfile.Location = New System.Drawing.Point(160, 369)
         Me.btnSaveProfile.Name = "btnSaveProfile"
-        Me.btnSaveProfile.Size = New System.Drawing.Size(145, 35)
+        Me.btnSaveProfile.Size = New System.Drawing.Size(145, 41)
         Me.btnSaveProfile.TabIndex = 34
         Me.btnSaveProfile.Text = "Save Changes"
         Me.btnSaveProfile.UseVisualStyleBackColor = True
@@ -308,7 +308,7 @@ Partial Class frmAdministrator
         Me.TabControl1.Location = New System.Drawing.Point(12, 12)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(618, 448)
+        Me.TabControl1.Size = New System.Drawing.Size(618, 445)
         Me.TabControl1.TabIndex = 46
         '
         'TabPage3
@@ -316,7 +316,7 @@ Partial Class frmAdministrator
         Me.TabPage3.Controls.Add(Me.Panel2)
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(610, 422)
+        Me.TabPage3.Size = New System.Drawing.Size(610, 419)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Profiles"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -331,7 +331,7 @@ Partial Class frmAdministrator
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(610, 422)
+        Me.TabPage1.Size = New System.Drawing.Size(610, 419)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "APIs"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -343,7 +343,7 @@ Partial Class frmAdministrator
         Me.btnSaveAPI.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnSaveAPI.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold)
         Me.btnSaveAPI.ForeColor = System.Drawing.Color.White
-        Me.btnSaveAPI.Location = New System.Drawing.Point(503, 393)
+        Me.btnSaveAPI.Location = New System.Drawing.Point(503, 390)
         Me.btnSaveAPI.Name = "btnSaveAPI"
         Me.btnSaveAPI.Size = New System.Drawing.Size(98, 23)
         Me.btnSaveAPI.TabIndex = 45
@@ -715,7 +715,7 @@ Partial Class frmAdministrator
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(610, 422)
+        Me.TabPage2.Size = New System.Drawing.Size(610, 419)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "General"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -735,10 +735,11 @@ Partial Class frmAdministrator
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Gainsboro
-        Me.ClientSize = New System.Drawing.Size(642, 472)
+        Me.ClientSize = New System.Drawing.Size(642, 469)
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
+        Me.MinimumSize = New System.Drawing.Size(658, 508)
         Me.Name = "frmAdministrator"
         Me.Text = "Administrator"
         Me.Panel2.ResumeLayout(False)

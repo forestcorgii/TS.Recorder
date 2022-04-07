@@ -49,7 +49,7 @@ Namespace Model
         End Sub
 
         Sub New(emp As IEmployee)
-            EE_Id = emp.idno
+            EE_Id = emp.ee_id
 
             First_Name = emp.first_name
             Last_Name = emp.last_name

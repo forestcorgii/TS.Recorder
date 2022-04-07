@@ -118,9 +118,9 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
-        CloseStream()
-        frmAdministrator.ShowDialog()
-        OpenStream()
+        'CloseStream()
+        'frmAdministrator.ShowDialog()
+        'OpenStream()
         TryAccess(btnAdministrator)
     End Sub
 
@@ -296,7 +296,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Function ProcessAttendanceAsync(score As Integer, employee As Model.Employee) As Boolean
+    Private Function ProcessAttendance(score As Integer, employee As Model.Employee) As Boolean
         Dim validLog As Boolean = True
         DatabaseManager.Connection.Open()
         If score < (employee.Lowest_Matching_Score - 5) Then
@@ -356,7 +356,7 @@ Public Class frmMain
                     RecentEE_Ids.Remove(ee_id)
                     AccessAdministrator(employee)
                 Else
-                    If ProcessAttendanceAsync(e.Score, employee) = False Then
+                    If ProcessAttendance(e.Score, employee) = False Then
                         RecentEE_Ids.Remove(ee_id)
                     End If
                 End If

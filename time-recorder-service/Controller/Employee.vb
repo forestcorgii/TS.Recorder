@@ -1,7 +1,4 @@
-﻿Imports MySql.Data
-Imports MySql.Data.MySqlClient
-Imports Newtonsoft.Json
-Imports utility_service
+﻿Imports MySql.Data.MySqlClient
 
 Namespace Controller
     Public Class Employee
@@ -23,11 +20,15 @@ Namespace Controller
             End Using
 
             If employee Is Nothing Then
-                Dim employeeFound As hrms_api_service.IInterface.IEmployee = Await hrmsAPIManager.GetEmployeeFromServer(ee_id)
-                If employeeFound IsNot Nothing Then
-                    employee = New Model.Employee(employeeFound)
-                    Save(databaseManager, New Model.Employee(employeeFound))
-                End If
+                Try
+                    Dim employeeFound As hrms_api_service.IInterface.IEmployee = Await hrmsAPIManager.GetEmployeeFromServer_NoPrompt(ee_id)
+                    If employeeFound IsNot Nothing Then
+                        employee = New Model.Employee(employeeFound)
+                        Save(databaseManager, New Model.Employee(employeeFound))
+                    End If
+                Catch ex As Exception
+                    Console.WriteLine(ex.Message)
+                End Try
             End If
 
             If employee IsNot Nothing AndAlso shouldCompleteDetail Then
