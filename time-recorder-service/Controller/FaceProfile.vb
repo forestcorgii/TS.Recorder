@@ -64,16 +64,18 @@ Namespace Controller
         Public Shared Async Function SaveToServer(databaseManager As utility_service.Manager.Mysql, employeeAPIManager As face_recognition_service.Manager.API.FaceProfile) As Task(Of Integer)
             Dim EmployeeRecords As New List(Of Model.FaceProfile)
 
-            Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM face_profile_sync_log WHERE `request_type` = 'POST' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;")
-                While reader.Read
-                    lastSynced = reader.Item("exec_datetime")
-                End While
-            End Using
+            Dim success As Boolean = False
+            Dim postMessage As String = ""
+            Dim startTimestamp As Date = Now
 
-            Dim success As Boolean = True
-            Dim postMessage As String = "POST Request Succeeded"
             Try 'POST
+                Dim lastSynced As Date = Nothing
+                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader("SELECT * FROM face_profile_sync_log WHERE `request_type` = 'POST' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;")
+                    While reader.Read
+                        lastSynced = reader.Item("exec_datetime")
+                    End While
+                End Using
+
                 'get newly Updated USERS
                 Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM face_profile WHERE `owner` = '{0}' AND `date_modified` > '{1}'", employeeAPIManager.Terminal, lastSynced.ToString("yyyy-MM-dd HH:mm:ss")))
                     While reader.Read
@@ -82,8 +84,6 @@ Namespace Controller
                 End Using
 
                 If EmployeeRecords.Count > 0 Then
-                    postMessage = "Employees Sent Count: " & EmployeeRecords.Count
-
                     Dim postData As New FaceProfileSyncPostData
                     With postData
                         .site = employeeAPIManager.Site
@@ -92,17 +92,18 @@ Namespace Controller
                     End With
                     Dim dataString As String = JsonConvert.SerializeObject(postData, Formatting.Indented)
 
-                    Await employeeAPIManager.SendSyncPOSTRequest(dataString)
+                    Await employeeAPIManager.SendSyncPOSTRequest_NoPrompt(dataString)
+
+                    postMessage = "Employees Sent Count: " & EmployeeRecords.Count
+                    success = True
+                Else
+                    postMessage = "No newly registered Employee."
                 End If
             Catch ex As Exception
-                postMessage = "POST Request Failed due to an Exception"
-                success = False
-                Return 0
+                postMessage = "POST Request Failed due to an Exception: " & ex.Message
             End Try
 
-            If success Then
-                databaseManager.ExecuteNonQuery(String.Format("INSERT INTO face_profile_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", postMessage, "POST", success))
-            End If
+            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO face_profile_sync_log (`description`,`request_type`,`succeeded`,`exec_datetime`) VALUES ('{0}','{1}',{2},'{3:yyyy-MM-dd HH:mm:ss}');", postMessage, "POST", success, startTimestamp))
 
             Return EmployeeRecords.Count
         End Function
@@ -110,34 +111,36 @@ Namespace Controller
         Public Shared Async Function CollectFromServer(databaseManager As utility_service.Manager.Mysql, employeeAPIManager As face_recognition_service.Manager.API.FaceProfile) As Task(Of Integer)
             'get last GET Sync Request date
             Dim EmployeeRecords As New List(Of Model.FaceProfile)
-            Dim lastSynced As Date = Nothing
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM face_profile_sync_log WHERE `request_type` = 'GET' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;"))
-                While reader.Read
-                    lastSynced = reader.Item("exec_datetime")
-                End While
-            End Using
 
-            Dim success As Boolean = True
-            Dim getMessage As String = "GET Request Succeeded"
+            Dim success As Boolean = False
+            Dim getMessage As String = ""
 
+            Dim startTimestamp As Date = Now
             Try 'GET
-                EmployeeRecords = JsonConvert.DeserializeObject(Of Model.FaceProfile())(Await employeeAPIManager.SendSyncGETRequest(lastSynced)).ToList
+                Dim lastSynced As Date = Nothing
+                Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(String.Format("SELECT * FROM face_profile_sync_log WHERE `request_type` = 'GET' AND `succeeded` = 1 ORDER BY `exec_datetime` DESC LIMIT 1;"))
+                    While reader.Read
+                        lastSynced = reader.Item("exec_datetime")
+                    End While
+                End Using
+
+                EmployeeRecords = JsonConvert.DeserializeObject(Of Model.FaceProfile())(Await employeeAPIManager.SendSyncGETRequest_NoPrompt(lastSynced)).ToList
                 If EmployeeRecords.Count > 0 Then
                     For i As Integer = 0 To EmployeeRecords.Count - 1
                         Save(databaseManager, EmployeeRecords(i))
-
                     Next
+                    success = True
+                    getMessage = "Received Employee Count: " & EmployeeRecords.Count
+                Else
+                    getMessage = "No Employee received."
                 End If
-                success = True
             Catch ex As Exception
                 success = False
-                getMessage = "GET Request Failed due to an Exception"
+                getMessage = "GET Request Failed due to an Exception: " & ex.Message
                 Console.WriteLine(ex.Message)
             End Try
 
-            If success Then
-                databaseManager.ExecuteNonQuery(String.Format("INSERT INTO face_profile_sync_log (`description`,`request_type`,`succeeded`) VALUES ('{0}','{1}',{2});", getMessage, "GET", success))
-            End If
+            databaseManager.ExecuteNonQuery(String.Format("INSERT INTO face_profile_sync_log (`description`,`request_type`,`succeeded`,`exec_datetime`) VALUES ('{0}','{1}',{2},'{3:yyyy-MM-dd HH:mm:ss}');", getMessage, "GET", success, startTimestamp))
 
             Return EmployeeRecords.Count
         End Function

@@ -17,8 +17,8 @@ Namespace Controller
                 For Each log As Model.UPSG In logs
                     Try
                         Dim res = Await upsgAPIManager.SendTimelog(log.EE_Id, log.TimeStamp)
-                        'MsgBox(res(1) & res(0))
                         If res(0) Then
+                            'MsgBox(res(1) & res(0))
                             DeleteLogFromQueue(databaseManager, log)
                         End If
                     Catch ex As Exception
@@ -29,7 +29,7 @@ Namespace Controller
                 Return True
             Catch ex As Exception
                 'MsgBox(ex.Message, Title:="outer send exception")
-                'Console.WriteLine(ex.Message)
+                Console.WriteLine(ex.Message)
             End Try
 
             Return False

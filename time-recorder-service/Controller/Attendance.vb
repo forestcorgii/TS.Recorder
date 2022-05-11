@@ -42,7 +42,8 @@ Namespace Controller
         End Function
         Public Shared Async Function SyncAttendance(databaseManager As utility_service.Manager.Mysql, AttendanceAPIManager As Manager.API.Attendance, hrmsAPIManager As hrms_api_service.Manager.API.HRMS) As Task(Of Boolean)
             Dim tms As New List(Of AttendanceFromServer)
-            Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync(GetLastAttendanceSyncLogDate(databaseManager).ToString("yyyy-MM-dd HH:mm:ss"))
+            Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync_NoPrompt(GetLastAttendanceSyncLogDate(databaseManager).ToString("yyyy-MM-dd HH:mm:ss"))
+            'Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync_NoPrompt("2022-04-28 01:00:00")
             If serverResponse(0) Then
 
                 tms = JsonConvert.DeserializeObject(serverResponse(1), tms.GetType)
@@ -90,7 +91,7 @@ Namespace Controller
             Try
                 Dim attendanceStatus As Byte = 0
                 Dim attendanceDate As Date = Now
-                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, employee.EE_Id)
+                Dim currentAttendance As Model.Attendance = GetLatestAttendance(databaseManager, employee.EE_Id)
                 If (Now - currentAttendance.TimeStamp).TotalMinutes < 2 Then Return Nothing 'IF CURRENT ATTENDANCE IS LESS THAN 2MINS FROM NOW THEN DISREGARD ATTENDANCE ENTRY.
 
                 If currentAttendance.LogDate.ToString("yyyyMMdd HHmmss") <> "00010101 000000" Then
@@ -99,13 +100,13 @@ Namespace Controller
 
                 If attendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso currentAttendance.LogStatus = AttendanceStatusChoices.TIME_IN Then '
                     Dim timeDifference As Integer = (Now - currentAttendance.TimeStamp).TotalHours
-                    Dim dayDifference As Integer = (CInt(attendanceDate.ToString("MMdd")) - CInt(currentAttendance.LogDate.ToString("MMdd")))
-                    If (timeDifference <= 24 AndAlso dayDifference > 0) Then
+                    Dim dayDifference As Integer = CInt(attendanceDate.ToString("yyyyMMdd")) - CInt(currentAttendance.LogDate.ToString("yyyyMMdd"))
+                    If (timeDifference <= 24 AndAlso dayDifference > 0) Then 'If the timedifference exceeds 24 hours and the day change, use the previus day
                         attendanceDate = attendanceDate.AddDays(-dayDifference)
                     End If
                 End If
 
-                If attendanceStatus = 0 AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider it as the next day.
+                If attendanceStatus = 0 AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider the logdate as the next day.
                     attendanceDate = attendanceDate.AddDays(1)
                 End If
 
@@ -120,7 +121,7 @@ Namespace Controller
                 InsertAttendanceSendQueue(databaseManager, newAttendance)
                 InsertAttendance(databaseManager, newAttendance, employee)
 
-                Return GetAttendance(databaseManager, employee.EE_Id)
+                Return GetLatestAttendance(databaseManager, employee.EE_Id)
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Error occured while saving the time log.", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
@@ -137,13 +138,13 @@ Namespace Controller
             If attendance.LogStatus = 0 Then
                 apiLogDetail.Timein = ToTimeString(Now)
             ElseIf attendance.LogStatus = 1 Then
-                Dim previousAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.EE_Id, AttendanceStatusChoices.TIME_IN)
+                Dim previousAttendance As Model.Attendance = GetLatestAttendance(databaseManager, attendance.EE_Id, AttendanceStatusChoices.TIME_IN)
                 apiLogDetail.Timein = ToTimeString(previousAttendance.TimeStamp)
                 apiLogDetail.Timeout = ToTimeString(Now)
             End If
             Return apiLogDetail
         End Function
-        Private Shared Function GetAttendance(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
+        Private Shared Function GetLatestAttendance(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
             Dim attendance As New Model.Attendance
             Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' ORDER BY `time` DESC LIMIT 1", ee_id)
 
@@ -161,45 +162,78 @@ Namespace Controller
             End Using
             Return attendance
         End Function
+        Private Shared Function GetAttendance(databaseManager As utility_service.Manager.Mysql, attendanceName As String) As Model.Attendance
+            Dim attendance As Model.Attendance = Nothing
+            Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `attendance_name`='{0}' LIMIT 1", attendanceName)
+
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(query)
+                If reader.HasRows Then
+                    reader.Read()
+                    attendance = New Model.Attendance
+                    attendance.EE_Id = reader.Item("ee_id")
+                    attendance.LogStatus = reader.Item("logstatus")
+                    attendance.SendStatus = reader.Item("status")
+                    attendance.TimeStamp = Date.Parse(reader.Item("time"))
+                    attendance.LogDate = Date.Parse(reader.Item("date"))
+                End If
+            End Using
+
+            Return attendance
+        End Function
 
         Private Shared Sub InsertAttendance(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance, employee As Model.Employee)
-            Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
+            Try
+                Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.Attendance_Name)
+                If currentAttendance Is Nothing OrElse currentAttendance.TimeStamp <> attendance.TimeStamp Then
+                    Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
+                    Dim command As New MySqlCommand(query, databaseManager.Connection)
+                    command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
+                    command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
+                    command.Parameters.AddWithValue("date", attendance.LogDate)
+                    command.Parameters.AddWithValue("name", employee.FullName)
+                    command.Parameters.AddWithValue("time", attendance.TimeStamp.ToString("yyyy-MM-dd HH:mm:00"))
+                    command.Parameters.AddWithValue("logstatus", attendance.LogStatus)
+                    command.Parameters.AddWithValue("status", 0)
+                    command.ExecuteNonQuery()
 
-            Dim command As New MySqlCommand(query, databaseManager.Connection)
-            command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
-            command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
-            command.Parameters.AddWithValue("date", attendance.LogDate)
-            command.Parameters.AddWithValue("name", employee.FullName)
-            command.Parameters.AddWithValue("time", attendance.TimeStamp.ToString("yyyy-MM-dd HH:mm:00"))
-            command.Parameters.AddWithValue("logstatus", attendance.LogStatus)
-            command.Parameters.AddWithValue("status", 0)
-
-            command.ExecuteNonQuery()
+                    If currentAttendance IsNot Nothing AndAlso currentAttendance.TimeStamp <> attendance.TimeStamp Then
+                        command = New MySqlCommand("insert into `attendance_send_log` (argument_summary)values(@argument_summary)", databaseManager.Connection)
+                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} log was overwritten: from {1:yyyy-MM-dd HH:mm:ss} to {2:yyyy-MM-dd HH:mm:ss}.", attendance.EE_Id, currentAttendance.TimeStamp, attendance.TimeStamp))
+                        command.ExecuteNonQuery()
+                    End If
+                End If
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+            End Try
         End Sub
 
         Private Shared Sub InsertAttendanceSendQueue(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance)
-            Dim apiLogDetail As AttendanceAPIPostData = FillAttendanceAPIPostData(databaseManager, attendance)
+            Try
+                Dim apiLogDetail As AttendanceAPIPostData = FillAttendanceAPIPostData(databaseManager, attendance)
 
-            Dim args = JsonConvert.SerializeObject(apiLogDetail, Formatting.Indented)
+                Dim args = JsonConvert.SerializeObject(apiLogDetail, Formatting.Indented)
 
-            Dim command As New MySqlCommand("insert into `attendance_send_queue` (argument,argument_summary)values(@argument,@argument_summary)", databaseManager.Connection)
-            command.Parameters.AddWithValue("argument", args)
-            command.Parameters.AddWithValue("argument_summary", String.Format("{0} worked from {1} to {2}.", apiLogDetail.EmployeeID, apiLogDetail.Timein, apiLogDetail.Timeout))
+                Dim command As New MySqlCommand("insert into `attendance_send_queue` (argument,argument_summary)values(@argument,@argument_summary)", databaseManager.Connection)
+                command.Parameters.AddWithValue("argument", args)
+                command.Parameters.AddWithValue("argument_summary", String.Format("{0} worked from {1} to {2} in logdate {3}.", apiLogDetail.EmployeeID, apiLogDetail.Timein, apiLogDetail.Timeout, apiLogDetail.LogDate))
 
-            command.ExecuteNonQuery()
+                command.ExecuteNonQuery()
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+            End Try
         End Sub
 
         Private Shared Function GetNextAttendanceStatus(timeIn As Date, logStatus As AttendanceStatusChoices) As AttendanceStatusChoices
             Dim nextLogStatus As AttendanceStatusChoices = AttendanceStatusChoices.TIME_IN
             Select Case logStatus
                 Case AttendanceStatusChoices.TIME_IN
-                    If (Now - timeIn).TotalHours >= 14 Then 'General.Math.Between((Now - timeIn).TotalHours, 14, Integer.MaxValue) Then 'And Now.Day <> TimeIn.Day Then
+                    If (Now - timeIn).TotalHours > 15 And Now.Day <> timeIn.Day Then
                         nextLogStatus = 0
                     Else
                         nextLogStatus = 1
                     End If
                 Case AttendanceStatusChoices.TIME_OUT
-                    If (Now - timeIn).TotalHours >= 8 Then 'And val <= max General.Math.Between((Now - timeIn).TotalHours, 8, Integer.MaxValue) Then
+                    If (Now - timeIn).TotalHours >= 8 Then
                         nextLogStatus = 0
                     Else
                         nextLogStatus = 1

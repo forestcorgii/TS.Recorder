@@ -68,6 +68,8 @@ Partial Class frmMain
         Me.pnlSuccess = New System.Windows.Forms.Panel()
         Me.pnlError = New System.Windows.Forms.Panel()
         Me.tmScanResult = New System.Windows.Forms.Timer(Me.components)
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.lbFaceCount = New System.Windows.Forms.Label()
         Me.stState.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         CType(Me.dgv, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -82,7 +84,7 @@ Partial Class frmMain
         Me.stState.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.stState.Location = New System.Drawing.Point(0, 674)
         Me.stState.Name = "stState"
-        Me.stState.Size = New System.Drawing.Size(1123, 30)
+        Me.stState.Size = New System.Drawing.Size(1345, 30)
         Me.stState.TabIndex = 0
         Me.stState.Text = "StatusStrip1"
         '
@@ -153,7 +155,7 @@ Partial Class frmMain
         Me.lbCompany.ForeColor = System.Drawing.Color.Black
         Me.lbCompany.Location = New System.Drawing.Point(220, 33)
         Me.lbCompany.Name = "lbCompany"
-        Me.lbCompany.Size = New System.Drawing.Size(512, 58)
+        Me.lbCompany.Size = New System.Drawing.Size(734, 58)
         Me.lbCompany.TabIndex = 3
         Me.lbCompany.Text = "COMPANY INC."
         '
@@ -187,7 +189,7 @@ Partial Class frmMain
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(6, 2, 2, 2)
-        Me.MenuStrip1.Size = New System.Drawing.Size(1123, 26)
+        Me.MenuStrip1.Size = New System.Drawing.Size(1345, 26)
         Me.MenuStrip1.TabIndex = 11
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -205,7 +207,6 @@ Partial Class frmMain
         Me.tbAdminID.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(40, Byte), Integer), CType(CType(45, Byte), Integer))
         Me.tbAdminID.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.tbAdminID.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        Me.tbAdminID.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.tbAdminID.ForeColor = System.Drawing.Color.White
         Me.tbAdminID.MaxLength = 4
         Me.tbAdminID.Name = "tbAdminID"
@@ -275,7 +276,7 @@ Partial Class frmMain
         Me.dgv.RowsDefaultCellStyle = DataGridViewCellStyle7
         Me.dgv.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgv.Size = New System.Drawing.Size(1106, 410)
+        Me.dgv.Size = New System.Drawing.Size(1328, 410)
         Me.dgv.TabIndex = 7
         '
         'empName
@@ -339,11 +340,11 @@ Partial Class frmMain
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.ForeColor = System.Drawing.Color.Black
-        Me.Label1.Location = New System.Drawing.Point(304, 644)
+        Me.Label1.Location = New System.Drawing.Point(271, 644)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(79, 19)
+        Me.Label1.Size = New System.Drawing.Size(128, 19)
         Me.Label1.TabIndex = 12
-        Me.Label1.Text = "User Sync:"
+        Me.Label1.Text = "Face Profile Sync:"
         '
         'lbLastUserSync
         '
@@ -351,7 +352,7 @@ Partial Class frmMain
         Me.lbLastUserSync.AutoSize = True
         Me.lbLastUserSync.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lbLastUserSync.ForeColor = System.Drawing.Color.Black
-        Me.lbLastUserSync.Location = New System.Drawing.Point(389, 644)
+        Me.lbLastUserSync.Location = New System.Drawing.Point(405, 644)
         Me.lbLastUserSync.Name = "lbLastUserSync"
         Me.lbLastUserSync.Size = New System.Drawing.Size(345, 19)
         Me.lbLastUserSync.TabIndex = 13
@@ -387,7 +388,7 @@ Partial Class frmMain
         'pbStatus
         '
         Me.pbStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.pbStatus.Location = New System.Drawing.Point(913, 644)
+        Me.pbStatus.Location = New System.Drawing.Point(1135, 644)
         Me.pbStatus.Name = "pbStatus"
         Me.pbStatus.Size = New System.Drawing.Size(201, 23)
         Me.pbStatus.Style = System.Windows.Forms.ProgressBarStyle.Marquee
@@ -407,7 +408,7 @@ Partial Class frmMain
         Me.fvStream.Face = Nothing
         Me.fvStream.FaceIds = Nothing
         Me.fvStream.IcaoArrowsColor = System.Drawing.Color.Red
-        Me.fvStream.Location = New System.Drawing.Point(811, 33)
+        Me.fvStream.Location = New System.Drawing.Point(1033, 33)
         Me.fvStream.Margin = New System.Windows.Forms.Padding(1)
         Me.fvStream.Name = "fvStream"
         Me.fvStream.ShowIcaoArrows = True
@@ -422,7 +423,7 @@ Partial Class frmMain
         Me.pnlSuccess.BackColor = System.Drawing.Color.PaleGreen
         Me.pnlSuccess.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_ok_240
         Me.pnlSuccess.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pnlSuccess.Location = New System.Drawing.Point(810, 33)
+        Me.pnlSuccess.Location = New System.Drawing.Point(1032, 33)
         Me.pnlSuccess.Name = "pnlSuccess"
         Me.pnlSuccess.Size = New System.Drawing.Size(304, 189)
         Me.pnlSuccess.TabIndex = 1
@@ -434,7 +435,7 @@ Partial Class frmMain
         Me.pnlError.BackColor = System.Drawing.Color.MistyRose
         Me.pnlError.BackgroundImage = Global.Time_Recorder_v5s._0.My.Resources.Resources.icons8_cancel_240
         Me.pnlError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pnlError.Location = New System.Drawing.Point(810, 33)
+        Me.pnlError.Location = New System.Drawing.Point(1032, 33)
         Me.pnlError.Name = "pnlError"
         Me.pnlError.Size = New System.Drawing.Size(304, 189)
         Me.pnlError.TabIndex = 19
@@ -444,12 +445,38 @@ Partial Class frmMain
         '
         Me.tmScanResult.Interval = 5000
         '
+        'Label2
+        '
+        Me.Label2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label2.ForeColor = System.Drawing.Color.Black
+        Me.Label2.Location = New System.Drawing.Point(824, 644)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(119, 19)
+        Me.Label2.TabIndex = 21
+        Me.Label2.Text = "Face Registered:"
+        '
+        'lbFaceCount
+        '
+        Me.lbFaceCount.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.lbFaceCount.AutoSize = True
+        Me.lbFaceCount.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lbFaceCount.ForeColor = System.Drawing.Color.Black
+        Me.lbFaceCount.Location = New System.Drawing.Point(949, 644)
+        Me.lbFaceCount.Name = "lbFaceCount"
+        Me.lbFaceCount.Size = New System.Drawing.Size(30, 19)
+        Me.lbFaceCount.TabIndex = 20
+        Me.lbFaceCount.Text = "???"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(1123, 704)
+        Me.ClientSize = New System.Drawing.Size(1345, 704)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.lbFaceCount)
         Me.Controls.Add(Me.pnlSuccess)
         Me.Controls.Add(Me.pnlError)
         Me.Controls.Add(Me.fvStream)
@@ -516,4 +543,6 @@ Partial Class frmMain
     Friend WithEvents rwDate As DataGridViewTextBoxColumn
     Friend WithEvents timeIN As DataGridViewTextBoxColumn
     Friend WithEvents tmScanResult As Timer
+    Friend WithEvents Label2 As Label
+    Friend WithEvents lbFaceCount As Label
 End Class

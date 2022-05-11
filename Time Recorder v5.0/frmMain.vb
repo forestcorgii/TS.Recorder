@@ -87,7 +87,7 @@ Public Class frmMain
                 .Cells(1).Value = attendance.Employee.Job_Code
                 .Cells(2).Value = attendance.LogStatus.ToString
                 .Cells(3).Value = attendance.LogDate.ToString("yyyy-MM-dd")
-                .Cells(4).Value = attendance.TimeStamp.ToString("hh:mm tt")
+                .Cells(4).Value = attendance.TimeStamp.ToString("MM-dd hh:mm tt")
             End With
             dgv.Rows.Add(dgvr)
         Next
@@ -113,7 +113,6 @@ Public Class frmMain
 
         Me.Clock1.UtcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(Date.Now)
     End Sub
-
 #End Region
 
 #Region "Administrator Access"
@@ -232,21 +231,21 @@ Public Class frmMain
                    End Sub)
 
             Dim userSent As Integer = Await Controller.FaceProfile.SaveToServer(_databaseManager, FaceProfileAPIManager)
-            Dim userReceived As Integer = Await Controller.FaceProfile.CollectFromServer(_databaseManager, FaceProfileAPIManager)
+            Invoke(Sub() lbLastUserSync.Text = String.Format("Last Synced: {0}   Received: {1} Sent: {2}", Now.ToString("yyyy-MM-dd HH:mm:ss"), "???", userSent))
 
+            Dim userReceived As Integer = Await Controller.FaceProfile.CollectFromServer(_databaseManager, FaceProfileAPIManager)
             Invoke(Sub()
                        lbLastUserSync.Text = String.Format("Last Synced: {0}   Received: {1} Sent: {2}", Now.ToString("yyyy-MM-dd HH:mm:ss"), userReceived, userSent)
                        If userReceived > 0 Then RefreshStream()
                    End Sub)
         Catch ex As Exception
             Invoke(Sub() lbLastUserSync.Text = "Sync attempt resulted to an Error!")
-            MessageBox.Show(ex.Message, "Error occured while saving the time log.", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Console.WriteLine("Error occured while saving the time log. {0}", ex.Message)
         End Try
 
         _databaseManager.Connection.Close()
 
     End Sub
-
 #End Region
 
 #Region "Stream Handler"
@@ -261,6 +260,8 @@ Public Class frmMain
         FaceRecognitionManager.FillBiometricTask()
 
         AddHandler FaceRecognitionManager.FaceIdentified, AddressOf FaceManager_FaceIdentified
+
+        lbFaceCount.Text = FaceRecognitionManager.EmployeeFaceSubjects.Count
 
         Await FaceRecognitionManager.StartProcess(Me, fvStream, FaceProcessType.Identify)
     End Sub
@@ -284,7 +285,6 @@ Public Class frmMain
     Private Sub AccessAdministrator(employee As Model.Employee)
         tbAdminID.Visible = False
         PendingAuth = False
-
 
         If employee.FaceProfile.Admin Then
             Splash("Access allowed.", StatusChoices.SCAN_SUCCESS)
@@ -311,11 +311,13 @@ Public Class frmMain
 
         If validLog Then
             Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
+
             Try
 
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
                 If attendance IsNot Nothing Then
 
+                    'upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
                     If employee.Job_Code.ToUpper = "UPSG" Or employee.Job_Code.ToUpper = "UPS" Then
                         upsg_api_service.Controller.UPSG.SaveLogToQueue(DatabaseManager, employee.EE_Id, Now)
                     End If
@@ -325,7 +327,7 @@ Public Class frmMain
                                 employee.Job_Code,
                                 attendance.LogStatus,
                                 attendance.LogDate.ToString("yyyy-MM-dd"),
-                                attendance.TimeStamp.ToString("hh:mm tt")
+                                attendance.TimeStamp.ToString("MM-dd hh:mm tt")
                     )
 
                     If Not dgv.Rows.Count = 0 Then dgv.CurrentCell = dgv.Item(0, 0)
@@ -339,7 +341,7 @@ Public Class frmMain
         Return validLog
     End Function
 
-    Private Async Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
+    Private Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
         Try
             If e.Status = Neurotec.Biometrics.NBiometricStatus.Ok Then
                 Dim ee_id As String = e.UserID.Split("_")(0)
@@ -349,7 +351,7 @@ Public Class frmMain
                 If RecentEE_Ids.Count > 5 Then RecentEE_Ids.RemoveAt(5)
 
                 DatabaseManager.Connection.Open()
-                Dim employee As Model.Employee = Await Controller.Employee.FindAsync(DatabaseManager, ee_id, shouldCompleteDetail:=True)
+                Dim employee As Model.Employee = Controller.Employee.Find(DatabaseManager, ee_id, shouldCompleteDetail:=True)
                 DatabaseManager.Connection.Close()
 
                 If PendingAuth Then

@@ -1,4 +1,5 @@
-﻿Imports MySql.Data.MySqlClient
+﻿Imports System.Windows.Forms
+Imports MySql.Data.MySqlClient
 Namespace Controller
 
     Public Class AttendanceLog
@@ -21,7 +22,8 @@ Namespace Controller
                     End If
                 Next
             Catch ex As Exception
-                MsgBox(ex.Message)
+                Console.WriteLine(ex.Message)
+                'MessageBox.Show(ex.Message, "SendQueuedAttendance", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Function
 
@@ -29,7 +31,7 @@ Namespace Controller
             Try
                 databaseManager.ExecuteNonQuery(String.Format("DELETE FROM attendance_send_queue WHERE `timestamp`='{0}'", attendance.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss")))
             Catch ex As Exception
-                MsgBox(ex.Message)
+                MessageBox.Show(ex.Message, "DeleteQueuedAttendance", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
     End Class

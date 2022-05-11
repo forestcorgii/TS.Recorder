@@ -13,7 +13,7 @@ Namespace Manager
 
             Sub New()
                 Client = New HttpClient
-                Client.Timeout = TimeSpan.FromSeconds(10)
+                Client.Timeout = TimeSpan.FromSeconds(30)
             End Sub
 
             Public Async Function SendTimelog(ee_id As String, timeStamp As Date) As Task(Of Object())
@@ -34,13 +34,16 @@ Namespace Manager
                     Else
                         Select Case response.StatusCode
                             Case 404
-                                MessageBox.Show("Page not Found.", response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                Throw New Exception(String.Format("Page not Found.", response.StatusCode.ToString))
+                                'MessageBox.Show("Page not Found.", response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
                             Case Else
-                                MessageBox.Show(responseString, response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                Throw New Exception(String.Format(responseString, response.StatusCode.ToString))
+                                'MessageBox.Show(responseString, response.StatusCode.ToString, MessageBoxButtons.OK, MessageBoxIcon.Error)
                         End Select
                     End If
                 Catch ex As Exception
-                    MessageBox.Show(ex.Message, "RequestUpdateAsync", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Throw New Exception(String.Format(ex.Message, "SendTimelog"))
+                    'MessageBox.Show(ex.Message, "SendTimelog UPSG", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
 
                 Return Nothing
