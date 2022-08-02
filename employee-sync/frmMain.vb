@@ -49,6 +49,9 @@ Public Class frmMain
                     Dim employeeFound As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer_NoPrompt(employee.EE_Id)
                     If employeeFound IsNot Nothing Then
                         Controller.Employee.Save(DatabaseManager, New Model.Employee(employeeFound))
+                        Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, True)
+                    Else
+                        Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, False)
                     End If
 
                     Invoke(Sub()
@@ -69,6 +72,8 @@ Public Class frmMain
             MessageBox.Show(ex.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+
 
     Private Sub bgwSync_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles bgwSync.RunWorkerCompleted
     End Sub
