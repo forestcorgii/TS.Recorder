@@ -94,21 +94,8 @@ Namespace Controller
                 Dim currentAttendance As Model.Attendance = GetLatestAttendance(databaseManager, employee.EE_Id)
                 If (Now - currentAttendance.TimeStamp).TotalMinutes < 2 Then Return Nothing 'IF CURRENT ATTENDANCE IS LESS THAN 2MINS FROM NOW THEN DISREGARD ATTENDANCE ENTRY.
 
-                If currentAttendance.LogDate.ToString("yyyyMMdd HHmmss") <> "00010101 000000" Then
-                    attendanceStatus = GetNextAttendanceStatus(currentAttendance.TimeStamp, currentAttendance.LogStatus)
-                End If
-
-                If attendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso currentAttendance.LogStatus = AttendanceStatusChoices.TIME_IN Then '
-                    Dim timeDifference As Integer = (Now - currentAttendance.TimeStamp).TotalHours
-                    Dim dayDifference As Integer = CInt(attendanceDate.ToString("yyyyMMdd")) - CInt(currentAttendance.LogDate.ToString("yyyyMMdd"))
-                    If (timeDifference <= 24 AndAlso dayDifference > 0) Then 'If the timedifference exceeds 24 hours and the day change, use the previus day
-                        attendanceDate = attendanceDate.AddDays(-dayDifference)
-                    End If
-                End If
-
-                If attendanceStatus = 0 AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider the logdate as the next day.
-                    attendanceDate = attendanceDate.AddDays(1)
-                End If
+                attendanceStatus = GetNextAttendanceStatus(currentAttendance.TimeStamp, currentAttendance.LogDate, currentAttendance.LogStatus)
+                attendanceDate = GetAttendanceDate(attendanceStatus, attendanceDate, currentAttendance.LogStatus, currentAttendance.TimeStamp, currentAttendance.LogDate)
 
                 Dim newAttendance As New Model.Attendance
                 With newAttendance
@@ -131,6 +118,67 @@ Namespace Controller
 
 
 #Region "Private Methods"
+
+        Private Shared Function GetNextAttendanceStatus(currentAttendanceTime As Date, currentAttendanceDate As Date, currentAttendanceStatus As AttendanceStatusChoices) As AttendanceStatusChoices
+            If currentAttendanceDate.ToString("yyyyMMdd HHmmss") = "00010101 000000" Then Return currentAttendanceStatus
+
+            Dim nextLogStatus As AttendanceStatusChoices = AttendanceStatusChoices.TIME_IN
+            Select Case currentAttendanceStatus
+                Case AttendanceStatusChoices.TIME_IN
+                    If (Now - currentAttendanceTime).TotalHours > 20 And Now.Day <> currentAttendanceTime.Day Then
+                        nextLogStatus = AttendanceStatusChoices.TIME_IN
+                    Else
+                        nextLogStatus = AttendanceStatusChoices.TIME_OUT
+                    End If
+                Case AttendanceStatusChoices.TIME_OUT
+                    If (Now - currentAttendanceTime).TotalHours >= 8 Then
+                        nextLogStatus = AttendanceStatusChoices.TIME_IN
+                    Else
+                        nextLogStatus = AttendanceStatusChoices.TIME_OUT
+                    End If
+            End Select
+            Return nextLogStatus
+        End Function
+
+        Private Shared Function GetAttendanceDate(attendanceStatus As Integer, attendanceDate As Date, currentAttendanceStatus As Integer, currentAttendanceTime As Date, currentAttendanceDate As Date) As Date
+            'IF 
+            If attendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso currentAttendanceStatus = AttendanceStatusChoices.TIME_IN Then '
+                Dim timeDifference As Integer = (Now - currentAttendanceTime).TotalDays
+                Dim dayDifference As Integer = CInt(attendanceDate.ToString("yyyyMMdd")) - CInt(currentAttendanceDate.ToString("yyyyMMdd"))
+                If timeDifference <= 24 AndAlso dayDifference > 0 Then 'If the timedifference exceeds 24 hours and the day change, use the previus day
+                    attendanceDate = attendanceDate.AddDays(-1)
+                End If
+            End If
+
+            If attendanceStatus = AttendanceStatusChoices.TIME_IN AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider the logdate as the next day.
+                attendanceDate = attendanceDate.AddDays(1)
+            End If
+
+            Return attendanceDate
+        End Function
+
+
+        Private Shared Function GetLatestAttendance(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
+            Dim attendance As New Model.Attendance
+            Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' ORDER BY `time` DESC LIMIT 1", ee_id)
+
+            If logStatus > -1 Then query = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' and logstatus={1} ORDER BY `time` DESC LIMIT 1", ee_id, logStatus)
+
+            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(query)
+                If reader.HasRows Then
+                    reader.Read()
+                    attendance = New Model.Attendance(reader)
+                    'attendance.EE_Id = reader.Item("ee_id")
+                    'attendance.LogStatus = reader.Item("logstatus")
+                    'attendance.SendStatus = reader.Item("status")
+                    'attendance.TimeStamp = reader.Item("time")
+                    'attendance.LogDate = reader.Item("date")
+                End If
+            End Using
+            Return attendance
+        End Function
+
+
         Private Shared Function FillAttendanceAPIPostData(databaseManager As utility_service.Manager.Mysql, attendance As Model.Attendance)
             Dim apiLogDetail As New AttendanceAPIPostData
             apiLogDetail.EmployeeID = attendance.EE_Id
@@ -144,24 +192,7 @@ Namespace Controller
             End If
             Return apiLogDetail
         End Function
-        Private Shared Function GetLatestAttendance(databaseManager As utility_service.Manager.Mysql, ee_id As String, Optional logStatus As Integer = -1) As Model.Attendance
-            Dim attendance As New Model.Attendance
-            Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' ORDER BY `time` DESC LIMIT 1", ee_id)
 
-            If logStatus > -1 Then query = String.Format("SELECT * FROM `attendance` WHERE `ee_id`='{0}' and logstatus={1} ORDER BY `time` DESC LIMIT 1", ee_id, logStatus)
-
-            Using reader As MySqlDataReader = databaseManager.ExecuteDataReader(query)
-                If reader.HasRows Then
-                    reader.Read()
-                    attendance.EE_Id = reader.Item("ee_id")
-                    attendance.LogStatus = reader.Item("logstatus")
-                    attendance.SendStatus = reader.Item("status")
-                    attendance.TimeStamp = Date.Parse(reader.Item("time"))
-                    attendance.LogDate = Date.Parse(reader.Item("date"))
-                End If
-            End Using
-            Return attendance
-        End Function
         Private Shared Function GetAttendance(databaseManager As utility_service.Manager.Mysql, attendanceName As String) As Model.Attendance
             Dim attendance As Model.Attendance = Nothing
             Dim query As String = String.Format("SELECT * FROM `attendance` WHERE `attendance_name`='{0}' LIMIT 1", attendanceName)
@@ -185,7 +216,7 @@ Namespace Controller
             Try
                 Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.Attendance_Name)
                 If currentAttendance Is Nothing OrElse currentAttendance.TimeStamp <> attendance.TimeStamp Then
-                    Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
+                    Dim query As String = "INSERT INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
                     Dim command As New MySqlCommand(query, databaseManager.Connection)
                     command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
                     command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
@@ -223,24 +254,6 @@ Namespace Controller
             End Try
         End Sub
 
-        Private Shared Function GetNextAttendanceStatus(timeIn As Date, logStatus As AttendanceStatusChoices) As AttendanceStatusChoices
-            Dim nextLogStatus As AttendanceStatusChoices = AttendanceStatusChoices.TIME_IN
-            Select Case logStatus
-                Case AttendanceStatusChoices.TIME_IN
-                    If (Now - timeIn).TotalHours > 15 And Now.Day <> timeIn.Day Then
-                        nextLogStatus = 0
-                    Else
-                        nextLogStatus = 1
-                    End If
-                Case AttendanceStatusChoices.TIME_OUT
-                    If (Now - timeIn).TotalHours >= 8 Then
-                        nextLogStatus = 0
-                    Else
-                        nextLogStatus = 1
-                    End If
-            End Select
-            Return nextLogStatus
-        End Function
 
         Private Shared Function ToTimeString(value As Date) As String
             Return value.ToString("yyyy-MM-dd HH:mm:00")
