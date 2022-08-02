@@ -56,6 +56,18 @@ Namespace Controller
             End Try
         End Sub
 
+        Public Shared Sub SetFaceProfileActivation(databaseManager As utility_service.Manager.Mysql, eeId As String, isActive As Boolean)
+            Try
+                Dim faceProfile As Model.FaceProfile = Find(databaseManager, eeId)
+                faceProfile.Active = isActive
+                Save(databaseManager, faceProfile)
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+            End Try
+        End Sub
+
+
+
         Public Class FaceProfileSyncPostData
             Public site As String
             Public terminal As String
