@@ -222,7 +222,6 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <None Include="Time Recorder v5.0_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

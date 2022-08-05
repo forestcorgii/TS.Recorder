@@ -118,7 +118,6 @@ Namespace Controller
 
 
 #Region "Private Methods"
-
         Private Shared Function GetNextAttendanceStatus(currentAttendanceTime As Date, currentAttendanceDate As Date, currentAttendanceStatus As AttendanceStatusChoices) As AttendanceStatusChoices
             If currentAttendanceDate.ToString("yyyyMMdd HHmmss") = "00010101 000000" Then Return currentAttendanceStatus
 
@@ -140,21 +139,25 @@ Namespace Controller
             Return nextLogStatus
         End Function
 
-        Private Shared Function GetAttendanceDate(attendanceStatus As Integer, attendanceDate As Date, currentAttendanceStatus As Integer, currentAttendanceTime As Date, currentAttendanceDate As Date) As Date
+        Private Shared Function GetAttendanceDate(newAttendanceStatus As Integer, newAttendanceDate As Date, lastAttendanceStatus As Integer, lastAttendanceTime As Date, lastAttendanceDate As Date) As Date
             'IF 
-            If attendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso currentAttendanceStatus = AttendanceStatusChoices.TIME_IN Then '
-                Dim timeDifference As Integer = (Now - currentAttendanceTime).TotalDays
-                Dim dayDifference As Integer = CInt(attendanceDate.ToString("yyyyMMdd")) - CInt(currentAttendanceDate.ToString("yyyyMMdd"))
-                If timeDifference <= 24 AndAlso dayDifference > 0 Then 'If the timedifference exceeds 24 hours and the day change, use the previus day
-                    attendanceDate = attendanceDate.AddDays(-1)
+            If newAttendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso lastAttendanceStatus = AttendanceStatusChoices.TIME_IN Then '
+                Dim timeDifference As Integer = (Now - lastAttendanceTime).TotalDays
+                Dim dayDifference As Integer = CInt(newAttendanceDate.ToString("yyyyMMdd")) - CInt(lastAttendanceDate.ToString("yyyyMMdd"))
+                If timeDifference <= 24 AndAlso dayDifference > 0 Then 'If the timedifference exceeds 24 hours and the day change, use the previous day
+                    newAttendanceDate = newAttendanceDate.AddDays(-1)
                 End If
+            ElseIf newAttendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso lastAttendanceStatus = AttendanceStatusChoices.TIME_OUT Then
+                'IF THE NEW ATTENDANCE STATUS RESULTED TO AN OUT AND THE LAST ATTENDANCE IS ALSO AN OUT, COPY THE LOG DATE OF THE LAST ATTENDANCE
+                newAttendanceDate = lastAttendanceDate
             End If
 
-            If attendanceStatus = AttendanceStatusChoices.TIME_IN AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider the logdate as the next day.
-                attendanceDate = attendanceDate.AddDays(1)
+            If newAttendanceStatus = AttendanceStatusChoices.TIME_IN AndAlso (CInt(Now.ToString("HHmm")) >= 2331) Then 'If time exceeds 11:30PM, Consider the logdate as the next day.
+                newAttendanceDate = newAttendanceDate.AddDays(1)
             End If
 
-            Return attendanceDate
+
+            Return newAttendanceDate
         End Function
 
 
@@ -216,7 +219,7 @@ Namespace Controller
             Try
                 Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.Attendance_Name)
                 If currentAttendance Is Nothing OrElse currentAttendance.TimeStamp <> attendance.TimeStamp Then
-                    Dim query As String = "INSERT INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
+                    Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
                     Dim command As New MySqlCommand(query, databaseManager.Connection)
                     command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
                     command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
@@ -234,6 +237,7 @@ Namespace Controller
                     End If
                 End If
             Catch ex As Exception
+                MessageBox.Show(ex.Message, "Error occured while inserting attendance.", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Console.WriteLine(ex.Message)
             End Try
         End Sub
@@ -250,6 +254,7 @@ Namespace Controller
 
                 command.ExecuteNonQuery()
             Catch ex As Exception
+                MessageBox.Show(ex.Message, "Error occured while inserting attendance on queue.", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Console.WriteLine(ex.Message)
             End Try
         End Sub
