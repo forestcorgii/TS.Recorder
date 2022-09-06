@@ -3,6 +3,7 @@ Imports Newtonsoft.Json
 Imports utility_service
 Imports time_recorder_service
 Imports System.ComponentModel
+Imports face_recognition_service.Manager
 
 Public Class frmMain
 
@@ -28,6 +29,11 @@ Public Class frmMain
         If settings IsNot Nothing Then
             HRMSAPIManager = JsonConvert.DeserializeObject(Of Manager.API.HRMS)(settings.JSON_Arguments)
         End If
+        settings = Controller.Settings.GetSettings(DatabaseManager, "FaceRecognitionAPIManager")
+        If settings IsNot Nothing Then
+            FaceProfileAPIManager = JsonConvert.DeserializeObject(Of API.FaceProfile)(settings.JSON_Arguments)
+        End If
+
 
         Return True
     End Function
@@ -49,9 +55,13 @@ Public Class frmMain
                     Dim employeeFound As IInterface.IEmployee = Await HRMSAPIManager.GetEmployeeFromServer_NoPrompt(employee.EE_Id)
                     If employeeFound IsNot Nothing Then
                         Controller.Employee.Save(DatabaseManager, New Model.Employee(employeeFound))
-                        Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, True)
+                        If Not employee.Active Then
+                            Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, FaceProfileAPIManager.Terminal, True)
+                        End If
                     Else
-                        Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, False)
+                        If employee.Active Then
+                            Controller.FaceProfile.SetFaceProfileActivation(DatabaseManager, employee.EE_Id, FaceProfileAPIManager.Terminal, False)
+                        End If
                     End If
 
                     Invoke(Sub()

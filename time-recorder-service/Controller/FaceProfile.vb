@@ -35,31 +35,29 @@ Namespace Controller
         End Function
 
         Public Shared Sub Save(databaseManager As utility_service.Manager.Mysql, employee As Model.FaceProfile, Optional owner As String = "")
-            Try
-                If owner <> "" Then
-                    employee.Owner = owner
-                End If
+            If owner <> "" Then
+                employee.Owner = owner
+            End If
 
-                Dim command As New MySqlCommand("REPLACE INTO face_profile (`id`,`admin`,`active`,`owner`,`face_img1`) VALUES(?,?,?,?,?)", databaseManager.Connection)
-                command.Parameters.Add("@ee_id", MySqlDbType.MediumBlob).Value = employee.EE_Id
-                command.Parameters.Add("@admin", MySqlDbType.String).Value = employee.Admin
-                command.Parameters.Add("@active", MySqlDbType.String).Value = employee.Active
-                command.Parameters.Add("@owner", MySqlDbType.String).Value = employee.Owner
+            Dim command As New MySqlCommand("REPLACE INTO face_profile (`id`,`admin`,`active`,`owner`,`face_img1`) VALUES(?,?,?,?,?)", databaseManager.Connection)
+            command.Parameters.Add("@ee_id", MySqlDbType.MediumBlob).Value = employee.EE_Id
+            command.Parameters.Add("@admin", MySqlDbType.String).Value = employee.Admin
+            command.Parameters.Add("@active", MySqlDbType.String).Value = employee.Active
+            command.Parameters.Add("@owner", MySqlDbType.String).Value = employee.Owner
 
-                If employee.NoFaceImage = False Then
-                    command.Parameters.Add("@face_img1", MySqlDbType.Binary).Value = employee.face_data1
-                End If
+            If employee.NoFaceImage = False Then
+                command.Parameters.Add("@face_img1", MySqlDbType.Binary).Value = employee.face_data1
+            End If
 
-                command.ExecuteNonQuery()
-            Catch ex As Exception
-                Console.WriteLine(ex.Message)
-            End Try
+            command.ExecuteNonQuery()
+
         End Sub
 
-        Public Shared Sub SetFaceProfileActivation(databaseManager As utility_service.Manager.Mysql, eeId As String, isActive As Boolean)
+        Public Shared Sub SetFaceProfileActivation(databaseManager As utility_service.Manager.Mysql, eeId As String, owner As String, isActive As Boolean)
             Try
                 Dim faceProfile As Model.FaceProfile = Find(databaseManager, eeId)
                 faceProfile.Active = isActive
+                faceProfile.Owner = owner
                 Save(databaseManager, faceProfile)
             Catch ex As Exception
                 Console.WriteLine(ex.Message)

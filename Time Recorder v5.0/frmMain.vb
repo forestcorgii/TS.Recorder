@@ -117,10 +117,10 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
-        'CloseStream()
-        'frmAdministrator.ShowDialog()
-        'OpenStream()
-        TryAccess(btnAdministrator)
+        CloseStream()
+        frmAdministrator.ShowDialog()
+        OpenStream()
+        'TryAccess(btnAdministrator)
     End Sub
 
     Private Function TryAccess(btn As Object) As Boolean
