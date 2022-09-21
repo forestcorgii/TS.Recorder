@@ -78,10 +78,14 @@ Namespace Controller
                             End If
                         End If
                     Catch ex As Exception
+                        MessageBox.Show(ex.Message)
                         Return False
                     End Try
                 Next
-                If tms.Count > 0 Then databaseManager.ExecuteNonQuery("INSERT INTO attendance_sync_log ()VALUES();")
+                If tms.Count > 0 Then
+                    databaseManager.ExecuteNonQuery(String.Format("DELETE FROM attendance where `time` < '{0:yyyy-MM-dd HH:mm:ss}';", Now.AddDays(-4)))
+                    databaseManager.ExecuteNonQuery("INSERT INTO attendance_sync_log ()VALUES();")
+                End If
             End If
 
             Return True
@@ -219,22 +223,26 @@ Namespace Controller
             Try
                 Dim currentAttendance As Model.Attendance = GetAttendance(databaseManager, attendance.Attendance_Name)
                 If currentAttendance Is Nothing OrElse currentAttendance.TimeStamp <> attendance.TimeStamp Then
-                    Dim query As String = "REPLACE INTO `attendance`(attendance_name,ee_id,`date`,`name`,`time`,logstatus,status) VALUES(?,?,?,?,?,?,?)"
-                    Dim command As New MySqlCommand(query, databaseManager.Connection)
-                    command.Parameters.AddWithValue("p1", attendance.Attendance_Name)
-                    command.Parameters.AddWithValue("employee_id", attendance.EE_Id)
+                    Dim command As New MySqlCommand()
+
+                    If currentAttendance IsNot Nothing AndAlso currentAttendance.TimeStamp <> attendance.TimeStamp Then
+
+                        command = New MySqlCommand("insert into `attendance_send_log` (argument_summary)values(@argument_summary)", databaseManager.Connection)
+                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} log was overwritten: from {1:yyyy-MM-dd HH:mm:ss} to {2:yyyy-MM-dd HH:mm:ss}.", attendance.EE_Id, currentAttendance.TimeStamp, attendance.TimeStamp))
+                        command.ExecuteNonQuery()
+                    End If
+
+                    Dim query As String = "INSERT INTO `attendance`(ee_id,`date`,`name`,`time`,logstatus,status,attendance_name) VALUES(@ee_id,@date,@name,@time,@logstatus,@status,@attendance_name) ON DUPLICATE KEY UPDATE ee_id=@ee_id, `date`=@date, `name`=@name, `time`=@time, logstatus=@logstatus, status=@status;"
+
+                    command = New MySqlCommand(query, databaseManager.Connection)
+                    command.Parameters.AddWithValue("ee_id", attendance.EE_Id)
                     command.Parameters.AddWithValue("date", attendance.LogDate)
                     command.Parameters.AddWithValue("name", employee.FullName)
                     command.Parameters.AddWithValue("time", attendance.TimeStamp.ToString("yyyy-MM-dd HH:mm:00"))
                     command.Parameters.AddWithValue("logstatus", attendance.LogStatus)
                     command.Parameters.AddWithValue("status", 0)
+                    command.Parameters.AddWithValue("attendance_name", attendance.Attendance_Name)
                     command.ExecuteNonQuery()
-
-                    If currentAttendance IsNot Nothing AndAlso currentAttendance.TimeStamp <> attendance.TimeStamp Then
-                        command = New MySqlCommand("insert into `attendance_send_log` (argument_summary)values(@argument_summary)", databaseManager.Connection)
-                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} log was overwritten: from {1:yyyy-MM-dd HH:mm:ss} to {2:yyyy-MM-dd HH:mm:ss}.", attendance.EE_Id, currentAttendance.TimeStamp, attendance.TimeStamp))
-                        command.ExecuteNonQuery()
-                    End If
                 End If
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Error occured while inserting attendance.", MessageBoxButtons.OK, MessageBoxIcon.Error)

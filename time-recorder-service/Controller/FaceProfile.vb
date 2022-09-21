@@ -39,7 +39,7 @@ Namespace Controller
                 employee.Owner = owner
             End If
 
-            Dim command As New MySqlCommand("REPLACE INTO face_profile (`id`,`admin`,`active`,`owner`,`face_img1`) VALUES(?,?,?,?,?)", databaseManager.Connection)
+            Dim command As New MySqlCommand("INSERT INTO face_profile (`id`,`admin`,`active`,`owner`,`face_img1`) VALUES(@ee_id,@admin,@active,@owner,@face_img1) ON DUPLICATE KEY UPDATE `id`=@ee_id,`admin`=@admin,`active`=@active,`owner`=@owner,`face_img1`=@face_img1;", databaseManager.Connection)
             command.Parameters.Add("@ee_id", MySqlDbType.MediumBlob).Value = employee.EE_Id
             command.Parameters.Add("@admin", MySqlDbType.String).Value = employee.Admin
             command.Parameters.Add("@active", MySqlDbType.String).Value = employee.Active

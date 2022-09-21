@@ -206,17 +206,18 @@ Public Class frmMain
             'Dim res As Boolean = True
             Dim res As Boolean = Await Controller.Attendance.SyncAttendance(_databaseManager, AttendanceAPIManager, HRMSAPIManager)
 
-            Invoke( Sub()
+            Invoke(Sub()
                        If res Then
                            lbLastTimelogSync.Text = Now.ToString("yyyy-MM-dd HH:mm:ss")
                        Else : lbLastTimelogSync.Text = "Sync attempt resulted to an Error!"
                        End If
 
-                        pbStatus.Visible = False
-                    End Sub)
+                       pbStatus.Visible = False
+                   End Sub)
 
         Catch ex As Exception
-            Invoke(Sub() lbLastTimelogSync.Text = "Sync attempt resulted to an Error!")
+            MessageBox.Show(ex.Message)
+            Invoke(Sub() lbLastTimelogSync.Text = ex.Message)
         End Try
         _databaseManager.Connection.Close()
     End Sub
@@ -239,7 +240,7 @@ Public Class frmMain
                        If userReceived > 0 Then RefreshStream()
                    End Sub)
         Catch ex As Exception
-            Invoke(Sub() lbLastUserSync.Text = "Sync attempt resulted to an Error!")
+            Invoke(Sub() lbLastUserSync.Text = ex.Message)
             Console.WriteLine("Error occured while saving the time log. {0}", ex.Message)
         End Try
 
@@ -313,7 +314,6 @@ Public Class frmMain
             Splash("Found " & employee.FullName, StatusChoices.SCAN_SUCCESS)
 
             Try
-
                 Dim attendance As Model.Attendance = Controller.Attendance.SaveAttendance(DatabaseManager, employee)
                 If attendance IsNot Nothing Then
 

@@ -70,7 +70,8 @@ Namespace Controller
 
         Public Shared Sub Save(databaseManager As utility_service.Manager.Mysql, employee As Model.Employee)
             Try
-                Dim command As New MySqlCommand("REPLACE INTO employee (`first_name`,`last_name`,`middle_name`,`ee_id`,job_code,lowest_matching_score) VALUES(?,?,?,?,?,?)", databaseManager.Connection)
+                Dim command As New MySqlCommand("INSERT INTO employee (`first_name`,`last_name`,`middle_name`,`ee_id`,job_code,lowest_matching_score) VALUES(@p1,@p2,@p3,@p5,@p4,@p6)" &
+                                                "ON DUPLICATE KEY UPDATE `first_name`=@p1,`last_name`=@p2,`middle_name`=@p3,`ee_id`=@p5,job_code=@p4,lowest_matching_score=@p6;", databaseManager.Connection)
                 command.Parameters.AddWithValue("p1", employee.First_Name)
                 command.Parameters.AddWithValue("p2", employee.Last_Name)
                 command.Parameters.AddWithValue("p3", employee.Middle_Name)
