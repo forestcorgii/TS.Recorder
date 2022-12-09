@@ -45,47 +45,51 @@ Namespace Controller
             Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync_NoPrompt(GetLastAttendanceSyncLogDate(databaseManager).ToString("yyyy-MM-dd HH:mm:ss"))
             'Dim serverResponse = Await AttendanceAPIManager.RequestUpdateAsync_NoPrompt("2022-04-28 01:00:00")
             If serverResponse(0) Then
+                Try
+                    tms = JsonConvert.DeserializeObject(serverResponse(1), tms.GetType)
 
-                tms = JsonConvert.DeserializeObject(serverResponse(1), tms.GetType)
+                    For i As Integer = 0 To tms.Count - 1
+                        Dim loginf As AttendanceFromServer = tms(i)
+                        Try
+                            Dim empinfo As Model.Employee = Await Employee.FindAsync(databaseManager, loginf.id_number, hrmsAPIManager:=hrmsAPIManager)
 
-                For i As Integer = 0 To tms.Count - 1
-                    Dim loginf As AttendanceFromServer = tms(i)
-                    Try
-                        Dim empinfo As Model.Employee = Await Employee.FindAsync(databaseManager, loginf.id_number, hrmsAPIManager:=hrmsAPIManager)
+                            If empinfo IsNot Nothing Then
+                                Dim attendance As Model.Attendance
+                                If loginf.no_time_in = False Then
+                                    attendance = New Model.Attendance
+                                    With attendance
+                                        .EE_Id = loginf.id_number
+                                        .LogDate = loginf.log_date
+                                        .LogStatus = AttendanceStatusChoices.TIME_IN
+                                        .TimeStamp = loginf.new_time_in
+                                    End With
+                                    InsertAttendance(databaseManager, attendance, empinfo)
+                                End If
 
-                        If empinfo IsNot Nothing Then
-                            Dim attendance As Model.Attendance
-                            If loginf.no_time_in = False Then
-                                attendance = New Model.Attendance
-                                With attendance
-                                    .EE_Id = loginf.id_number
-                                    .LogDate = loginf.log_date
-                                    .LogStatus = AttendanceStatusChoices.TIME_IN
-                                    .TimeStamp = loginf.new_time_in
-                                End With
-                                InsertAttendance(databaseManager, attendance, empinfo)
+                                If loginf.no_time_out = False Then
+                                    attendance = New Model.Attendance
+                                    With attendance
+                                        .EE_Id = loginf.id_number
+                                        .LogDate = loginf.log_date
+                                        .LogStatus = AttendanceStatusChoices.TIME_OUT
+                                        .TimeStamp = loginf.new_time_out
+                                    End With
+                                    InsertAttendance(databaseManager, attendance, empinfo)
+                                End If
                             End If
-
-                            If loginf.no_time_out = False Then
-                                attendance = New Model.Attendance
-                                With attendance
-                                    .EE_Id = loginf.id_number
-                                    .LogDate = loginf.log_date
-                                    .LogStatus = AttendanceStatusChoices.TIME_OUT
-                                    .TimeStamp = loginf.new_time_out
-                                End With
-                                InsertAttendance(databaseManager, attendance, empinfo)
-                            End If
-                        End If
-                    Catch ex As Exception
-                        MessageBox.Show(ex.Message)
-                        Return False
-                    End Try
-                Next
-                If tms.Count > 0 Then
-                    databaseManager.ExecuteNonQuery(String.Format("DELETE FROM attendance where `time` < '{0:yyyy-MM-dd HH:mm:ss}';", Now.AddDays(-4)))
-                    databaseManager.ExecuteNonQuery("INSERT INTO attendance_sync_log ()VALUES();")
-                End If
+                        Catch ex As Exception
+                            MessageBox.Show(ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            Return False
+                        End Try
+                    Next
+                    If tms.Count > 0 Then
+                        databaseManager.ExecuteNonQuery(String.Format("DELETE FROM attendance where `time` < '{0:yyyy-MM-dd HH:mm:ss}';", Now.AddDays(-4)))
+                        databaseManager.ExecuteNonQuery("INSERT INTO attendance_sync_log ()VALUES();")
+                    End If
+                Catch ex As Exception
+                    MessageBox.Show(ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return False
+                End Try
             End If
 
             Return True
@@ -146,7 +150,7 @@ Namespace Controller
         Private Shared Function GetAttendanceDate(newAttendanceStatus As Integer, newAttendanceDate As Date, lastAttendanceStatus As Integer, lastAttendanceTime As Date, lastAttendanceDate As Date) As Date
             'IF 
             If newAttendanceStatus = AttendanceStatusChoices.TIME_OUT AndAlso lastAttendanceStatus = AttendanceStatusChoices.TIME_IN Then '
-                Dim timeDifference As Integer = (Now - lastAttendanceTime).TotalDays
+                Dim timeDifference As Integer = (Now - lastAttendanceTime).TotalHours
                 Dim dayDifference As Integer = CInt(newAttendanceDate.ToString("yyyyMMdd")) - CInt(lastAttendanceDate.ToString("yyyyMMdd"))
                 If timeDifference <= 24 AndAlso dayDifference > 0 Then 'If the timedifference exceeds 24 hours and the day change, use the previous day
                     newAttendanceDate = newAttendanceDate.AddDays(-1)
@@ -225,12 +229,13 @@ Namespace Controller
                 If currentAttendance Is Nothing OrElse currentAttendance.TimeStamp <> attendance.TimeStamp Then
                     Dim command As New MySqlCommand()
 
+                    command = New MySqlCommand("insert into `attendance_send_log` (argument_summary)values(@argument_summary)", databaseManager.Connection)
                     If currentAttendance IsNot Nothing AndAlso currentAttendance.TimeStamp <> attendance.TimeStamp Then
-
-                        command = New MySqlCommand("insert into `attendance_send_log` (argument_summary)values(@argument_summary)", databaseManager.Connection)
-                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} log was overwritten: from {1:yyyy-MM-dd HH:mm:ss} to {2:yyyy-MM-dd HH:mm:ss}.", attendance.EE_Id, currentAttendance.TimeStamp, attendance.TimeStamp))
-                        command.ExecuteNonQuery()
+                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} {4} log was overwritten: from {1:yyyy-MM-dd HH:mm:ss} to {2:yyyy-MM-dd HH:mm:ss} in logdate {3:yyyy-MM-dd}.", attendance.EE_Id, currentAttendance.TimeStamp, attendance.TimeStamp, attendance.LogDate, attendance.LogStatus))
+                    Else
+                        command.Parameters.AddWithValue("argument_summary", String.Format("{0} new {3} log was added: {1:yyyy-MM-dd HH:mm:ss} in logdate {2:yyyy-MM-dd}.", attendance.EE_Id, attendance.TimeStamp, attendance.LogDate, attendance.LogStatus))
                     End If
+                    command.ExecuteNonQuery()
 
                     Dim query As String = "INSERT INTO `attendance`(ee_id,`date`,`name`,`time`,logstatus,status,attendance_name) VALUES(@ee_id,@date,@name,@time,@logstatus,@status,@attendance_name) ON DUPLICATE KEY UPDATE ee_id=@ee_id, `date`=@date, `name`=@name, `time`=@time, logstatus=@logstatus, status=@status;"
 
@@ -397,14 +402,7 @@ Namespace Controller
                 End Get
             End Property
 
-            Public ReadOnly Property status As String
-                Get
-                    If edited_time_out = "0000-00-00 00:00:00" Then
-                        Return "1"
-                    Else : Return "2"
-                    End If
-                End Get
-            End Property
+
 
         End Class
 

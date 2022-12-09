@@ -117,10 +117,10 @@ Public Class frmMain
 
 #Region "Administrator Access"
     Private Sub btnAdministrator_Click(sender As Object, e As EventArgs) Handles btnAdministrator.Click
-        CloseStream()
-        frmAdministrator.ShowDialog()
-        OpenStream()
-        'TryAccess(btnAdministrator)
+        'CloseStream()
+        'frmAdministrator.ShowDialog()
+        'OpenStream()
+        TryAccess(btnAdministrator)
     End Sub
 
     Private Function TryAccess(btn As Object) As Boolean
@@ -343,7 +343,7 @@ Public Class frmMain
 
     Private Sub FaceManager_FaceIdentified(sender As Object, e As FaceRecognizeEventArgs)
         Try
-            If e.Status = Neurotec.Biometrics.NBiometricStatus.Ok Then
+            If e.Status = NBiometricStatus.Ok Then
                 Dim ee_id As String = e.UserID.Split("_")(0)
                 If Not PendingAuth AndAlso RecentEE_Ids.Contains(ee_id) Then Exit Sub
 
