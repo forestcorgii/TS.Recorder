@@ -135,13 +135,13 @@
       <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
       <Name>face-recognition-service</Name>
     </ProjectReference>
-    <ProjectReference Include="..\hrms-api-service\hrms-api-service.vbproj">
-      <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
-      <Name>hrms-api-service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\utility-service\utility-service.vbproj">
+    <ProjectReference Include="..\..\..\ddc-utility-service\utility-service\utility-service.vbproj">
       <Project>{d314d3f7-c0e4-4103-b768-e5b299ce14b7}</Project>
       <Name>utility-service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\hrms-api-service\hrms-api-service.vbproj">
+      <Project>{F3D16904-61B6-47BA-9F13-1885636D7712}</Project>
+      <Name>hrms-api-service</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

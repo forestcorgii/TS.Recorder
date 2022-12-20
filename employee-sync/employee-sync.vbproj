@@ -178,6 +178,10 @@
       <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
       <Name>hrms-api-service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\face-recognition-service\face-recognition-service.vbproj">
+      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
+      <Name>face-recognition-service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\time-recorder-service\time-recorder-service.vbproj">
       <Project>{4fe7cb48-0a3c-4d4f-ac87-c549df7b9310}</Project>
       <Name>time-recorder-service</Name>
