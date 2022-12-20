@@ -263,17 +263,13 @@
     <None Include="Resources\check-mark.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ddc-face-recognition-service\face-recognition-service\face-recognition-service.vbproj">
-      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
-      <Name>face-recognition-service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ddc-utility-service\utility-service\utility-service.vbproj">
-      <Project>{d314d3f7-c0e4-4103-b768-e5b299ce14b7}</Project>
-      <Name>utility-service</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\hrms-api-service\hrms-api-service\hrms-api-service.vbproj">
       <Project>{f3d16904-61b6-47ba-9f13-1885636d7712}</Project>
       <Name>hrms-api-service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\face-recognition-service\face-recognition-service.vbproj">
+      <Project>{58976bf9-ec30-4e26-bec1-01f277457966}</Project>
+      <Name>face-recognition-service</Name>
     </ProjectReference>
     <ProjectReference Include="..\time-recorder-service\time-recorder-service.vbproj">
       <Project>{4FE7CB48-0A3C-4D4F-AC87-C549DF7B9310}</Project>
@@ -282,6 +278,10 @@
     <ProjectReference Include="..\upsg-api-service\upsg-api-service.vbproj">
       <Project>{1b28f3d2-da0c-4267-8bb6-be4ea74f5b7e}</Project>
       <Name>upsg-api-service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\utility-service\utility-service.vbproj">
+      <Project>{D314D3F7-C0E4-4103-B768-E5B299CE14B7}</Project>
+      <Name>utility-service</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

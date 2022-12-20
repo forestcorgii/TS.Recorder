@@ -13,9 +13,9 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "upsg-api-service", "upsg-ap
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "employee-sync", "employee-sync\employee-sync.vbproj", "{E8CE4122-A45F-4382-88D9-004DA88F45BD}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "utility-service", "..\..\ddc-utility-service\utility-service\utility-service.vbproj", "{D314D3F7-C0E4-4103-B768-E5B299CE14B7}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "utility-service", "utility-service\utility-service.vbproj", "{D314D3F7-C0E4-4103-B768-E5B299CE14B7}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "face-recognition-service", "..\..\ddc-face-recognition-service\face-recognition-service\face-recognition-service.vbproj", "{58976BF9-EC30-4E26-BEC1-01F277457966}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "face-recognition-service", "face-recognition-service\face-recognition-service.vbproj", "{58976BF9-EC30-4E26-BEC1-01F277457966}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
